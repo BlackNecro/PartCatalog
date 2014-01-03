@@ -1003,6 +1003,7 @@ namespace PartCatalog
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Autotag"))
             {
+                PartCategoryRuleHandler.Instance.ReloadFiles();
                 PartCatalog.Instance.BuildCatalogs();
                 PartCatalog.Instance.AutoTagByMod();
             }
@@ -1012,7 +1013,7 @@ namespace PartCatalog
             {
                 if (selectedPartTag != null)
                 {
-                    PartCatalog.Instance.AutoGroupTag(selectedPartTag);
+                    PartCategoryRuleHandler.Instance.AutoGroupPartTag(ref selectedPartTag);
                 }
             }
 

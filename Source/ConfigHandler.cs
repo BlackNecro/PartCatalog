@@ -203,6 +203,9 @@ namespace PartCatalog
         [SaveToConfig(408321)]
         public int WindowIndexOffset;
 
+        [SaveToConfig(true)]
+        public bool UseDynamicRules;
+
         public int LayoutWindow
         {
             get

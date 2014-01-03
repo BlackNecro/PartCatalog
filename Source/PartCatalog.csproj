@@ -51,6 +51,7 @@
     <Compile Include="PartCatalog.cs" />
     <Compile Include="PartCatalogBehavior.cs" />
     <Compile Include="PartCategorizer.cs" />
+    <Compile Include="PartCategoryRuleHandler.cs" />
     <Compile Include="PartFilterManager.cs" />
     <Compile Include="PartTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -120,7 +120,7 @@ namespace PartCatalog
 
         public void Rehash()
         {
-            //Debug.Log("Rehashing Tag " + this.Name);
+            //Debug.Log("Rehashing Tag " + this.Name);            
             PartCategories.Clear();
             VisibleParts.Clear();
             

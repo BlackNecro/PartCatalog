@@ -324,8 +324,11 @@ namespace PartCatalog
                 GUI.Label(LabelPos, count.ToString(), tag.Enabled ? LabelStyleEnabled : LabelStyle);
                 if (curPos.Contains(Event.current.mousePosition))
                 {
-                    MouseOverStack.Clear();
-                    MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
+                    if (MouseOverStack.Count == 0 || MouseOverStack[0].Tag != tag)
+                    {
+                        MouseOverStack.Clear();
+                        MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));                        
+                    }
                     MouseOverClear = false;
                 }
                 switch (ConfigHandler.Instance.ToolBarDirection)

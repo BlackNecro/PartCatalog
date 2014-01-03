@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using KSP.IO;
 
 namespace PartCatalog
@@ -14,11 +15,359 @@ namespace PartCatalog
 
         }
 
-        public PartCategorizer Instance
+        public static PartCategorizer Instance
         {
             get
             {
                 return instance;
+            }
+        }
+
+        public void CreatePartTags(PartTag toCategorize)
+        {
+            Dictionary<string, HashSet<AvailablePart>> categories = PartCategorizer.GetCategories(toCategorize.IncludedParts);
+            if (categories.Count > 0)
+            {
+                if (categories.ContainsKey("Pod"))
+                {
+                    PartTag pod = new PartTag();
+                    pod.Name = "Pods";
+                    if (categories.ContainsKey("MannedPod"))
+                    {
+                        PartTag mpod = new PartTag();
+                        mpod.Name = "Manned";
+                        mpod.AddParts(categories["MannedPod"]);
+                        toCategorize.RemoveParts(categories["MannedPod"]);
+                        pod.AddChild(mpod);
+                    }
+                    if (categories.ContainsKey("UnmannedPod"))
+                    {
+                        PartTag upod = new PartTag();
+                        upod.Name = "Unmanned";
+                        upod.AddParts(categories["UnmannedPod"]);
+                        toCategorize.RemoveParts(categories["UnmannedPod"]);
+                        pod.AddChild(upod);
+                    }
+                    if (categories.ContainsKey("Seat"))
+                    {
+                        PartTag seat = new PartTag();
+                        seat.Name = "Seats";
+                        seat.AddParts(categories["Seat"]);
+                        toCategorize.RemoveParts(categories["Seat"]);
+                        pod.AddChild(seat);
+                    }
+                    toCategorize.AddChild(pod);
+                }
+                if (categories.ContainsKey("Engine"))
+                {
+                    PartTag engines = new PartTag();
+                    engines.Name = "Propulsion";
+                    engines.AddParts(categories["Engine"]);
+                    toCategorize.RemoveParts(categories["Engine"]);
+                    foreach (string cat in categories.Keys)
+                    {
+                        if (cat.StartsWith("EngineProp_"))
+                        {
+                            PartTag catEngine = new PartTag();
+                            catEngine.Name = cat.Substring("EngineProp_".Length);
+                            catEngine.AddParts(categories[cat]);
+                            engines.RemoveParts(categories[cat]);
+                            engines.AddChild(catEngine);
+                        }
+                    }
+                    if (categories.ContainsKey("RCS"))
+                    {
+                        PartTag rcs = new PartTag();
+                        rcs.Name = "RCS";
+                        rcs.AddParts(categories["RCS"]);
+                        toCategorize.RemoveParts(categories["RCS"]);
+                        engines.AddChild(rcs);
+                    }
+                    if (engines.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(engines.IncludedParts);
+                        engines.RemoveParts(other.IncludedParts);
+                        engines.AddChild(other);
+                    }
+                    toCategorize.AddChild(engines);
+
+                    engines.ChildTags = new LinkedList<PartTag>(engines.ChildTags.OrderBy(sorttag => sorttag.Name));
+                }
+                if (categories.ContainsKey("Storage"))
+                {
+                    PartTag storage = new PartTag();
+                    storage.Name = "Storage";
+                    storage.AddParts(categories["Storage"]);
+                    toCategorize.RemoveParts(categories["Storage"]);
+                    foreach (string cat in categories.Keys)
+                    {
+                        if (cat.StartsWith("Storage_"))
+                        {
+                            PartTag catStore = new PartTag();
+                            catStore.Name = cat.Substring("Storage_".Length);
+                            catStore.AddParts(categories[cat]);
+                            storage.RemoveParts(categories[cat]);
+                            storage.AddChild(catStore);
+                        }
+                    }
+                    storage.ChildTags = new LinkedList<PartTag>(storage.ChildTags.OrderBy(sorttag => sorttag.Name));
+                    if (categories.ContainsKey("Transfer"))
+                    {
+                        PartTag transfer = new PartTag();
+                        transfer.Name = "Transfer";
+                        transfer.AddParts(categories["Transfer"]);
+                        storage.RemoveParts(categories["Transfer"]);
+                        storage.AddChild(transfer);
+
+                    }
+                    toCategorize.AddChild(storage);
+                    if (storage.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(storage.IncludedParts);
+                        storage.RemoveParts(other.IncludedParts);
+                        storage.AddChild(other);
+                    }
+                }
+                if (categories.ContainsKey("Structural"))
+                {
+                    PartTag structural = new PartTag();
+                    structural.Name = "Structural";
+                    structural.AddParts(categories["Structural"]);
+                    toCategorize.RemoveParts(categories["Structural"]);
+                    toCategorize.AddChild(structural);
+                    if (categories.ContainsKey("Structure"))
+                    {
+                        PartTag structure = new PartTag();
+                        structure.Name = "Main";
+                        structure.AddParts(categories["Structure"]);
+                        structural.RemoveParts(categories["Structure"]);
+                        structural.AddChild(structure);
+                    }
+                    if (categories.ContainsKey("Decoupler"))
+                    {
+                        PartTag decoupler = new PartTag();
+                        decoupler.Name = "Decoupler";
+                        decoupler.AddParts(categories["Decoupler"]);
+                        structural.RemoveParts(categories["Decoupler"]);
+                        structural.AddChild(decoupler);
+                    }
+
+                    if (structural.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(structural.IncludedParts);
+                        structural.RemoveParts(other.IncludedParts);
+                        structural.AddChild(other);
+                    }
+                }
+                if (categories.ContainsKey("Aero"))
+                {
+                    PartTag aero = new PartTag();
+                    aero.Name = "Aero";
+                    aero.AddParts(categories["Aero"]);
+                    toCategorize.RemoveParts(categories["Aero"]);
+                    if (categories.ContainsKey("ControlSurface"))
+                    {
+                        PartTag controlsurface = new PartTag();
+                        controlsurface.Name = "Control Surfaces";
+                        controlsurface.AddParts(categories["ControlSurface"]);
+                        aero.RemoveParts(categories["ControlSurface"]);
+                        aero.AddChild(controlsurface);
+                    }
+                    if (categories.ContainsKey("Winglet"))
+                    {
+                        PartTag winglet = new PartTag();
+                        winglet.Name = "Winglets";
+                        winglet.AddParts(categories["Winglet"]);
+                        aero.RemoveParts(categories["Winglet"]);
+                        aero.AddChild(winglet);
+                    }
+                    if (categories.ContainsKey("Intake"))
+                    {
+                        PartTag intake = new PartTag();
+                        intake.Name = "Intakes";
+                        intake.AddParts(categories["Intake"]);
+                        aero.RemoveParts(categories["Intake"]);
+                        aero.AddChild(intake);
+                    }
+                    if (aero.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(aero.IncludedParts);
+                        aero.RemoveParts(other.IncludedParts);
+                        aero.AddChild(other);
+                    }
+                    toCategorize.AddChild(aero);
+                }
+                if (categories.ContainsKey("Utility"))
+                {
+                    PartTag utils = new PartTag();
+                    utils.Name = "Utility";
+                    utils.AddParts(categories["Utility"]);
+                    toCategorize.RemoveParts(categories["Utility"]);
+                    if (categories.ContainsKey("Docking"))
+                    {
+                        PartTag docking = new PartTag();
+                        docking.Name = "Docking";
+                        docking.AddParts(categories["Docking"]);
+                        utils.RemoveParts(categories["Docking"]);
+                        utils.AddChild(docking);
+                    }
+                    if (categories.ContainsKey("Generator"))
+                    {
+                        PartTag generator = new PartTag();
+                        generator.Name = "Generators";
+                        generator.AddParts(categories["Generator"]);
+                        utils.RemoveParts(categories["Generator"]);
+                        if (categories.ContainsKey("Solar Panel"))
+                        {
+                            PartTag solarpanels = new PartTag();
+                            solarpanels.Name = "Solar Panels";
+                            solarpanels.AddParts(categories["Solar Panel"]);
+                            generator.RemoveParts(categories["Solar Panel"]);
+                            generator.AddChild(solarpanels);
+                        }
+                        if (generator.IncludedParts.Count > 0)
+                        {
+                            PartTag other = new PartTag();
+                            other.Name = "Other";
+                            other.AddParts(generator.IncludedParts);
+                            generator.RemoveParts(other.IncludedParts);
+                            generator.AddChild(other);
+                        }
+                        utils.AddChild(generator);
+                    }
+                    if (categories.ContainsKey("LandingAparatus"))
+                    {
+                        PartTag landing = new PartTag();
+                        landing.Name = "Landing";
+                        landing.AddParts(categories["LandingAparatus"]);
+                        utils.RemoveParts(categories["LandingAparatus"]);
+
+                        if (categories.ContainsKey("Parachute"))
+                        {
+                            PartTag parachutes = new PartTag();
+                            parachutes.Name = "Parachutes";
+                            parachutes.AddParts(categories["Parachute"]);
+                            landing.RemoveParts(categories["Parachute"]);
+                            landing.AddChild(parachutes);
+                        }
+                        if (categories.ContainsKey("Wheel"))
+                        {
+                            PartTag wheels = new PartTag();
+                            wheels.Name = "Wheels";
+                            wheels.AddParts(categories["Wheel"]);
+                            landing.RemoveParts(categories["Wheel"]);
+                            landing.AddChild(wheels);
+                        }
+                        if (categories.ContainsKey("Landing Gear"))
+                        {
+                            PartTag gear = new PartTag();
+                            gear.Name = "Landing Gears";
+                            gear.AddParts(categories["Landing Gear"]);
+                            landing.RemoveParts(categories["Landing Gear"]);
+                            landing.AddChild(gear);
+                        }
+                        if (categories.ContainsKey("Landing Leg"))
+                        {
+                            PartTag leg = new PartTag();
+                            leg.Name = "Landing Legs";
+                            leg.AddParts(categories["Landing Leg"]);
+                            landing.RemoveParts(categories["Landing Leg"]);
+                            landing.AddChild(leg);
+                        }
+                        utils.AddChild(landing);
+                    }
+                    if (categories.ContainsKey("Light"))
+                    {
+                        PartTag light = new PartTag();
+                        light.Name = "Light";
+                        light.AddParts(categories["Light"]);
+                        utils.RemoveParts(categories["Light"]);
+                        utils.AddChild(light);
+                    }
+                    if (categories.ContainsKey("SAS"))
+                    {
+                        PartTag sas = new PartTag();
+                        sas.Name = "SAS";
+                        sas.AddParts(categories["SAS"]);
+                        utils.RemoveParts(categories["SAS"]);
+                        utils.AddChild(sas);
+                    }
+                    if (categories.ContainsKey("Control"))
+                    {
+                        PartTag control = new PartTag();
+                        control.Name = "Control";
+                        control.AddParts(categories["Control"]);
+                        utils.RemoveParts(categories["Control"]);
+                        utils.AddChild(control);
+                    }
+                    if (categories.ContainsKey("Ladder"))
+                    {
+                        PartTag ladders = new PartTag();
+                        ladders.Name = "Ladders";
+                        ladders.AddParts(categories["Ladder"]);
+                        utils.RemoveParts(categories["Ladder"]);
+                        utils.AddChild(ladders);
+                    }
+                    if (utils.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(utils.IncludedParts);
+                        utils.RemoveParts(other.IncludedParts);
+                        utils.AddChild(other);
+                    }
+                    toCategorize.AddChild(utils);
+                }
+                if (categories.ContainsKey("Science"))
+                {
+                    PartTag science = new PartTag();
+                    science.Name = "Science";
+                    science.AddParts(categories["Science"]);
+                    toCategorize.RemoveParts(categories["Science"]);
+
+                    if (categories.ContainsKey("Sensor"))
+                    {
+                        PartTag sensors = new PartTag();
+                        sensors.Name = "Sensors";
+                        sensors.AddParts(categories["Sensor"]);
+                        science.RemoveParts(categories["Sensor"]);
+                        science.AddChild(sensors);
+                    }
+                    if (categories.ContainsKey("Antenna"))
+                    {
+                        PartTag antenna = new PartTag();
+                        antenna.Name = "Antennas";
+                        antenna.AddParts(categories["Antenna"]);
+                        science.RemoveParts(categories["Antenna"]);
+                        science.AddChild(antenna);
+                    }
+                    if (science.IncludedParts.Count > 0)
+                    {
+                        PartTag other = new PartTag();
+                        other.Name = "Other";
+                        other.AddParts(science.IncludedParts);
+                        science.RemoveParts(other.IncludedParts);
+                        science.AddChild(other);
+                    }
+                    toCategorize.AddChild(science);
+                }
+                if (toCategorize.IncludedParts.Count > 0)
+                {
+                    PartTag ungrouped = new PartTag();
+                    ungrouped.Name = "Other";
+                    ungrouped.AddParts(toCategorize.IncludedParts);
+                    toCategorize.RemoveParts(ungrouped.IncludedParts);
+                    toCategorize.AddChild(ungrouped);
+                }
+
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PartCatalog
@@ -11,7 +12,8 @@ namespace PartCatalog
         private bool launched = false;
 
         public void Awake()
-        {                                          
+        {
+
         }
 
         public void OnDestroy()
@@ -22,7 +24,7 @@ namespace PartCatalog
         public void OnGUI()
         {
             if (launched && HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH)
-            {
+            {                      
                 if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
                 {
                     GUILayoutSettings.Instance.Draw();
@@ -35,7 +37,8 @@ namespace PartCatalog
         {
             if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null ) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
             {
-                launched = true;
+                launched = true;                
+
                 Debug.Log("****Loading PartCatalog****");
 
                 ConfigHandler.Instance.LoadConfig();

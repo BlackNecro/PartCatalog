@@ -85,20 +85,7 @@ namespace PartCatalog
         {
             return LoadedTextures.ContainsKey(name) || BufferTexture(name);
         }
-
-        public void SaveIconList()
-        {
-            /*
-            TextWriter file = TextWriter.CreateForType<PartCatalog>("icons.txt");
-            foreach (string iconName in LoadedTextures.Keys)
-            {
-                file.WriteLine(iconName);
-            }
-            file.Flush();
-            file.Close();
-             */
-        }
-                                        
+                   
         public void LoadIconList()
         {
             List<string> files = DirectoryLister.Instance.ListFiles(GUIConstants.CatalogDataPath);
@@ -109,15 +96,6 @@ namespace PartCatalog
                     BufferTexture(file.Substring(0, file.Length - "_On.png".Length));
                 }
             }
-            /*
-            if (File.Exists<PartCatalog>("icons.txt"))
-            {
-                TextReader file = TextReader.CreateForType<PartCatalog>("icons.txt");
-                while (!file.EndOfStream)
-                {
-                    BufferTexture(file.ReadLine());
-                }
-            }       */
         }
     }
 

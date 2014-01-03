@@ -1,0 +1,89 @@
+TAG Pod
+	ICON Pod
+	INCLUDE MannedPod AS Manned WITH ICON MannedPod
+	INCLUDE UnmannedPod AS Unmanned WITH ICON UnmannedPod
+	INCLUDE Seat AS Seat WITH ICON Seat
+	INCLUDE Misc_Pods AS Misc WITH ICON Pod
+END TAG
+
+TAG Engine
+	Icon Engine
+	INCLUDE Engine_* AS * WITH ICON Engine*	
+	REORDER	
+END TAG
+
+
+TAG Storage
+	ICON Storage
+	INCLUDE Storage_* AS * WITH ICON Storage*
+	REORDER
+	INCLUDE FuelTransfer AS Transfer WITH ICON Transfer
+END TAG
+	
+INCLUDE Misc_Propulsion AS Propulsion WITH ICON Engine
+
+TAG Control
+	ICON Control
+	INCLUDE SAS AS SAS WITH ICON SAS
+	TAG RCS
+		ICON RCS
+		INCLUDE RCS_* AS * WITH ICON RCS
+	END TAG	
+	INCLUDE Misc_Control AS Misc	
+END TAG
+	
+TAG Structural
+	ICON Structural
+	INCLUDE Misc_Structural AS General WITH ICON Structural	
+	TAG Decoupler
+		ICON Decoupler
+		INCLUDE DecouplerStack AS Horizontal WITH ICON Decoupler
+		INCLUDE DecouplerRadial AS Radial WITH ICON DecouplerRadial
+		INCLUDE Seperator AS Seperator WITH ICON Seperator
+	END TAG
+	INCLUDE 
+	INCLUDE StrutConnector AS Strut WITH ICON Strut
+	INCLUDE GroundSupport AS Ground Support
+END TAG
+
+TAG Aero	
+	INCLUDE ControlSurface AS Control Surface
+	INCLUDE Winglet AS Winglet
+	TAG Intakes
+		INCLUDE Intake_* AS *
+		REORDER
+	END TAG
+	INCLUDE Fairing AS Fairing
+	INCLUDE NoseCone as Nose Cone
+	INCLUDE Misc_Aero AS Misc
+END TAG
+
+TAG Utility	
+	INCLUDE Docking as Docking
+	TAG Landing
+		INCLUDE Parachute AS Parachute
+		INCLUDE Wheel AS Wheel
+		INCLUDE LandingGear AS Landing Gear
+		INCLUDE LandingLeg AS Landing Leg
+	END TAG
+	TAG Generators
+		INCLUDE Generator_* AS *
+		REORDER
+		INCLUDE SolarPanel AS Solar Panel
+	END TAG
+	INCLUDE Ladder as Ladder
+	INCLUDE Light AS Light
+	INCLUDE Misc_Utility AS Misc
+END TAG
+
+TAG Science
+	TAG Communication
+		INCLUDE ScienceAntenna 
+		INCLUDE ScienceAntennaDish AS Dish
+		INCLUDE ScienceAntennaOmni AS Omni
+	END TAG
+	INCLUDE ScienceExperiment AS Experiment
+	INCLUDE ScienceLab as Lab
+	INCLUDE Sensor AS Sensor
+	INCLUDE Misc_Science AS Misc
+END TAG
