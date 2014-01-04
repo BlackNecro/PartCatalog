@@ -1,20 +1,17 @@
-TAG Pod
-	ICON Pod
+TAG Pod WITH ICON Pod
 	INCLUDE MannedPod AS Manned WITH ICON MannedPod
 	INCLUDE UnmannedPod AS Unmanned WITH ICON UnmannedPod
 	INCLUDE Seat AS Seat WITH ICON Seat
 	INCLUDE Misc_Pods AS Misc WITH ICON Pod
 END TAG
 
-TAG Engine
-	Icon Engine
+TAG Engine WITH ICON Engine
 	INCLUDE Engine_* AS * WITH ICON Engine*	
 	REORDER	
 END TAG
 
 
-TAG Storage
-	ICON Storage
+TAG Storage WITH ICON Storage
 	INCLUDE Storage_* AS * WITH ICON Storage*
 	REORDER
 	INCLUDE FuelTransfer AS Transfer WITH ICON Transfer
@@ -22,31 +19,26 @@ END TAG
 	
 INCLUDE Misc_Propulsion AS Propulsion WITH ICON Engine
 
-TAG Control
-	ICON Control
+TAG Control WITH ICON Control
 	INCLUDE SAS AS SAS WITH ICON SAS
-	TAG RCS
-		ICON RCS
+	TAG RCS WITH ICON RCS
 		INCLUDE RCS_* AS * WITH ICON RCS
 	END TAG	
 	INCLUDE Misc_Control AS Misc	
 END TAG
 	
-TAG Structural
-	ICON Structural
+TAG Structural WITH	ICON Structural
 	INCLUDE Misc_Structural AS General WITH ICON Structural	
-	TAG Decoupler
-		ICON Decoupler
+	TAG Decoupler WITH ICON Decoupler
 		INCLUDE DecouplerStack AS Horizontal WITH ICON Decoupler
 		INCLUDE DecouplerRadial AS Radial WITH ICON DecouplerRadial
 		INCLUDE Seperator AS Seperator WITH ICON Seperator
 	END TAG
-	INCLUDE 
 	INCLUDE StrutConnector AS Strut WITH ICON Strut
 	INCLUDE GroundSupport AS Ground Support
 END TAG
 
-TAG Aero	
+TAG Aero
 	INCLUDE ControlSurface AS Control Surface
 	INCLUDE Winglet AS Winglet
 	TAG Intakes
@@ -66,7 +58,7 @@ TAG Utility
 		INCLUDE LandingGear AS Landing Gear
 		INCLUDE LandingLeg AS Landing Leg
 	END TAG
-	TAG Generators
+	TAG Generator
 		INCLUDE Generator_* AS *
 		REORDER
 		INCLUDE SolarPanel AS Solar Panel

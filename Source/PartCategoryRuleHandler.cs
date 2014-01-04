@@ -289,6 +289,7 @@ namespace PartCatalog
         protected string Name;
         public bool Loaded = false;
         public string Line = "";
+        public string IconName = "";
 
         protected LinkedList<CategoryStructure> ChildStructures = new LinkedList<CategoryStructure>();
 
@@ -296,6 +297,18 @@ namespace PartCatalog
         {
 
             Line = file.CurrentLine;
+
+            int index = Line.IndexOf(" WITH ICON ", StringComparison.OrdinalIgnoreCase);
+            if (index >= 0)
+            {
+                IconName = "Category_" + Line.Substring(index + " WITH ICON ".Length).Trim().Replace(@"*", @"{0}");
+                if(!ResourceProxy.Instance.IconExists(IconName))
+                {
+                    IconName = "";
+                }
+                Line = Line.Substring(0, index);
+            }
+
             Name = Line.Substring("TAG".Length);
             file.Advance();
 
@@ -327,7 +340,8 @@ namespace PartCatalog
         public virtual void Execute(ref PartTag toCategorize, PartTag rootNode, Dictionary<string, HashSet<AvailablePart>> rootCategories)
         {
             PartTag childTag = new PartTag();
-            childTag.Name = Name;            
+            childTag.Name = Name;
+            childTag.IconName = IconName;
             foreach (var childStructure in ChildStructures)
             {
                 childStructure.Execute(ref childTag, rootNode, rootCategories);
