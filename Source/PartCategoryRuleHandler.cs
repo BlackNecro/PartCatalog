@@ -476,7 +476,7 @@ namespace PartCatalog
         public CategoryStructureIcon(ParseFile file)
         {
             Line = file.CurrentLine;
-            Name = Line.Substring("ICON".Length);
+            Name = "Category_"+Line.Substring("ICON".Length);
             file.Advance();
 
             Loaded = true;
