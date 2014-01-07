@@ -128,7 +128,7 @@ namespace PartCatalog
             foreach (AvailablePart part in IncludedParts)
             {                
 
-                if(!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
+                if(!ConfigHandlerHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
                 {
                     PartCategories.Add(part.category);
                     VisibleParts.Add(part.name);                                           

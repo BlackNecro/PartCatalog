@@ -80,13 +80,13 @@ namespace PartCatalog
         {
             get
             {
-                if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
+                if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
                 {
-                    return (int)(GetToolbarRectNoConfig().width / (ConfigHandler.Instance.ButtonSize.x + 1));
+                    return (int)(GetToolbarRectNoConfig().width / (ConfigHandlerHandler.Instance.ButtonSize.x + 1));
                 }
                 else
                 {
-                    return (int)(GetToolbarRectNoConfig().height / (ConfigHandler.Instance.ButtonSize.y + 1));
+                    return (int)(GetToolbarRectNoConfig().height / (ConfigHandlerHandler.Instance.ButtonSize.y + 1));
                 }
             }
         }
@@ -100,14 +100,14 @@ namespace PartCatalog
                 GUI.Box(toolBarRect, "Toolbar", HighLogic.Skin.box);
             }
 
-            if (!ConfigHandler.Instance.AutoHideToolBar || shiftAmount != 0)
+            if (!ConfigHandlerHandler.Instance.AutoHideToolBar || shiftAmount != 0)
             {
                 Rect toolbarRect = GetToolbarRectRaw();
                 GUI.BeginGroup(toolbarRect);
                 Rect shiftRect = new Rect(0, 0, toolbarRect.width, toolbarRect.height);
-                if (ConfigHandler.Instance.AutoHideToolBar)
+                if (ConfigHandlerHandler.Instance.AutoHideToolBar)
                 {
-                    switch (ConfigHandler.Instance.ToolBarPreset)
+                    switch (ConfigHandlerHandler.Instance.ToolBarPreset)
                     {
                         case ToolBarPositions.HorizontalTop:
                             shiftRect.y = shiftAmount - toolbarRect.height;
@@ -124,21 +124,21 @@ namespace PartCatalog
                     }
                 }
                 GUI.BeginGroup(shiftRect);
-                if (ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd)
+                if (ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd)
                 {
                     DrawConfigButton();
                 }
 
                 Rect configOffsetRect = GetToolbarRectNoConfig();
                 GUI.BeginGroup(configOffsetRect);
-                if (ConfigHandler.Instance.AutoHideToolBar)
+                if (ConfigHandlerHandler.Instance.AutoHideToolBar)
                 {
                     GUI.Box(configOffsetRect, "");
                 }
 
                 TextAnchor old = GUI.skin.label.alignment;
                 GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-                GUI.Label(GetPageNumberPos(), (ConfigHandler.Instance.DisplayedPage + 1).ToString());
+                GUI.Label(GetPageNumberPos(), (ConfigHandlerHandler.Instance.DisplayedPage + 1).ToString());
                 GUI.skin.label.alignment = old;
                 Rect pageOffsetRect = GetToolbarRectNoPageNumber();
                 GUI.BeginGroup(pageOffsetRect);
@@ -150,7 +150,7 @@ namespace PartCatalog
                 GUI.EndGroup();
                 GUI.EndGroup();
             }
-            if (!(ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
+            if (!(ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
             {
                 DrawConfigButton();
             }
@@ -171,11 +171,11 @@ namespace PartCatalog
                 {
                     break;
                 }
-                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name, GUILayout.MinHeight(200), GUILayout.MinWidth(200), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+                Entry.WindowPos = GUILayout.Window(ConfigHandlerHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name, GUILayout.MinHeight(200), GUILayout.MinWidth(200), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
                 if (i > 0)
                 {
                     MouseOverStackEntry LastEntry = MouseOverStack[i - 1];
-                    if (ConfigHandler.Instance.ToolBarPreset == ToolBarPositions.VerticalRight)
+                    if (ConfigHandlerHandler.Instance.ToolBarPreset == ToolBarPositions.VerticalRight)
                     {
                         Entry.WindowPos.x = Entry.Position.x - Entry.WindowPos.width;
                     }
@@ -187,18 +187,18 @@ namespace PartCatalog
                 }
                 else
                 {
-                    switch (ConfigHandler.Instance.ToolBarPreset)
+                    switch (ConfigHandlerHandler.Instance.ToolBarPreset)
                     {
                         case ToolBarPositions.HorizontalTop:
-                            Entry.WindowPos.x = Entry.Position.x - Entry.WindowPos.width * 0.5f + ConfigHandler.Instance.ButtonSize.x * 0.5f;
-                            Entry.WindowPos.y = Entry.Position.y + ConfigHandler.Instance.ButtonSize.y;
+                            Entry.WindowPos.x = Entry.Position.x - Entry.WindowPos.width * 0.5f + ConfigHandlerHandler.Instance.ButtonSize.x * 0.5f;
+                            Entry.WindowPos.y = Entry.Position.y + ConfigHandlerHandler.Instance.ButtonSize.y;
                             break;
                         case ToolBarPositions.HorizontalBottom:
-                            Entry.WindowPos.x = Entry.Position.x - Entry.WindowPos.width * 0.5f + ConfigHandler.Instance.ButtonSize.x * 0.5f;
+                            Entry.WindowPos.x = Entry.Position.x - Entry.WindowPos.width * 0.5f + ConfigHandlerHandler.Instance.ButtonSize.x * 0.5f;
                             Entry.WindowPos.y = Entry.Position.y - Entry.WindowPos.height;
                             break;
                         case ToolBarPositions.VerticalLeft:
-                            Entry.WindowPos.x = Entry.Position.x + ConfigHandler.Instance.ButtonSize.x;
+                            Entry.WindowPos.x = Entry.Position.x + ConfigHandlerHandler.Instance.ButtonSize.x;
                             Entry.WindowPos.y = Entry.Position.y - Entry.WindowPos.height * 0.5f;
                             break;
                         case ToolBarPositions.VerticalRight:
@@ -228,7 +228,7 @@ namespace PartCatalog
                 }
 
 
-                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name);
+                Entry.WindowPos = GUILayout.Window(ConfigHandlerHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name);
 
                 if (Entry.WindowPos.Contains(Event.current.mousePosition))
                 {
@@ -239,7 +239,7 @@ namespace PartCatalog
 
         private void DrawMouseOverWindow(int id)
         {
-            int index = id - ConfigHandler.Instance.MouseOverWindow;
+            int index = id - ConfigHandlerHandler.Instance.MouseOverWindow;
             if (index < MouseOverStack.Count)
             {
                 MouseOverStackEntry Entry = MouseOverStack[index];
@@ -254,7 +254,7 @@ namespace PartCatalog
                 GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9));
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
                 {
-                    if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
+                    if (ConfigHandlerHandler.Instance.HideUnresearchedTags && !subTag.Researched)
                     {
                        continue;
                     }
@@ -262,7 +262,7 @@ namespace PartCatalog
                     bool pushed = false;
                     if (subTag.IconName != "")
                     {
-                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, true), iconStyle, GUILayout.Width(ConfigHandlerHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandlerHandler.Instance.ButtonSize.y));
                     }
                     pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.ExpandWidth(true));
                     GUILayout.EndHorizontal();
@@ -296,17 +296,17 @@ namespace PartCatalog
         public void UpdateDisplayedTags()
         {
             int maxNumTags = MaxTagCount;
-            currentPageTags = PartCatalog.Instance.GetTagsForPage(ConfigHandler.Instance.DisplayedPage, maxNumTags, out nextPageAvailable);
+            currentPageTags = PartCatalog.Instance.GetTagsForPage(ConfigHandlerHandler.Instance.DisplayedPage, maxNumTags, out nextPageAvailable);
         }
 
         private void DrawToolBarTags(Rect drawInto)
         {
-            Rect curPos = new Rect(0, 0, ConfigHandler.Instance.ButtonSize.x, ConfigHandler.Instance.ButtonSize.y);
-            if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
+            Rect curPos = new Rect(0, 0, ConfigHandlerHandler.Instance.ButtonSize.x, ConfigHandlerHandler.Instance.ButtonSize.y);
+            if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
             {
                 curPos.x = drawInto.xMax - curPos.width;
             }
-            else if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Up)
+            else if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Up)
             {
                 curPos.y = drawInto.yMax - curPos.height;
             }
@@ -331,7 +331,7 @@ namespace PartCatalog
                     }
                     MouseOverClear = false;
                 }
-                switch (ConfigHandler.Instance.ToolBarDirection)
+                switch (ConfigHandlerHandler.Instance.ToolBarDirection)
                 {
                     case ToolBarDirections.Up:
                         curPos.y -= curPos.height;
@@ -373,29 +373,29 @@ namespace PartCatalog
         private Rect GetToolbarRectRaw()
         {
             Rect toReturn = new Rect();
-            switch (ConfigHandler.Instance.ToolBarPreset)
+            switch (ConfigHandlerHandler.Instance.ToolBarPreset)
             {
                 case ToolBarPositions.HorizontalTop:
                     toReturn.x = GUIConstants.EditorPartListWidth;
                     toReturn.y = GUIConstants.EditorToolbarTop;
                     toReturn.width = Screen.width - GUIConstants.EditorButtonsWidth - toReturn.x;
-                    toReturn.height = ConfigHandler.Instance.ButtonSize.y;
+                    toReturn.height = ConfigHandlerHandler.Instance.ButtonSize.y;
                     break;
                 case ToolBarPositions.HorizontalBottom:
                     toReturn.x = GUIConstants.EditorPartListWidth;
-                    toReturn.height = ConfigHandler.Instance.ButtonSize.y;
+                    toReturn.height = ConfigHandlerHandler.Instance.ButtonSize.y;
                     toReturn.y = Screen.height - toReturn.height - 1;
                     toReturn.width = Screen.width - GUIConstants.EditorResetButtonWidth - toReturn.x;
                     break;
                 case ToolBarPositions.VerticalLeft:
                     toReturn.x = GUIConstants.EditorPartListWidth;
-                    toReturn.width = ConfigHandler.Instance.ButtonSize.x;
+                    toReturn.width = ConfigHandlerHandler.Instance.ButtonSize.x;
                     toReturn.y = GUIConstants.EditorToolbarHeight;
                     toReturn.height = Screen.height - toReturn.y;
                     break;
                 case ToolBarPositions.VerticalRight:
-                    toReturn.x = Screen.width - ConfigHandler.Instance.ButtonSize.x;
-                    toReturn.width = ConfigHandler.Instance.ButtonSize.x;
+                    toReturn.x = Screen.width - ConfigHandlerHandler.Instance.ButtonSize.x;
+                    toReturn.width = ConfigHandlerHandler.Instance.ButtonSize.x;
                     toReturn.y = GUIConstants.EditorButtonsHeight;
                     toReturn.height = Screen.height - toReturn.y - GUIConstants.EditorButtonsHeight;
                     break;
@@ -410,22 +410,22 @@ namespace PartCatalog
             Rect toReturn = GetToolbarRectRaw();
             toReturn.x = 0;
             toReturn.y = 0;
-            if (ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd)
+            if (ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart || ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd)
             {
-                if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
+                if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
                 {
-                    toReturn.width -= ConfigHandler.Instance.ButtonSize.x;
-                    if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
+                    toReturn.width -= ConfigHandlerHandler.Instance.ButtonSize.x;
+                    if ((ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Right && ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Left && ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.x += ConfigHandler.Instance.ButtonSize.x;
+                        toReturn.x += ConfigHandlerHandler.Instance.ButtonSize.x;
                     }
                 }
                 else
                 {
-                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y;
-                    if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Down && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Up && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
+                    toReturn.height -= ConfigHandlerHandler.Instance.ButtonSize.y;
+                    if ((ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Down && ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Up && ConfigHandlerHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.y += ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += ConfigHandlerHandler.Instance.ButtonSize.y;
                     }
                 }
             }
@@ -438,33 +438,33 @@ namespace PartCatalog
             toReturn.x = 0;
             toReturn.y = 0;
 
-            switch (ConfigHandler.Instance.ToolBarDirection)
+            switch (ConfigHandlerHandler.Instance.ToolBarDirection)
             {
                 case ToolBarDirections.Up:
-                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y;
-                    if (ConfigHandler.Instance.PageNumberOnToolbarEnd)
+                    toReturn.height -= ConfigHandlerHandler.Instance.ButtonSize.y;
+                    if (ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd)
                     {
-                        toReturn.y += ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += ConfigHandlerHandler.Instance.ButtonSize.y;
                     }
                     break;
                 case ToolBarDirections.Down:
 
-                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y;
-                    if (!ConfigHandler.Instance.PageNumberOnToolbarEnd)
+                    toReturn.height -= ConfigHandlerHandler.Instance.ButtonSize.y;
+                    if (!ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd)
                     {
-                        toReturn.y += ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += ConfigHandlerHandler.Instance.ButtonSize.y;
                     }
                     break;
                 case ToolBarDirections.Left:
                     toReturn.width -= GUIConstants.PageNumberWidth;
-                    if (ConfigHandler.Instance.PageNumberOnToolbarEnd)
+                    if (ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd)
                     {
                         toReturn.x += GUIConstants.PageNumberWidth;
                     }
                     break;
                 case ToolBarDirections.Right:
                     toReturn.width -= GUIConstants.PageNumberWidth;
-                    if (!ConfigHandler.Instance.PageNumberOnToolbarEnd)
+                    if (!ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd)
                     {
                         toReturn.x += GUIConstants.PageNumberWidth;
                     }
@@ -478,14 +478,14 @@ namespace PartCatalog
 
         private Rect GetPageNumberPos()
         {
-            Rect toReturn = new Rect(0, 1.5f, GUIConstants.PageNumberWidth, ConfigHandler.Instance.ButtonSize.y);
+            Rect toReturn = new Rect(0, 1.5f, GUIConstants.PageNumberWidth, ConfigHandlerHandler.Instance.ButtonSize.y);
             Rect toolBarRect = GetToolbarRectNoConfig();
-            if (ConfigHandler.Instance.PageNumberOnToolbarEnd)
+            if (ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd)
             {
-                switch (ConfigHandler.Instance.ToolBarDirection)
+                switch (ConfigHandlerHandler.Instance.ToolBarDirection)
                 {
                     case ToolBarDirections.Down:
-                        toReturn.y += toolBarRect.height - ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += toolBarRect.height - ConfigHandlerHandler.Instance.ButtonSize.y;
                         break;
                     case ToolBarDirections.Right:
                         toReturn.x = toolBarRect.width - GUIConstants.PageNumberWidth;
@@ -494,10 +494,10 @@ namespace PartCatalog
             }
             else //On start of Toolbar
             {
-                switch (ConfigHandler.Instance.ToolBarDirection)
+                switch (ConfigHandlerHandler.Instance.ToolBarDirection)
                 {
                     case ToolBarDirections.Up:
-                        toReturn.y += toolBarRect.height - ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += toolBarRect.height - ConfigHandlerHandler.Instance.ButtonSize.y;
                         break;
                     case ToolBarDirections.Left:
                         toReturn.x = toolBarRect.width - GUIConstants.PageNumberWidth;
@@ -510,29 +510,29 @@ namespace PartCatalog
 
         private Rect GetConfigButtonPos()
         {
-            Rect toReturn = new Rect(0, 0, ConfigHandler.Instance.ButtonSize.x, ConfigHandler.Instance.ButtonSize.y);
+            Rect toReturn = new Rect(0, 0, ConfigHandlerHandler.Instance.ButtonSize.x, ConfigHandlerHandler.Instance.ButtonSize.y);
             Rect toolBarRect = GetToolbarRectRaw();
-            switch (ConfigHandler.Instance.ConfigButtonPreset)
+            switch (ConfigHandlerHandler.Instance.ConfigButtonPreset)
             {
                 case ConfigButtonPositions.CompoundStart:
-                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    switch (ConfigHandlerHandler.Instance.ToolBarDirection)
                     {
                         case ToolBarDirections.Up:
-                            toReturn.y = toolBarRect.height - ConfigHandler.Instance.ButtonSize.y;
+                            toReturn.y = toolBarRect.height - ConfigHandlerHandler.Instance.ButtonSize.y;
                             break;
                         case ToolBarDirections.Left:
-                            toReturn.x = toolBarRect.width - ConfigHandler.Instance.ButtonSize.x;
+                            toReturn.x = toolBarRect.width - ConfigHandlerHandler.Instance.ButtonSize.x;
                             break;
                     }
                     break;
                 case ConfigButtonPositions.CompoundEnd:
-                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    switch (ConfigHandlerHandler.Instance.ToolBarDirection)
                     {
                         case ToolBarDirections.Down:
-                            toReturn.y = toolBarRect.height - ConfigHandler.Instance.ButtonSize.y;
+                            toReturn.y = toolBarRect.height - ConfigHandlerHandler.Instance.ButtonSize.y;
                             break;
                         case ToolBarDirections.Right:
-                            toReturn.x = toolBarRect.width - ConfigHandler.Instance.ButtonSize.x;
+                            toReturn.x = toolBarRect.width - ConfigHandlerHandler.Instance.ButtonSize.x;
                             break;
                     }
                     break;
@@ -560,16 +560,16 @@ namespace PartCatalog
         #region Input
         public void Update()
         {
-            if (ConfigHandler.Instance.AutoHideToolBar)
+            if (ConfigHandlerHandler.Instance.AutoHideToolBar)
             {
                 Rect ToolbarRect = GetToolbarRectRaw();
                 if (ToolbarRect.Contains(Event.current.mousePosition))
                 {
-                    shiftAmount = Math.Min(shiftAmount + ConfigHandler.Instance.ToolbarShiftSpeed * 0.1f, Math.Min(ToolbarRect.height, ToolbarRect.width));
+                    shiftAmount = Math.Min(shiftAmount + ConfigHandlerHandler.Instance.ToolbarShiftSpeed * 0.1f, Math.Min(ToolbarRect.height, ToolbarRect.width));
                 }
                 else
                 {
-                    shiftAmount = Math.Max(shiftAmount - ConfigHandler.Instance.ToolbarShiftSpeed * 0.1f, 0);
+                    shiftAmount = Math.Max(shiftAmount - ConfigHandlerHandler.Instance.ToolbarShiftSpeed * 0.1f, 0);
                 }
             }
             if (!MouseOverClear)
@@ -611,7 +611,7 @@ namespace PartCatalog
         private void HandleKeyBindings()
         {
             HandleMouseScroll();
-            if (ConfigHandler.Instance.EnableShortcuts)
+            if (ConfigHandlerHandler.Instance.EnableShortcuts)
             {
                 for (int i = 0; i < shortCutsKeyCodes.Length; i++)
                 {
@@ -637,13 +637,13 @@ namespace PartCatalog
                 {
                     if (nextPageAvailable)
                     {
-                        ConfigHandler.Instance.DisplayedPage++;
+                        ConfigHandlerHandler.Instance.DisplayedPage++;
                         UpdateDisplayedTags();
                     }
                 }
-                else if (CurMouseScroll > 0.0f && ConfigHandler.Instance.DisplayedPage > 0)
+                else if (CurMouseScroll > 0.0f && ConfigHandlerHandler.Instance.DisplayedPage > 0)
                 {
-                    ConfigHandler.Instance.DisplayedPage--;
+                    ConfigHandlerHandler.Instance.DisplayedPage--;
                     UpdateDisplayedTags();
                 }
             }
@@ -651,22 +651,22 @@ namespace PartCatalog
             {
                 if (CurMouseScroll < 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandlerHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
                     {
                         MoveCategory(1);
                     }
-                    else if (ConfigHandler.Instance.EnablePartListScrolling)
+                    else if (ConfigHandlerHandler.Instance.EnablePartListScrolling)
                     {
                         EditorPartList.Instance.NextPage();
                     }
                 }
                 else if (CurMouseScroll > 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandlerHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
                     {
                         MoveCategory(-1);
                     }
-                    else if (ConfigHandler.Instance.EnablePartListScrolling)
+                    else if (ConfigHandlerHandler.Instance.EnablePartListScrolling)
                     {
                         EditorPartList.Instance.PrevPage();
                     }
@@ -679,12 +679,12 @@ namespace PartCatalog
         {
             AccumulatedMouseScroll += Input.GetAxis("Mouse ScrollWheel");
             CurMouseScroll = 0;
-            if (AccumulatedMouseScroll > ConfigHandler.Instance.MouseWheelPrescaler / 10f)
+            if (AccumulatedMouseScroll > ConfigHandlerHandler.Instance.MouseWheelPrescaler / 10f)
             {
                 CurMouseScroll = 1;
                 AccumulatedMouseScroll = 0;
             }
-            if (AccumulatedMouseScroll < ConfigHandler.Instance.MouseWheelPrescaler / -10f)
+            if (AccumulatedMouseScroll < ConfigHandlerHandler.Instance.MouseWheelPrescaler / -10f)
             {
                 CurMouseScroll = -1;
                 AccumulatedMouseScroll = 0;

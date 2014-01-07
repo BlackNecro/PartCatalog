@@ -103,7 +103,7 @@ namespace PartCatalog
         }
         public void SortPartList()
         {
-            switch (ConfigHandler.Instance.SortNumber)
+            switch (ConfigHandlerHandler.Instance.SortNumber)
             {
                 case 0:
                     SortedPartList = SortedPartList.OrderBy(x => x.name).Distinct().ToList();
@@ -284,7 +284,7 @@ namespace PartCatalog
 
             foreach (PartTag tag in RootTag.ChildTags)
             {
-                if (!ConfigHandler.Instance.HideUnresearchedTags || tag.Researched)
+                if (!ConfigHandlerHandler.Instance.HideUnresearchedTags || tag.Researched)
                 {
                     curCount++;
                     if (curCount == maxNumPerPage || tag.StartNewPage)
@@ -331,7 +331,7 @@ namespace PartCatalog
                     HashSet<AvailablePart> toAdd = new HashSet<AvailablePart>();
                     foreach (AvailablePart modPart in kv.Value)
                     {
-                        if (!ConfigHandler.Instance.AutotagOnlyUntagged || !RootTag.VisibleParts.Contains(modPart.title))
+                        if (!ConfigHandlerHandler.Instance.AutotagOnlyUntagged || !RootTag.VisibleParts.Contains(modPart.title))
                         {
                             toAdd.Add(modPart);
                         }
@@ -352,7 +352,7 @@ namespace PartCatalog
                             tag.IconName = kv.Key;
                         }
                         tag.AddParts(toAdd);
-                        if (tag.VisibleParts.Count < ConfigHandler.Instance.SmallModTagPartCount)
+                        if (tag.VisibleParts.Count < ConfigHandlerHandler.Instance.SmallModTagPartCount)
                         {
                             smallTags.Add(tag);
                         }
@@ -420,7 +420,7 @@ namespace PartCatalog
 
         internal void AutoGroupTag(PartTag tag)
         {
-            if (ConfigHandler.Instance.UseDynamicRules)
+            if (ConfigHandlerHandler.Instance.UseDynamicRules)
             {
                 PartCategoryRuleHandler.Instance.AutoGroupPartTag(ref tag);
             }

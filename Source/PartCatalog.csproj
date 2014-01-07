@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PartCatalog</RootNamespace>
     <AssemblyName>PartCatalog</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -37,13 +37,17 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.CSharp">
+      <HintPath>..\packages\Mono.CSharp.3.0.6\Lib\net40\Mono.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\KSP_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigHandler.cs" />
+    <Compile Include="ConfigHandlerHandler.cs" />
+    <Compile Include="DynamicCompilation.cs" />
     <Compile Include="GUIConstants.cs" />
     <Compile Include="GUIEditorControls.cs" />
     <Compile Include="GUILayoutSettings.cs" />
@@ -56,6 +60,9 @@
     <Compile Include="PartTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceProxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

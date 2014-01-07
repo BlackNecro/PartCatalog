@@ -13,16 +13,31 @@ namespace PartCatalog
 
         public void Awake()
         {
-
+            Debug.Log("Starting");
+            DynamicCompilationHandler handler = new DynamicCompilationHandler();
+            handler.CompileFile("test.cs");
+            Debug.Log("Compiled File");
+            int count = 0;
+            foreach (AvailablePart part in PartLoader.LoadedPartsList)
+            {
+                Debug.Log("Doing Part " + part.name);
+                handler.ListCategories(part);
+                if (count > 10)
+                {
+                    break;
+                }
+            }
         }
 
         public void OnDestroy()
         {
+            return;
             PartCatalog.Instance.Dispose();
         }                                                
 
         public void OnGUI()
         {
+            return;
             if (launched && HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH)
             {                      
                 if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
@@ -35,27 +50,30 @@ namespace PartCatalog
         }
         public void Update()
         {
+            return;
             if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null ) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
             {
                 launched = true;                
 
-                Debug.Log("****Loading PartCatalog****");
+                Debug.Log("****Loading PartCatalog ****");
 
-                ConfigHandler.Instance.LoadConfig();
+                ConfigHandlerHandler.Instance.LoadConfig();
                 PartCatalog.Instance.LoadPartTags();
 
                 GUIEditorControls.Instance.UpdateDisplayedTags();
                 PartFilterManager.Instance.EnablePartFilter();
-                if (ConfigHandler.Instance.FirstRun )
+                if (ConfigHandlerHandler.Instance.FirstRun )
                 {
-                    ConfigHandler.Instance.FirstRun = false;
-                    ConfigHandler.Instance.ButtonSize.x = 37;
-                    ConfigHandler.Instance.ButtonSize.y = 26;
+                    ConfigHandlerHandler.Instance.FirstRun = false;
+                    ConfigHandlerHandler.Instance.ButtonSize.x = 37;
+                    ConfigHandlerHandler.Instance.ButtonSize.y = 26;
                     GUILayoutSettings.Instance.Open();
                     PartCatalog.Instance.AutoTagByMod();
                 }
                 EditorPartList.Instance.ShowTabs();
                 EditorPartList.Instance.SelectTab(PartCategories.Pods);
+
+                Debug.Log("**** Loaded PartCatalog ****");
             }
             else
             {

@@ -69,14 +69,14 @@ namespace PartCatalog
         {
             display = false;
             PartCatalog.Instance.SavePartTags();
-            ConfigHandler.Instance.SaveConfig();
+            ConfigHandlerHandler.Instance.SaveConfig();
         }
 
         public void Draw()
         {
             if (display)
             {
-                GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
+                GUILayout.Window(ConfigHandlerHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
             }
         }
         public void DrawWindow(int id)
@@ -143,7 +143,7 @@ namespace PartCatalog
                 }
             }
             GUILayout.EndHorizontal();
-            if (ConfigHandler.Instance.HelpActive)
+            if (ConfigHandlerHandler.Instance.HelpActive)
             {
                 string label = "";
                 if (CurHelpField != null)
@@ -170,7 +170,7 @@ namespace PartCatalog
                 {
                     GUILayout.BeginHorizontal();
                     bool pushed = false;
-                    pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                    pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, true), iconStyle, GUILayout.Width(ConfigHandlerHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandlerHandler.Instance.ButtonSize.y));
                     pushed |= GUILayout.Button(iconName);
                     GUILayout.EndHorizontal();
                     RegisterHelp("IconSelect");
@@ -330,11 +330,11 @@ namespace PartCatalog
             RegisterHelp("TransferPartList");
             if (tagToList == selectedPartTag)
             {
-                if (ConfigHandler.Instance.SynchronizePartCategories)
+                if (ConfigHandlerHandler.Instance.SynchronizePartCategories)
                 {
                     if (GUILayout.Button("S", GUILayout.Width(30)))
                     {
-                        ConfigHandler.Instance.SynchronizePartCategories = false;
+                        ConfigHandlerHandler.Instance.SynchronizePartCategories = false;
                     }
                     RegisterHelp("SyncCategoriesOn");
                 }
@@ -342,7 +342,7 @@ namespace PartCatalog
                 {
                     if (GUILayout.Button("A", GUILayout.Width(30)))
                     {
-                        ConfigHandler.Instance.SynchronizePartCategories = true;
+                        ConfigHandlerHandler.Instance.SynchronizePartCategories = true;
                     }
                     RegisterHelp("SyncCategoriesOff");
                 }
@@ -377,7 +377,7 @@ namespace PartCatalog
                     {
                         bool draw = true;
                         string caption = part.title;
-                        if (ConfigHandler.Instance.SortNumber == 0)
+                        if (ConfigHandlerHandler.Instance.SortNumber == 0)
                         {
                             caption = part.name;
                         }
@@ -411,11 +411,11 @@ namespace PartCatalog
         private string GetPartCategory(AvailablePart part)
         {
             string category = null;
-            if (ConfigHandler.Instance.SortNumber == 2)
+            if (ConfigHandlerHandler.Instance.SortNumber == 2)
             {
                 category = part.manufacturer;
             }
-            else if (ConfigHandler.Instance.SortNumber == 3)
+            else if (ConfigHandlerHandler.Instance.SortNumber == 3)
             {
                 category = PartCatalog.Instance.PartModIndex[part];
             }
@@ -560,7 +560,7 @@ namespace PartCatalog
             {
                 return false;
             }
-            if (ConfigHandler.Instance.SynchronizePartCategories && EditorPartList.Instance.categorySelected != (int)cat)
+            if (ConfigHandlerHandler.Instance.SynchronizePartCategories && EditorPartList.Instance.categorySelected != (int)cat)
             {
                 return false;
             }
@@ -590,7 +590,7 @@ namespace PartCatalog
 
         private string GetCategoryString()
         {
-            if (!ConfigHandler.Instance.SynchronizePartCategories)
+            if (!ConfigHandlerHandler.Instance.SynchronizePartCategories)
             {
                 return "";
             }
@@ -632,12 +632,12 @@ namespace PartCatalog
 
         private void DrawSortButton()
         {
-            switch (ConfigHandler.Instance.SortNumber)
+            switch (ConfigHandlerHandler.Instance.SortNumber)
             {
                 case 0:
                     if (GUILayout.Button("Sort: Name"))
                     {
-                        ConfigHandler.Instance.SortNumber = 1;
+                        ConfigHandlerHandler.Instance.SortNumber = 1;
                         PartCatalog.Instance.SortPartList();
                     }
                     RegisterHelp("SortName");
@@ -645,7 +645,7 @@ namespace PartCatalog
                 case 1:
                     if (GUILayout.Button("Sort: Title"))
                     {
-                        ConfigHandler.Instance.SortNumber = 3;
+                        ConfigHandlerHandler.Instance.SortNumber = 3;
                         PartCatalog.Instance.SortPartList();
                     }
                     RegisterHelp("SortTitle");
@@ -654,7 +654,7 @@ namespace PartCatalog
                     if (GUILayout.Button("Sort: Manufacturer"))
                     {
 
-                        ConfigHandler.Instance.SortNumber = 0;
+                        ConfigHandlerHandler.Instance.SortNumber = 0;
                         PartCatalog.Instance.SortPartList();
                     }
                     RegisterHelp("SortManufacturer");
@@ -662,7 +662,7 @@ namespace PartCatalog
                 case 3:
                     if (GUILayout.Button("Sort: Mod"))
                     {
-                        ConfigHandler.Instance.SortNumber = 2;
+                        ConfigHandlerHandler.Instance.SortNumber = 2;
                         PartCatalog.Instance.SortPartList();
                     }
                     RegisterHelp("SortMod");
@@ -689,7 +689,7 @@ namespace PartCatalog
                         {
                             bool draw = true;
                             string caption = part.title;
-                            if (ConfigHandler.Instance.SortNumber == 0)
+                            if (ConfigHandlerHandler.Instance.SortNumber == 0)
                             {
                                 caption = part.name;
                             }
@@ -727,11 +727,11 @@ namespace PartCatalog
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("Available Parts {0}", GetCategoryString()), GUILayout.ExpandWidth(true));
             RegisterHelp("AvailablePartList");
-            if (ConfigHandler.Instance.SynchronizePartCategories)
+            if (ConfigHandlerHandler.Instance.SynchronizePartCategories)
             {
                 if (GUILayout.Button("S", GUILayout.Width(30)))
                 {
-                    ConfigHandler.Instance.SynchronizePartCategories = false;
+                    ConfigHandlerHandler.Instance.SynchronizePartCategories = false;
                 }
                 RegisterHelp("SyncCategoriesOn");
             }
@@ -739,7 +739,7 @@ namespace PartCatalog
             {
                 if (GUILayout.Button("A", GUILayout.Width(30)))
                 {
-                    ConfigHandler.Instance.SynchronizePartCategories = true;
+                    ConfigHandlerHandler.Instance.SynchronizePartCategories = true;
                 }
                 RegisterHelp("SyncCategoriesOff");
             }
@@ -778,7 +778,7 @@ namespace PartCatalog
                                 bool draw = true;
 
                                 string caption = part.title;
-                                if (ConfigHandler.Instance.SortNumber == 0)
+                                if (ConfigHandlerHandler.Instance.SortNumber == 0)
                                 {
                                     caption = part.name;
                                 }
@@ -808,7 +808,7 @@ namespace PartCatalog
 
         private bool PartInclusionFilter(PartTag tag, AvailablePart part)
         {
-            if (ConfigHandler.Instance.SearchPartInSubtags)
+            if (ConfigHandlerHandler.Instance.SearchPartInSubtags)
             {
                 return !tag.VisibleParts.Contains(part.name);
             }
@@ -829,25 +829,25 @@ namespace PartCatalog
             GUILayout.BeginVertical(GUILayout.Width(500));
 
             GUILayout.BeginHorizontal();
-            ConfigHandler.Instance.EnableShortcuts = GUILayout.Toggle(ConfigHandler.Instance.EnableShortcuts, "Shortcuts");
+            ConfigHandlerHandler.Instance.EnableShortcuts = GUILayout.Toggle(ConfigHandlerHandler.Instance.EnableShortcuts, "Shortcuts");
             GUILayout.EndHorizontal();
             RegisterHelp("EnableShortcuts");
             GUILayout.BeginHorizontal();
-            ConfigHandler.Instance.EnablePartListScrolling = GUILayout.Toggle(ConfigHandler.Instance.EnablePartListScrolling, "Editor Page Scrolling");
+            ConfigHandlerHandler.Instance.EnablePartListScrolling = GUILayout.Toggle(ConfigHandlerHandler.Instance.EnablePartListScrolling, "Editor Page Scrolling");
             GUILayout.EndHorizontal();
             RegisterHelp("EnablePartListScrolling");
             GUILayout.BeginHorizontal();
-            ConfigHandler.Instance.EnableCategoryScrolling = GUILayout.Toggle(ConfigHandler.Instance.EnableCategoryScrolling, "Editor Category Scrolling");
+            ConfigHandlerHandler.Instance.EnableCategoryScrolling = GUILayout.Toggle(ConfigHandlerHandler.Instance.EnableCategoryScrolling, "Editor Category Scrolling");
             GUILayout.EndHorizontal();
             RegisterHelp("EnableCategoryScrolling");
 
             GUILayout.BeginHorizontal();
-            ConfigHandler.Instance.DisplayAllOnEmptyFilter = GUILayout.Toggle(ConfigHandler.Instance.DisplayAllOnEmptyFilter, "Display all parts if filter is empty");
+            ConfigHandlerHandler.Instance.DisplayAllOnEmptyFilter = GUILayout.Toggle(ConfigHandlerHandler.Instance.DisplayAllOnEmptyFilter, "Display all parts if filter is empty");
             GUILayout.EndHorizontal();
             RegisterHelp("DisplayAllPartsEmptyFilter");
 
             GUILayout.BeginHorizontal();
-            ConfigHandler.Instance.HideUnresearchedTags = GUILayout.Toggle(ConfigHandler.Instance.HideUnresearchedTags, "Hide unavailable Parts");
+            ConfigHandlerHandler.Instance.HideUnresearchedTags = GUILayout.Toggle(ConfigHandlerHandler.Instance.HideUnresearchedTags, "Hide unavailable Parts");
             GUILayout.EndHorizontal();
             RegisterHelp("HideUnresearchedTags");
             /*
@@ -856,11 +856,11 @@ namespace PartCatalog
             GUILayout.EndHorizontal();
             RegisterHelp("HideEmptyCategories");
             */
-            if (ConfigHandler.Instance.UnionFilter)
+            if (ConfigHandlerHandler.Instance.UnionFilter)
             {
                 if (GUILayout.Button("Union tags"))
                 {
-                    ConfigHandler.Instance.UnionFilter = false;
+                    ConfigHandlerHandler.Instance.UnionFilter = false;
                 }
                 RegisterHelp("UnionFilter");
             }
@@ -868,29 +868,29 @@ namespace PartCatalog
             {
                 if (GUILayout.Button("Intersect tags"))
                 {
-                    ConfigHandler.Instance.UnionFilter = true;
+                    ConfigHandlerHandler.Instance.UnionFilter = true;
                 }
                 RegisterHelp("IntersectFilter");
             }
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouse Wheel Prescaler", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40));
-            ConfigHandler.Instance.MouseWheelPrescaler = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseWheelPrescaler, 0f, 20f, GUILayout.Height(40));
+            GUILayout.Label(ConfigHandlerHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40));
+            ConfigHandlerHandler.Instance.MouseWheelPrescaler = (int)GUILayout.HorizontalSlider((float)ConfigHandlerHandler.Instance.MouseWheelPrescaler, 0f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("MouseWheelPrescaler");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Tag Move Multiplier", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40));
-            ConfigHandler.Instance.TagMoveMultiplier = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.TagMoveMultiplier, 2f, 20f, GUILayout.Height(40));
+            GUILayout.Label(ConfigHandlerHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40));
+            ConfigHandlerHandler.Instance.TagMoveMultiplier = (int)GUILayout.HorizontalSlider((float)ConfigHandlerHandler.Instance.TagMoveMultiplier, 2f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("TagMoveMultiplier");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Small mod size", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40));
-            ConfigHandler.Instance.SmallModTagPartCount = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.SmallModTagPartCount, 0f, 100f, GUILayout.Height(40));
+            GUILayout.Label(ConfigHandlerHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40));
+            ConfigHandlerHandler.Instance.SmallModTagPartCount = (int)GUILayout.HorizontalSlider((float)ConfigHandlerHandler.Instance.SmallModTagPartCount, 0f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("SmallModSize");
 
@@ -909,7 +909,7 @@ namespace PartCatalog
         #region HelpRelated
         private void RegisterHelp(string name)
         {
-            if (ConfigHandler.Instance.HelpActive)
+            if (ConfigHandlerHandler.Instance.HelpActive)
             {
                 if (CurHelpField == null)
                 {
@@ -1142,7 +1142,7 @@ namespace PartCatalog
                     int num = 1;
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
-                        num = ConfigHandler.Instance.TagMoveMultiplier;
+                        num = ConfigHandlerHandler.Instance.TagMoveMultiplier;
                     }
                     for (int i = 0; i < num; i++)
                     {
@@ -1155,7 +1155,7 @@ namespace PartCatalog
                     int num = 1;
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
-                        num = ConfigHandler.Instance.TagMoveMultiplier;
+                        num = ConfigHandlerHandler.Instance.TagMoveMultiplier;
                     }
                     for (int i = 0; i < num; i++)
                     {
@@ -1231,7 +1231,7 @@ namespace PartCatalog
             GUILayout.BeginHorizontal();
             DisplaySettingsPanel = GUILayout.Toggle(DisplaySettingsPanel, "Settings", HighLogic.Skin.button);
             RegisterHelp("Settings");
-            ConfigHandler.Instance.HelpActive = GUILayout.Toggle(ConfigHandler.Instance.HelpActive, "?", HighLogic.Skin.button, GUILayout.Width(30));
+            ConfigHandlerHandler.Instance.HelpActive = GUILayout.Toggle(ConfigHandlerHandler.Instance.HelpActive, "?", HighLogic.Skin.button, GUILayout.Width(30));
             RegisterHelp("Help");
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
@@ -1312,10 +1312,10 @@ namespace PartCatalog
             bool buttonPress = false;
             if (tag.IconName != "")
             {
-                buttonPress |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(tag.IconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                buttonPress |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(tag.IconName, true), iconStyle, GUILayout.Width(ConfigHandlerHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandlerHandler.Instance.ButtonSize.y));
             }
             TextAnchor oldAlignment = GUI.skin.button.alignment;
-            GUI.skin.button.alignment = ConfigHandler.Instance.TagButtonTextAlignment;
+            GUI.skin.button.alignment = ConfigHandlerHandler.Instance.TagButtonTextAlignment;
             buttonPress |= GUILayout.Button(title);
             if (buttonPress)
             {

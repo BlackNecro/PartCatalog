@@ -6,17 +6,17 @@ using UnityEngine;
 
 namespace PartCatalog
 {
-    class ConfigHandler : IDisposable
+    class ConfigHandlerHandler : IDisposable
     {
-        static readonly ConfigHandler instance = new ConfigHandler();
+        static readonly ConfigHandlerHandler instance = new ConfigHandlerHandler();
 
-        private ConfigHandler()
+        private ConfigHandlerHandler()
         {
             LoadConfig();
         }
 
         
-        public static ConfigHandler Instance
+        public static ConfigHandlerHandler Instance
         {
             get
             {
