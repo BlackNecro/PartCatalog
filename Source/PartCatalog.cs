@@ -322,10 +322,14 @@ namespace PartCatalog
 
         internal void AutoTagByMod()
         {
+            LuaRuleHandler.Instance.ParseParts();// PartCategoryRuleHandler.Instance.GetCategoriesForParts(toGroup.IncludedParts);
+
             CreateAllPartTag();
 
             HashSet<PartTag> smallTags = new HashSet<PartTag>();
+
             
+
 
             foreach (KeyValuePair<string, HashSet<AvailablePart>> kv in HashedModCatalog)
             {

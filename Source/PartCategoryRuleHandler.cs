@@ -229,16 +229,13 @@ namespace PartCatalog
         static DateTime startTime;
         public void AutoGroupPartTag(ref PartTag toGroup)
         {
-            startTime = DateTime.Now;
-
-            var categories = LuaRuleHandler.Instance.ParseParts();// PartCategoryRuleHandler.Instance.GetCategoriesForParts(toGroup.IncludedParts);
-
+            startTime = DateTime.Now;           
             foreach (var kv in CategoryStructures)
             {
 
                 foreach (var structure in kv.Value)
                 {
-                    structure.Execute(ref toGroup, toGroup, categories);
+                    structure.Execute(ref toGroup, toGroup, LuaRuleHandler.Instance.Categories);
                 }
             }
         }
