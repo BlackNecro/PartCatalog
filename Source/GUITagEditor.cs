@@ -1003,9 +1003,9 @@ namespace PartCatalog
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Autotag"))
             {
-                PartCategoryRuleHandler.Instance.ReloadFiles();
-                PartCatalog.Instance.BuildCatalogs();
+                PartCategoryRuleHandler.Instance.ReloadFiles();               
                 PartCatalog.Instance.AutoTagByMod();
+                //LuaRuleHandler.Instance.ParseParts();
             }
 
             RegisterHelp("AutoTag");

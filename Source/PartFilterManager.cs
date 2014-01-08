@@ -112,7 +112,6 @@ namespace PartCatalog
         #region Rehashing        
         private void Rehash()
         {
-            //TODO Filter out unresearched parts
             HashedEnabledPartNames.Clear();
             EnabledCategories.Clear();
             bool firstRound = true;

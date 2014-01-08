@@ -39,8 +39,8 @@
       <HintPath>..\..\..\KSP_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RuntimeCompiler">
-      <HintPath>..\Plugins\RuntimeCompiler.dll</HintPath>
+    <Reference Include="NLua">
+      <HintPath>..\Plugins\NLua.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -55,6 +55,7 @@
     <Compile Include="GUIEditorControls.cs" />
     <Compile Include="GUILayoutSettings.cs" />
     <Compile Include="GUITagEditor.cs" />
+    <Compile Include="LuaRuleHandler.cs" />
     <Compile Include="PartCatalog.cs" />
     <Compile Include="PartCatalogBehavior.cs" />
     <Compile Include="PartCategorizer.cs" />

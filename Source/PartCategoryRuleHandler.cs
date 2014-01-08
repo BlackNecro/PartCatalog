@@ -163,10 +163,10 @@ namespace PartCatalog
                 {                    
                     ParseCategoryFile(file);
                 }
-                else if (file.EndsWith(".rules.txt", StringComparison.OrdinalIgnoreCase))
+                /*else if (file.EndsWith(".rules.txt", StringComparison.OrdinalIgnoreCase))
                 {
                     ParseRulesFile(file);
-                }
+                } */
             }
         }
         public static string GetLegacyPartModule(AvailablePart Part)
@@ -231,7 +231,7 @@ namespace PartCatalog
         {
             startTime = DateTime.Now;
 
-            var categories = PartCategoryRuleHandler.Instance.GetCategoriesForParts(toGroup.IncludedParts);
+            var categories = LuaRuleHandler.Instance.ParseParts();// PartCategoryRuleHandler.Instance.GetCategoriesForParts(toGroup.IncludedParts);
 
             foreach (var kv in CategoryStructures)
             {
@@ -390,7 +390,6 @@ namespace PartCatalog
     {
         public string CategoryName;
         public string TagName;
-        public string IconName;
 
         public CategoryStructureInclude(ParseFile file)
         {
@@ -589,7 +588,15 @@ namespace PartCatalog
 
                     return rule;
                 }
+            } else if(line.StartsWith("SET VARIABLE",StringComparison.OrdinalIgnoreCase))
+            {
+                CategoryRule rule = new CategoryRuleSetVariable(file, line.Substring("SET VARIABLE".Length).Trim());
+                if(rule.Loaded)
+                {
+                    return rule;
+                }
             }
+
 
             Debug.LogError("Unknown Line " + line);
             file.Advance();
@@ -772,8 +779,7 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { "==" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()),CategoryRuleConditionCompare.CompareType.Equal);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()),CategoryRuleConditionCompare.CompareType.Equal);                    
                 }
             }
             else if (conditionString.IndexOf("!=", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -781,8 +787,7 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { "<=" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Unequal);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Unequal);                    
                 }
             }
             else if (conditionString.IndexOf("<", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -790,8 +795,7 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Less);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Less);
                 }
             }
             else if (conditionString.IndexOf("<=", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -799,8 +803,8 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { "<=" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.LessOrEqual);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.LessOrEqual);
+                    
                 }
             }
 
@@ -809,8 +813,7 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { ">" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Greater);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Greater);
                 }
             }
 
@@ -819,8 +822,7 @@ namespace PartCatalog
                 string[] splitParts = conditionString.Split(new string[] { ">=" }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitParts.Length == 2)
                 {
-                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.GreaterOrEqual);
+                    return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.GreaterOrEqual);
                 }
             }
 
@@ -869,11 +871,17 @@ namespace PartCatalog
     {
         public abstract string GetValue(CategoryRuleContext context);
 
+
+
         public static CategoryRuleValue ParseValue(string value)
         {
-            if (value.StartsWith(@"$") && value.EndsWith(@"$"))
+            if (value.StartsWith(@"%"))
             {
-                return new CategoryRuleNodeValue(value.Substring(1, value.Length - 2));
+                return new CategoryRuleNodeValue(value.Substring(1));
+            }
+            else if(value.StartsWith(@"$")) 
+            {
+                return new CategoryRuleVariableValue(value.Substring(1));
             }
             else
             {
@@ -928,6 +936,25 @@ namespace PartCatalog
             return context.currentNode.GetValue(Name);
         }
         public CategoryRuleNodeValue(string name)
+        {
+            Name = name;
+        }
+    }
+
+    class CategoryRuleVariableValue : CategoryRuleValue
+    {
+                  string Name;
+        public override string GetValue(CategoryRuleContext context)
+        {
+            if(context.variables.ContainsKey(Name))
+            {
+                return context.variables[Name];
+            } else
+            {
+                return null;
+            }
+        }
+        public CategoryRuleVariableValue(string name)
         {
             Name = name;
         }
@@ -1097,6 +1124,68 @@ namespace PartCatalog
                 }
             }
 
+        }
+        public override void Execute(CategoryRuleContext context)
+        {
+
+            if (Keys.Count > 0)
+            {
+                List<string> Values = new List<string>();
+                foreach (var key in Keys)
+                {
+                    string value = key.GetValue(context);
+                    if (value == null)
+                    {
+                        return;
+                    }
+                    Values.Add(value);
+                }
+                context.categories.Add(String.Format(Name, Values.ToArray()));
+                return;
+            }
+            if (Name != null)
+            {
+                context.categories.Add(Name);
+            }
+
+        }
+    }
+
+    class CategoryRuleSetVariable : CategoryRule
+    {
+        string Name;
+        List<CategoryRuleNodeValue> Keys = new List<CategoryRuleNodeValue>();
+
+        public CategoryRuleSetVariable(ParseFile file, string line)
+        {
+            Line = file.CurrentLine;
+            file.Advance();
+
+
+            //Todo Finish Set variable parsing
+                       /*
+            if (category.Length > 0)
+            {
+                string[] parts = category.Split('$');
+                if (parts.Length > 0)
+                {
+                    Name = parts[0];
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        if (i % 2 == 1)
+                        {
+                            Keys.Add(new CategoryRuleNodeValue(parts[i]));
+                            Name += "{" + ((i - 1) / 2).ToString() + "}";
+                        }
+                        else
+                        {
+                            Name += parts[i];
+                        }
+                    }
+                    Loaded = true;            a
+                } 
+            }
+                 */
         }
         public override void Execute(CategoryRuleContext context)
         {

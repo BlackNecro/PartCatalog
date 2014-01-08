@@ -17,13 +17,10 @@ namespace PartCatalog
 
         public void OnDestroy()
         {
-            return;
-            PartCatalog.Instance.Dispose();
         }                                                
 
         public void OnGUI()
         {
-            return;
             if (launched && HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH)
             {                      
                 if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
@@ -36,7 +33,6 @@ namespace PartCatalog
         }
         public void Update()
         {
-            return;
             if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null ) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
             {
                 launched = true;                
@@ -58,6 +54,9 @@ namespace PartCatalog
                 }
                 EditorPartList.Instance.ShowTabs();
                 EditorPartList.Instance.SelectTab(PartCategories.Pods);
+
+                Debug.Log("Testing Lua");                
+                Debug.Log("Done Lua");
 
                 Debug.Log("**** Loaded PartCatalog ****");
             }

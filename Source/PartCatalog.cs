@@ -32,6 +32,7 @@ namespace PartCatalog
         #endregion
         #region Catalog Members
         public List<AvailablePart> SortedPartList = new List<AvailablePart>();
+        public Dictionary<string, AvailablePart> PartIndex = new Dictionary<string, AvailablePart>();
 
         public SortedDictionary<string, HashSet<AvailablePart>> HashedManufacturerCatalog = new SortedDictionary<string, HashSet<AvailablePart>>();
         public SortedDictionary<string, HashSet<AvailablePart>> HashedModCatalog = new SortedDictionary<string, HashSet<AvailablePart>>();
@@ -42,7 +43,7 @@ namespace PartCatalog
         #region Constructors
         private PartCatalog()
         {
-            BuildCatalogs();
+            BuildCatalogs();            
         }
 
         #endregion
@@ -51,6 +52,7 @@ namespace PartCatalog
         #region Building
         public void BuildCatalogs()
         {
+            PartIndex.Clear();
             SortedPartList.Clear();
             HashedManufacturerCatalog.Clear();
             HashedModCatalog.Clear();
@@ -58,6 +60,7 @@ namespace PartCatalog
             foreach (AvailablePart part in PartLoader.Instance.parts)
             {
                 SortedPartList.Add(part);
+                PartIndex[part.name] = part;
 
                 if (!HashedManufacturerCatalog.ContainsKey(part.manufacturer))
                 {
