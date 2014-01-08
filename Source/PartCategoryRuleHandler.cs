@@ -119,13 +119,16 @@ namespace PartCatalog
                 (c => part.name == c.name.Replace('_', '.')));
             if (config != null && config.config != null)
             {
+                CategoryRuleContext context = new CategoryRuleContext();
+                context.currentPart = part;
+                context.categories = toReturn;
+                context.currentNode = config.config;
+                context.variables = new Dictionary<string, string>();
                 foreach (var ruleList in CategorizationRules.Values)
                 {
-
                     foreach (CategoryRule rule in ruleList)
-                    {
-                        
-                        rule.Execute(ref toReturn, config.config, part);
+                    {                                               
+                        rule.Execute(context);
                     }
 
                 }
@@ -136,9 +139,7 @@ namespace PartCatalog
                     {
                         foreach (CategoryRule rule in ruleList)
                         {
-
-                            rule.Execute(ref toReturn, config.config, part);
-
+                            rule.Execute(context);
                         }
                     }
                 }
@@ -283,7 +284,7 @@ namespace PartCatalog
         }
     }
 
-
+    #region TagStructures
     class CategoryStructure
     {
         protected string Name;
@@ -503,7 +504,9 @@ namespace PartCatalog
 
     }
 
+    #endregion
 
+    #region CategoryRule
     class CategoryRule
     {
         public bool Loaded = false;
@@ -511,11 +514,11 @@ namespace PartCatalog
         public string Line = "";
         protected LinkedList<CategoryRule> ChildRules = new LinkedList<CategoryRule>();
 
-        public virtual void Execute(ref HashSet<string> categories, ConfigNode node, AvailablePart part)
+        public virtual void Execute(CategoryRuleContext context)
         {
             foreach (CategoryRule childRule in ChildRules)
             {
-                childRule.Execute(ref categories, node, part);
+                childRule.Execute(context);
             }
         }
 
@@ -627,17 +630,27 @@ namespace PartCatalog
         }
     }
 
+    struct CategoryRuleContext
+    {
+        public HashSet<string> categories;
+        public ConfigNode currentNode;
+        public AvailablePart currentPart;
+        public Dictionary<string, string> variables;
+    }
+
     class CategoryRuleNode : CategoryRule
     {
         protected string Name;
-        public override void Execute(ref HashSet<string> categories, ConfigNode node, AvailablePart part)
+        public override void Execute(CategoryRuleContext context)
         {
-            ConfigNode[] childNodes = node.GetNodes(Name);            
+            ConfigNode[] childNodes = context.currentNode.GetNodes(Name);            
             foreach (ConfigNode childNode in childNodes)
             {
+                CategoryRuleContext newContext = context;
+                newContext.currentNode = childNode;
                 foreach (CategoryRule childRule in ChildRules)
                 {
-                    childRule.Execute(ref categories, childNode, part);
+                    childRule.Execute(newContext);
                 }
             }
         }
@@ -672,27 +685,28 @@ namespace PartCatalog
 
     class CategoryRuleModule : CategoryRuleNode
     {
-        public override void Execute(ref HashSet<string> categories, ConfigNode node, AvailablePart part)
+        public override void Execute(CategoryRuleContext context)
         {
 
-            ConfigNode[] childNodes = node.GetNodes("MODULE");
+            ConfigNode[] childNodes = context.currentNode.GetNodes("MODULE");
             foreach (ConfigNode childNode in childNodes)
             {
                 if (childNode.GetValue("name") == Name)
                 {
-
+                    CategoryRuleContext newContext = context;
+                    newContext.currentNode = childNode;
                     foreach (CategoryRule childRule in ChildRules)
                     {
-                        childRule.Execute(ref categories, childNode, part);
+                        childRule.Execute(newContext);
                     }
                 }
             }
 
-            if (PartCategoryRuleHandler.GetLegacyPartModule(part) == Name)
+            if (PartCategoryRuleHandler.GetLegacyPartModule(context.currentPart) == Name)
             {
                 foreach (CategoryRule childRule in ChildRules)
                 {
-                    childRule.Execute(ref categories, node, part);
+                    childRule.Execute(context);
                 }
             }
 
@@ -727,7 +741,7 @@ namespace PartCatalog
 
     abstract class CategoryRuleCondition
     {
-        public abstract bool Evaluate(ConfigNode node, AvailablePart part);
+        public abstract bool Evaluate(CategoryRuleContext context);
 
         public static CategoryRuleCondition Parse(string conditionString)
         {
@@ -816,7 +830,7 @@ namespace PartCatalog
 
     class CategoryRuleConditionFalse : CategoryRuleCondition
     {
-        public override bool Evaluate(ConfigNode node, AvailablePart part)
+        public override bool Evaluate(CategoryRuleContext context)
         {
 
             return false;
@@ -833,7 +847,7 @@ namespace PartCatalog
         }
         public List<CategoryRuleCondition> Conditions = new List<CategoryRuleCondition>();
         public LogicType Type = LogicType.None;
-        public override bool Evaluate(ConfigNode node, AvailablePart part)
+        public override bool Evaluate(CategoryRuleContext context)
         {
             if (Conditions.Count > 0)
             {
@@ -842,9 +856,9 @@ namespace PartCatalog
                     case LogicType.None:
                         return false;
                     case LogicType.And:
-                        return (Conditions.TrueForAll(condition => condition.Evaluate(node, part)));
+                        return (Conditions.TrueForAll(condition => condition.Evaluate(context)));
                     case LogicType.Or:
-                        return (Conditions.Exists(condition => condition.Evaluate(node, part)));
+                        return (Conditions.Exists(condition => condition.Evaluate(context)));
                 }
             }
             return false;
@@ -853,7 +867,7 @@ namespace PartCatalog
 
     abstract class CategoryRuleValue
     {
-        public abstract string GetValue(ConfigNode node, AvailablePart Part);
+        public abstract string GetValue(CategoryRuleContext context);
 
         public static CategoryRuleValue ParseValue(string value)
         {
@@ -871,7 +885,7 @@ namespace PartCatalog
     class CategoryRuleConstantValue : CategoryRuleValue
     {
         string Value;
-        public override string GetValue(ConfigNode node, AvailablePart Part)
+        public override string GetValue(CategoryRuleContext context)
         {
             return Value;
         }
@@ -883,35 +897,35 @@ namespace PartCatalog
     class CategoryRuleNodeValue : CategoryRuleValue
     {
         string Name;
-        public override string GetValue(ConfigNode node, AvailablePart Part)
+        public override string GetValue(CategoryRuleContext context)
         {
-            if (node.name.Equals("part", StringComparison.OrdinalIgnoreCase))
+            if (context.currentNode.name.Equals("part", StringComparison.OrdinalIgnoreCase))
             {
                 switch (Name.ToLower()) //Fuck you Squad!
                 {
                     case "name":
-                        return Part.name;
+                        return context.currentPart.name;
                     case "author":
-                        return Part.author;
+                        return context.currentPart.author;
                     case "techrequired":
-                        return Part.TechRequired;
+                        return context.currentPart.TechRequired;
                     case "entrycost":
-                        return Part.entryCost.ToString();
+                        return context.currentPart.entryCost.ToString();
                     case "category":
-                        return Part.category.ToString();
+                        return context.currentPart.category.ToString();
                     case "cost":
-                        return Part.cost.ToString();
+                        return context.currentPart.cost.ToString();
                     case "description":
-                        return Part.description;
+                        return context.currentPart.description;
                     case "manufacturer":
-                        return Part.manufacturer;
+                        return context.currentPart.manufacturer;
                     case "title":
-                        return Part.title;
+                        return context.currentPart.title;
                     case "module":
-                        return PartCategoryRuleHandler.GetLegacyPartModule(Part);
+                        return PartCategoryRuleHandler.GetLegacyPartModule(context.currentPart);
                 }
             }
-            return node.GetValue(Name);
+            return context.currentNode.GetValue(Name);
         }
         public CategoryRuleNodeValue(string name)
         {
@@ -935,12 +949,12 @@ namespace PartCatalog
         bool Invert;
         CategoryRuleValue First;
         CategoryRuleValue Second;
-        public override bool Evaluate(ConfigNode node, AvailablePart part)
+        public override bool Evaluate(CategoryRuleContext context)
         {
             if (First != null && Second != null)
             {
-                string firstVal = First.GetValue(node, part);
-                string secondVal = Second.GetValue(node, part);
+                string firstVal = First.GetValue(context);
+                string secondVal = Second.GetValue(context);
                 if (firstVal != null && secondVal != null)
                 {
                     if(Compare == CompareType.Equal)
@@ -1027,23 +1041,23 @@ namespace PartCatalog
                 }
             }
         }
-        public override void Execute(ref HashSet<string> categories, ConfigNode node, AvailablePart part)
+        public override void Execute(CategoryRuleContext context)
         {
 
             if (Condition != null)
             {
-                if (Condition.Evaluate(node, part))
+                if (Condition.Evaluate(context))
                 {
                     foreach (CategoryRule childRule in ChildRules)
                     {
-                        childRule.Execute(ref categories, node, part);
+                        childRule.Execute(context);
                     }
                 }
                 else
                 {
                     foreach (CategoryRule childRule in ElseChildRules)
                     {
-                        childRule.Execute(ref categories, node, part);
+                        childRule.Execute(context);
                     }
                 }
             }
@@ -1084,7 +1098,7 @@ namespace PartCatalog
             }
 
         }
-        public override void Execute(ref HashSet<string> categories, ConfigNode node, AvailablePart part)
+        public override void Execute(CategoryRuleContext context)
         {
 
             if (Keys.Count > 0)
@@ -1092,21 +1106,22 @@ namespace PartCatalog
                 List<string> Values = new List<string>();
                 foreach (var key in Keys)
                 {
-                    string value = key.GetValue(node, part);
+                    string value = key.GetValue(context);
                     if (value == null)
                     {
                         return;
                     }
                     Values.Add(value);
                 }
-                categories.Add(String.Format(Name, Values.ToArray()));
+                context.categories.Add(String.Format(Name, Values.ToArray()));
                 return;
             }
             if (Name != null)
             {
-                categories.Add(Name);
+                context.categories.Add(Name);
             }
 
         }
     }
+#endregion
 }
