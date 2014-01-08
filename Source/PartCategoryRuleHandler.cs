@@ -759,7 +759,54 @@ namespace PartCatalog
                 if (splitParts.Length == 2)
                 {
                     //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
-                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()),CategoryRuleConditionCompare.CompareType.Equal);
+                }
+            }
+            else if (conditionString.IndexOf("!=", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string[] splitParts = conditionString.Split(new string[] { "<=" }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitParts.Length == 2)
+                {
+                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Unequal);
+                }
+            }
+            else if (conditionString.IndexOf("<", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string[] splitParts = conditionString.Split(new string[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitParts.Length == 2)
+                {
+                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Less);
+                }
+            }
+            else if (conditionString.IndexOf("<=", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string[] splitParts = conditionString.Split(new string[] { "<=" }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitParts.Length == 2)
+                {
+                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.LessOrEqual);
+                }
+            }
+
+            else if (conditionString.IndexOf(">", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string[] splitParts = conditionString.Split(new string[] { ">" }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitParts.Length == 2)
+                {
+                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.Greater);
+                }
+            }
+
+            else if (conditionString.IndexOf(">=", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                string[] splitParts = conditionString.Split(new string[] { ">=" }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitParts.Length == 2)
+                {
+                    //return new CategoryRuleConditionCompare(CategoryRuleValue.ParseValue(splitParts[0].Trim()), CategoryRuleValue.ParseValue(splitParts[1].Trim()));
+                    return new CategoryRuleConditionCompare(new CategoryRuleNodeValue(splitParts[0].Trim()), new CategoryRuleConstantValue(splitParts[1].Trim()), CategoryRuleConditionCompare.CompareType.GreaterOrEqual);
                 }
             }
 
@@ -874,6 +921,18 @@ namespace PartCatalog
 
     class CategoryRuleConditionCompare : CategoryRuleCondition
     {
+        public enum CompareType
+        {
+            Equal = 0x00,
+            Unequal = 0x01,
+            Greater = 0x02,
+            Less = 0x03,
+            GreaterOrEqual = 0x04,            
+            LessOrEqual = 0x05
+        }
+
+        CompareType Compare;
+        bool Invert;
         CategoryRuleValue First;
         CategoryRuleValue Second;
         public override bool Evaluate(ConfigNode node, AvailablePart part)
@@ -884,16 +943,43 @@ namespace PartCatalog
                 string secondVal = Second.GetValue(node, part);
                 if (firstVal != null && secondVal != null)
                 {
-                    Match match = Regex.Match(firstVal, secondVal, RegexOptions.IgnoreCase);
-                    return match.Success;
+                    if(Compare == CompareType.Equal)
+                    {
+                            Match match = Regex.Match(firstVal, secondVal, RegexOptions.IgnoreCase);
+                            return match.Success ^ Invert;
+                    }
+                    double firstDouble = 0;
+                    double secondDouble = 0;
+                    try
+                    {
+                        firstDouble = Convert.ToDouble(firstVal);
+                        secondDouble = Convert.ToDouble(secondVal);
+                    }
+                    catch (System.InvalidCastException e)
+                    {
+                        return false;
+                    }
+                    switch (Compare)
+                    {
+                        
+                        case CompareType.Greater:
+                            return (firstDouble > secondDouble) ^ Invert;
+                        case CompareType.GreaterOrEqual:
+                            return (firstDouble >= secondDouble) ^ Invert;
+                    }
                 }
             }
             return false;
         }
-        public CategoryRuleConditionCompare(CategoryRuleValue first, CategoryRuleValue second)
+        public CategoryRuleConditionCompare(CategoryRuleValue first, CategoryRuleValue second, CompareType compare)
         {
             First = first;
             Second = second;
+            Compare = (CompareType)(((int)compare) & (~0x01));   //Limit to half the types
+            if(compare == CompareType.Unequal || compare == CompareType.Less || compare == CompareType.LessOrEqual)
+            {
+                Invert = true;
+            }
         }
     }
 

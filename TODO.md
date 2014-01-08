@@ -16,4 +16,7 @@ PartCatalog TODO List
   * Get category parser working - Done
   * Get sub node sorter working - Done
   * Write scripts for default categories - Done
+  * Expand rule system
+   * different compare rules - Done
+   * variable support
  * Lock Editor while in windows

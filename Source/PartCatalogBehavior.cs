@@ -13,20 +13,6 @@ namespace PartCatalog
 
         public void Awake()
         {
-            Debug.Log("Starting");
-            DynamicCompilationHandler handler = new DynamicCompilationHandler();
-            handler.CompileFile("test.cs");
-            Debug.Log("Compiled File");
-            int count = 0;
-            foreach (AvailablePart part in PartLoader.LoadedPartsList)
-            {
-                Debug.Log("Doing Part " + part.name);
-                handler.ListCategories(part);
-                if (count > 10)
-                {
-                    break;
-                }
-            }
         }
 
         public void OnDestroy()
