@@ -29,9 +29,8 @@ namespace PartCatalog
         private LuaRuleHandler()
         {
             PartString = CreatePartString();
-            SetupNamespace();
             KSP.IO.File.WriteAllText<PartCatalog>(PartString, "partString.lua");
-
+            SetupNamespace();            
         }
         private static LuaRuleHandler instance = new LuaRuleHandler();
         public static LuaRuleHandler Instance
@@ -129,9 +128,12 @@ sortCat(CATEGORIES)");
 
         private static string CreatePartString()
         {
-            string toRun = "PARTS = {";
-            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
+            StringBuilder toRun = new StringBuilder();
 
+
+            toRun.Append("PARTS = {");
+            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
+            toRun.EnsureCapacity(configs.Length * ConfigHandler.Instance.PartSerializationBufferSize);
             bool first = true;
             foreach (var config in configs)
             {
@@ -146,100 +148,95 @@ sortCat(CATEGORIES)");
                     {
                         if (!first)
                         {
-                            toRun += ",";
+                            toRun.Append(",");
                         }
                         first = false;
-                        toRun = SerializeAvailablePart(toRun, part, config.config);
+                        SerializeAvailablePart(toRun, part, config.config);
                     }
                 }
 
             }
-            toRun += "}";
-            return toRun;
+            toRun.Append("}");
+            return toRun.ToString();
         }
 
-        private static string SerializeAvailablePart(string toRun, AvailablePart part, ConfigNode node)
+        private static void SerializeAvailablePart(StringBuilder toRun, AvailablePart part, ConfigNode node)
         {
-            toRun += "[ [[" + part.name + "]] ] = {";
-            toRun += "name = [[" + part.name + "]],";
-            toRun += "title = [[" + part.title + "]],";
-            toRun += "mod = [[" + PartCatalog.Instance.GetPartMod(part) + "]],";
-            toRun += "manufacturer = [[" + part.manufacturer + "]],";
-            toRun += "author = [[" + part.author + "]],";
-            toRun += "category = [[" + part.category + "]],";
-            toRun += "cost = [[" + part.cost + "]],";
-            toRun += "description = [[" + part.description + "]],";
-            toRun += "entryCost = [[" + part.entryCost + "]],";
-            toRun += "techRequired = [[" + part.TechRequired + "]],";
-            toRun += "angularDrag = [[" + part.partPrefab.angularDrag + "]],";
-            toRun += "breakingForce = [[" + part.partPrefab.breakingForce + "]],";
-            toRun += "breakingTorque = [[" + part.partPrefab.breakingTorque + "]],";
-            toRun += "buoyancy = [[" + part.partPrefab.buoyancy + "]],";
-            toRun += "crashTolerance = [[" + part.partPrefab.crashTolerance + "]],";
-            toRun += "crewCapacity = [[" + part.partPrefab.CrewCapacity + "]],";
-            toRun += "dragModelType = [[" + part.partPrefab.dragModelType + "]],"; //Determines whether we got stock aero or not
-            toRun += "explosionPotential = [[" + part.partPrefab.explosionPotential + "]],";
-            toRun += "fuelCrossFeed = [[" + part.partPrefab.fuelCrossFeed + "]],";
-            toRun += "heatConductivity = [[" + part.partPrefab.heatConductivity + "]],";
-            toRun += "heatDissipation = [[" + part.partPrefab.heatDissipation + "]],";
-            toRun += "mass = [[" + part.partPrefab.mass + "]],";
-            toRun += "minimum_drag = [[" + part.partPrefab.minimum_drag + "]],";
-            toRun += "maximum_drag = [[" + part.partPrefab.maximum_drag + "]],";
-            toRun += "maxTemp = [[" + part.partPrefab.maxTemp + "]],";
-            toRun += "rescaleFactor = [[" + part.partPrefab.rescaleFactor + "]],";
-            toRun += "scaleFactor = [[" + part.partPrefab.scaleFactor + "]],";
-            toRun += "stagingIcon = [[" + part.partPrefab.stagingIcon + "]],";
+            toRun   .Append("[ [[").Append(part.name).Append("]] ] = {")
+                    .Append("name = [[").Append(part.name).Append("]],")
+                    .Append("title = [[" ).Append(part.title ).Append("]],")
+                    .Append("mod = [[" ).Append(PartCatalog.Instance.GetPartMod(part) ).Append("]],")
+                    .Append("manufacturer = [[" ).Append(part.manufacturer ).Append("]],")
+                    .Append("author = [[" ).Append(part.author ).Append("]],")
+                    .Append("category = [[" ).Append(part.category ).Append("]],")
+                    .Append("cost = [[" ).Append(part.cost ).Append("]],")
+                    .Append("description = [[" ).Append(part.description ).Append("]],")
+                    .Append("entryCost = [[" ).Append(part.entryCost ).Append("]],")
+                    .Append("techRequired = [[" ).Append(part.TechRequired ).Append("]],")
+                    .Append("angularDrag = [[" ).Append(part.partPrefab.angularDrag ).Append("]],")
+                    .Append("breakingForce = [[" ).Append(part.partPrefab.breakingForce ).Append("]],")
+                    .Append("breakingTorque = [[" ).Append(part.partPrefab.breakingTorque ).Append("]],")
+                    .Append("buoyancy = [[" ).Append(part.partPrefab.buoyancy ).Append("]],")
+                    .Append("crashTolerance = [[" ).Append(part.partPrefab.crashTolerance ).Append("]],")
+                    .Append("crewCapacity = [[" ).Append(part.partPrefab.CrewCapacity ).Append("]],")
+                    .Append("dragModelType = [[" ).Append(part.partPrefab.dragModelType ).Append("]],") //Determines whether we got stock aero or not
+                    .Append("explosionPotential = [[" ).Append(part.partPrefab.explosionPotential ).Append("]],")
+                    .Append("fuelCrossFeed = [[" ).Append(part.partPrefab.fuelCrossFeed ).Append("]],")
+                    .Append("heatConductivity = [[" ).Append(part.partPrefab.heatConductivity ).Append("]],")
+                    .Append("heatDissipation = [[" ).Append(part.partPrefab.heatDissipation ).Append("]],")
+                    .Append("mass = [[" ).Append(part.partPrefab.mass ).Append("]],")
+                    .Append("minimum_drag = [[" ).Append(part.partPrefab.minimum_drag ).Append("]],")
+                    .Append("maximum_drag = [[" ).Append(part.partPrefab.maximum_drag ).Append("]],")
+                    .Append("maxTemp = [[" ).Append(part.partPrefab.maxTemp ).Append("]],")
+                    .Append("rescaleFactor = [[" ).Append(part.partPrefab.rescaleFactor ).Append("]],")
+                    .Append("scaleFactor = [[" ).Append(part.partPrefab.scaleFactor ).Append("]],")
+                    .Append("stagingIcon = [[" ).Append(part.partPrefab.stagingIcon ).Append("]],")
+                    .Append("assigned = false,")
+                    .Append("isPart = true,");
             if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
             {
-                toRun += "dragCoeff = [[" + ((Winglet)part.partPrefab).dragCoeff + "]],";
-                toRun += "deflectionLiftCoeff = [[" + ((Winglet)part.partPrefab).deflectionLiftCoeff + "]],";
+                toRun.Append("dragCoeff = [[").Append(((Winglet)part.partPrefab).dragCoeff).Append("]],")
+                     .Append("deflectionLiftCoeff = [[").Append(((Winglet)part.partPrefab).deflectionLiftCoeff).Append("]],");
             }
-            toRun += "assigned = false,";
-            toRun += "isPart = true,";
 
+            SerializeConfigNode(toRun, node);
 
-            toRun = SerializeConfigNode(toRun, node);
-
-            toRun += "}";
-
-            return toRun;
+            toRun.Append("}");
         }
 
-        private static string SerializeConfigNode(string toRun, ConfigNode node)
+        private static void SerializeConfigNode(StringBuilder toRun, ConfigNode node)
         {
-            toRun += "nodes = {";
+            toRun.Append("nodes = {");
             bool firstNode = true;
             foreach (ConfigNode childNode in node.nodes)
             {
                 if (!firstNode)
                 {
-                    toRun += ",";
+                    toRun.Append(",");
                 }
                 firstNode = false;
-                toRun += "{";
-
-                toRun += "name = [[" + childNode.name + "]],";
-                toRun += "values = {";
+                toRun   .Append("{")
+                        .Append("name = [[").Append(childNode.name).Append("]],")
+                        .Append("values = {");
                 bool first = true;
                 foreach (ConfigNode.Value val in childNode.values)
                 {
                     if (!first)
                     {
-                        toRun += ",";
+                        toRun.Append(",");
                     }
                     first = false;
-                    toRun += "[ [[" + val.name + "]] ] = [[" + val.value + "]]";
+                    toRun.Append("[ [[" ).Append(val.name).Append("]] ] = [[").Append(val.value).Append("]]");
                 }
-                toRun += "},";
+                toRun.Append("},");
 
-                toRun = SerializeConfigNode(toRun, childNode);
+                SerializeConfigNode(toRun, childNode);
 
-                toRun += "}";
+                toRun.Append("}");
 
 
             }
-            toRun += "}";
-            return toRun;
+            toRun.Append("}");
         }
 
         public void Test()

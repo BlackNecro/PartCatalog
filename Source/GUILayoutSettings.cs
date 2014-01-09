@@ -46,7 +46,7 @@ namespace PartCatalog
             if (display)
             {
                 GUI.skin = HighLogic.Skin;
-                windowPosition = GUILayout.Window(ConfigHandlerHandler.Instance.LayoutWindow, windowPosition, DrawWindow, "Catalog GUI Layout", GUILayout.ExpandHeight(true));
+                windowPosition = GUILayout.Window(ConfigHandler.Instance.LayoutWindow, windowPosition, DrawWindow, "Catalog GUI Layout", GUILayout.ExpandHeight(true));
             }
         }
 
@@ -63,51 +63,51 @@ namespace PartCatalog
             } */
             if (GUILayout.Button("Bottom"))
             {
-                ConfigHandlerHandler.Instance.ToolBarPreset = ToolBarPositions.HorizontalBottom;
-                ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Right;
+                ConfigHandler.Instance.ToolBarPreset = ToolBarPositions.HorizontalBottom;
+                ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Right;
             }
             if (GUILayout.Button("Left"))
             {
-                ConfigHandlerHandler.Instance.ToolBarPreset = ToolBarPositions.VerticalLeft;
-                ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
+                ConfigHandler.Instance.ToolBarPreset = ToolBarPositions.VerticalLeft;
+                ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
             }
             if (GUILayout.Button("Right"))
             {
-                ConfigHandlerHandler.Instance.ToolBarPreset = ToolBarPositions.VerticalRight;
-                ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
+                ConfigHandler.Instance.ToolBarPreset = ToolBarPositions.VerticalRight;
+                ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
             }
             GUILayout.Label("Tag Alignment");
-            if (ConfigHandlerHandler.Instance.ToolBarPreset == ToolBarPositions.HorizontalTop || ConfigHandlerHandler.Instance.ToolBarPreset == ToolBarPositions.HorizontalBottom)
+            if (ConfigHandler.Instance.ToolBarPreset == ToolBarPositions.HorizontalTop || ConfigHandler.Instance.ToolBarPreset == ToolBarPositions.HorizontalBottom)
             {
-                if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Right)
+                if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right)
                 {
                     if (GUILayout.Button("Left to Right"))
                     {
-                        ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Left;
+                        ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Left;
                     }
                 }
                 else
                 {
                     if (GUILayout.Button("Right to Left"))
                     {
-                        ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Right;
+                        ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Right;
                     }
                 }
             }
             else
             {
-                if (ConfigHandlerHandler.Instance.ToolBarDirection == ToolBarDirections.Down)
+                if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Down)
                 {
                     if (GUILayout.Button("Top to Bottom"))
                     {
-                        ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Up;
+                        ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Up;
                     }
                 }
                 else
                 {
                     if (GUILayout.Button("Bottom to Top"))
                     {
-                        ConfigHandlerHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
+                        ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Down;
                     }
                 }
             }            
@@ -116,12 +116,12 @@ namespace PartCatalog
             GUILayout.Label("Config Button Position");
             if (GUILayout.Button("Start of Toolbar"))
             {
-                ConfigHandlerHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundStart;
+                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundStart;
 
             }
             if (GUILayout.Button("End of Toolbar"))
             {
-                ConfigHandlerHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundEnd;
+                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundEnd;
             }
              /*  RIP 24/7/2013 DIED BY 0.21
             if (GUILayout.Button("Top Middle"))
@@ -131,20 +131,20 @@ namespace PartCatalog
               */
             if (GUILayout.Button("Top Left"))
             {
-                ConfigHandlerHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.TopLeft;
+                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.TopLeft;
             }
             if (GUILayout.Button("Bottom Left"))
             {
-                ConfigHandlerHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.BottomLeft;
+                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.BottomLeft;
             }
             if (GUILayout.Button("Bottom Right"))
             {
-                ConfigHandlerHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.BottomRight;
+                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.BottomRight;
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
-            ConfigHandlerHandler.Instance.AutoHideToolBar = GUILayout.Toggle(ConfigHandlerHandler.Instance.AutoHideToolBar, "Autohide Toolbar");
-            ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd = GUILayout.Toggle(ConfigHandlerHandler.Instance.PageNumberOnToolbarEnd, "Page number on end");
+            ConfigHandler.Instance.AutoHideToolBar = GUILayout.Toggle(ConfigHandler.Instance.AutoHideToolBar, "Autohide Toolbar");
+            ConfigHandler.Instance.PageNumberOnToolbarEnd = GUILayout.Toggle(ConfigHandler.Instance.PageNumberOnToolbarEnd, "Page number on end");
             if (GUILayout.Button("Close"))
             {
                 Close();
@@ -162,7 +162,7 @@ namespace PartCatalog
         internal void Close()
         {
             display = false;
-            ConfigHandlerHandler.Instance.SaveConfig();
+            ConfigHandler.Instance.SaveConfig();
         }
     }
 }

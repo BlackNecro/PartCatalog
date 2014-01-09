@@ -32,7 +32,7 @@ namespace PartCatalog
 
         private Texture2D LoadTextureRaw(string name)
         {            
-            Texture2D toReturn = new Texture2D((int)ConfigHandlerHandler.Instance.ButtonSize.x,(int)ConfigHandlerHandler.Instance.ButtonSize.y,TextureFormat.ARGB32,false);
+            Texture2D toReturn = new Texture2D((int)ConfigHandler.Instance.ButtonSize.x,(int)ConfigHandler.Instance.ButtonSize.y,TextureFormat.ARGB32,false);
             toReturn.LoadImage(KSP.IO.File.ReadAllBytes<PartCatalog>(name));
             return toReturn;
         }

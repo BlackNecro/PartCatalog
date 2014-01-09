@@ -46,11 +46,11 @@ namespace PartCatalog
         #region FilterFunction
         private bool FilterPart(AvailablePart toFilter)
         {
-            if (ConfigHandlerHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0 || EnabledTags.Count == 0)
+            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0 || EnabledTags.Count == 0)
             {
                 return true;
             }
-            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandlerHandler.Instance.InvertFilter;
+            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
         }
         #endregion
 
@@ -117,7 +117,7 @@ namespace PartCatalog
             bool firstRound = true;
             foreach (PartTag tag in EnabledTags)
             {
-                if (firstRound || ConfigHandlerHandler.Instance.UnionFilter)
+                if (firstRound || ConfigHandler.Instance.UnionFilter)
                 {
                     firstRound = false;
                     HashedEnabledPartNames.UnionWith(tag.VisibleParts);
@@ -129,7 +129,7 @@ namespace PartCatalog
                     EnabledCategories.IntersectWith(tag.VisiblePartCategories);
                 }
             }
-            if (ConfigHandlerHandler.Instance.DisplayAllOnEmptyFilter && EnabledCategories.Count == 0 || EnabledTags.Count == 0)
+            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && EnabledCategories.Count == 0 || EnabledTags.Count == 0)
             {
                 EditorPartList.Instance.ShowTabs();                
             }

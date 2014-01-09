@@ -39,16 +39,16 @@ namespace PartCatalog
 
                 Debug.Log("****Loading PartCatalog ****");
 
-                ConfigHandlerHandler.Instance.LoadConfig();
+                ConfigHandler.Instance.LoadConfig();
                 PartCatalog.Instance.LoadPartTags();
 
                 GUIEditorControls.Instance.UpdateDisplayedTags();
                 PartFilterManager.Instance.EnablePartFilter();
-                if (ConfigHandlerHandler.Instance.FirstRun )
+                if (ConfigHandler.Instance.FirstRun )
                 {
-                    ConfigHandlerHandler.Instance.FirstRun = false;
-                    ConfigHandlerHandler.Instance.ButtonSize.x = 37;
-                    ConfigHandlerHandler.Instance.ButtonSize.y = 26;
+                    ConfigHandler.Instance.FirstRun = false;
+                    ConfigHandler.Instance.ButtonSize.x = 37;
+                    ConfigHandler.Instance.ButtonSize.y = 26;
                     GUILayoutSettings.Instance.Open();
                     LuaRuleHandler.Instance.ParseParts();
                     //PartCatalog.Instance.AutoTagByMod();

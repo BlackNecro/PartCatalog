@@ -106,7 +106,7 @@ namespace PartCatalog
         }
         public void SortPartList()
         {
-            switch (ConfigHandlerHandler.Instance.SortNumber)
+            switch (ConfigHandler.Instance.SortNumber)
             {
                 case 0:
                     SortedPartList = SortedPartList.OrderBy(x => x.name).Distinct().ToList();
@@ -287,7 +287,7 @@ namespace PartCatalog
 
             foreach (PartTag tag in RootTag.ChildTags)
             {
-                if (!ConfigHandlerHandler.Instance.HideUnresearchedTags || tag.Researched)
+                if (!ConfigHandler.Instance.HideUnresearchedTags || tag.Researched)
                 {
                     curCount++;
                     if (curCount == maxNumPerPage || tag.StartNewPage)

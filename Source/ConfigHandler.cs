@@ -6,17 +6,17 @@ using UnityEngine;
 
 namespace PartCatalog
 {
-    class ConfigHandlerHandler : IDisposable
+    class ConfigHandler : IDisposable
     {
-        static readonly ConfigHandlerHandler instance = new ConfigHandlerHandler();
+        static readonly ConfigHandler instance = new ConfigHandler();
 
-        private ConfigHandlerHandler()
+        private ConfigHandler()
         {
-            LoadConfig();
+            LoadConfig();            
         }
 
         
-        public static ConfigHandlerHandler Instance
+        public static ConfigHandler Instance
         {
             get
             {
@@ -205,6 +205,9 @@ namespace PartCatalog
 
         [SaveToConfig(true)]
         public bool UseDynamicRules;
+
+        [SaveToConfig(2048)]
+        public int PartSerializationBufferSize;
 
         public int LayoutWindow
         {
