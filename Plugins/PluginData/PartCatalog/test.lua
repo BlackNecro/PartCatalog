@@ -1,13 +1,12 @@
+require "pl"
+
 dofile("util.lua")
 dofile("partString.lua")
+dofile("default.category.lua")
 dofile("default.rule.lua")
---dofile("default.fallback.lua")
+dofile("RemoteTech.rule.lua")
+dofile("default.fallback.lua")
 
-for category,parts in pairs(CATEGORIES) do
-	if(category:sub(1,4) == "Wing") then
-	print(category)
-	for name,v in pairs(parts) do
-		print("",name)
-	end
-	end
-end
+clean(CATEGORIES)
+sortCat(CATEGORIES)
+pretty.dump(CATEGORIES,"category.lua")

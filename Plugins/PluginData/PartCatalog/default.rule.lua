@@ -1,4 +1,4 @@
-for name,part in pairs(PARTS) do
+for name,part in pairs(PARTS) do	
 	
 	--Command Modules
 	local hasCommand = false
@@ -6,16 +6,16 @@ for name,part in pairs(PARTS) do
 		hasCommand = true
 		if module.values.minimumCrew ~= "0" then			
 			hasCommand = false
-			addCategory(part,"MannedPod")
+			addToModCategory(part,"Pod/Manned")
 			break
 		end		
 	end
 	if hasCommand then
-		addCategory(part,"UnmannedPod")
+		addToModCategory(part,"Pod/Unmanned")
 	end
 	
 	if containsModule(part,"KerbalSeat") then
-		addCategory(part,"Seat")
+		addToModCategory(part,"Pod/Seat")
 	end
 	
 	
@@ -25,45 +25,45 @@ for name,part in pairs(PARTS) do
 		local special = false
 		if containsNodeTypeName(engine,"PROPELLANT","LiquidFuel") then
 			if containsNodeTypeName(engine,"PROPELLANT","Oxidizer") then
-				addCategory(part,"LiquidEngine")				
+				addToModCategory(part,"Engine/LFOX")		
 			elseif containsNodeTypeName(engine,"PROPELLANT","IntakeAir") then
-				addCategory(part,"JetEngine")
+				addToModCategory(part,"Engine/Jet")
 			else
 				special = true
 			end
 		elseif containsNodeTypeName(engine,"PROPELLANT","XenonGas") and containsNodeTypeName(engine,"PROPELLANT","ElectricCharge") then
-			addCategory(part,"IonEngine")			
+			addToModCategory(part,"Engine/Ion")				
 		else
 			special = true
 		end
 		if special then
 			for propellant in nodesByName(engine,"PROPELLANT") do
-				addCategory(part,"Engine_" .. propellant.values.name)			
+				addToModCategory(part,"Engine/_"..propellant.values.name,propellant.values.name,"Engine"..propellant.values.name)					
 			end
 		end		
 	end
 	for engine in modulesByName(part,"MultiModeEngine") do
-		addCategory(part,"EngineMultiMode")
+		addToModCategory(part,"Engine/MultiMode")				
 	end
 	
 	--Intakes	
 	for intake in modulesByName(part,"ModuleResourceIntake") do
-		addCategory(part,"Intake_" .. intake.values.resourceName)
+		addToModCategory(part,"Aero/Intake/_"..intake.values.resourceName,intake.values.resourceName,"Intake"..intake.values.resourceName)					
 	end
 	
 	--Control Surfaces
 	for controlSurface in modulesByName(part,"ModuleControlSurface") do
-		addCategory(part,"ControlSurface")
+		addToModCategory(part,"Aero/ControlSurface")					
 	end
 	
-	--Winglet
+	--Wing/let
 	if part.dragModelType == "override" and part.deflectionLiftCoeff then
 		local coeff = tonumber(part.deflectionLiftCoeff) 
 		if coeff then
 			if coeff < 1 then
-				addCategory(part,"Winglet")
+				addToModCategory(part,"Aero/Winglet")
 			else
-				addCategory(part,"Wing")
+				addToModCategory(part,"Aero/Wing")									
 			end
 		end
 	end
@@ -73,113 +73,114 @@ for name,part in pairs(PARTS) do
 	--Decoupler
 	for decoupler in modulesByName(part,"ModuleDecouple") do
 		if decoupler.values.isOmniDecoupler == "true" then
-			addCategory(part,"Seperator")			
+			addToModCategory(part,"Structural/Decoupler/Separator")
 		else
-			addCategory(part,"DecouplerStack")						
+			addToModCategory(part,"Structural/Decoupler/Stack")				
 		end
 	end
 	if containsModule(part,"ModuleAnchoredDecoupler") then	
-		addCategory(part,"DecouplerRadial")
+		addToModCategory(part,"Structural/Decoupler/Radial")				
 	end
 	
 	--Docking
 	for docking in modulesByName(part,"ModuleDockingNode") do
 		if docking.values.nodeType and string.sub(docking.values.nodeType,1,4) == "size" then
-			addCategory(part,"Docking_" .. docking.values.nodeType)
+			local size = string.sub(docking.values.nodeType,5)
+			addToModCategory(part,"Utility/Docking/Size"..size,"Size "..size, "Docking"..size)							
 		else
-			addCategory(part,"Docking")
+			addToModCategory(part,"Utility/Docking/Misc")		
 		end
 	end
 	
 	--RCS
 	for rcs in modulesByName(part,"ModuleRCS") do
-		addCategory(part,"RCS_" .. rcs.values.resourceName)		
+		addToModCategory(part,"Control/RCS/"..rcs.values.resourceName,rcs.values.resourceName, "RCS"..rcs.values.resourceName)						
 	end
 	
 	--Clamp
 	if containsModule(part,"LaunchClamp") then	
-		addCategory(part,"GroundSupport")
+		addToModCategory(part,"Structural/GroundSupport")				
 	end	
 	
 	--Strut
 	if containsModule(part,"StrutConnector") then	
-		addCategory(part,"StrutConnector")
+		addToModCategory(part,"Structural/StrutConnector")
 	end
 	
 	--Solar Panel
 	for panel in modulesByName(part,"ModuleDeployableSolarPanel") do
 		if panel.values.sunTracking == "false" then
-			addCategory(part,"SolarPanelStatic")
+			addToModCategory(part,"Utility/SolarPanel/Static")
 		else			
-			addCategory(part,"SolarPanelDeployable")
+			addToModCategory(part,"Utility/SolarPanel/Deployable")
 		end
 	end
 	
 	if part.category == "Aero" then
 		if part.name:lower():find("nose") or part.description:lower():find("nose") then
-			addCategory(part,"NoseCone")
+			addToModCategory(part,"Aero/NoseCone")
 		end
 	end
 	
 	--Landing Legs
 	if containsModule(part,"ModuleLandingLeg") or containsModule(part,"HLandingLeg") then	
-		addCategory(part,"LandingLeg")
+		addToModCategory(part,"Utility/Landing/LandingLeg")
 	end
 
 	--Wheel
 	if containsModule(part,"ModuleWheel") then	
-		addCategory(part,"Wheel")
+		addToModCategory(part,"Utility/Landing/Wheel")
 	end	
 
 	--Landing Gear
 	if containsModule(part,"ModuleLandingGear") then	
-		addCategory(part,"LandingGear")
+		addToModCategory(part,"Utility/Landing/LandingGear")
 	end	
 
 	--Parachute	
 	if containsModule(part,"ModuleParachute") then	
-		addCategory(part,"Parachute")
+		addToModCategory(part,"Utility/Landing/Parachute")
 	end	
 
 	--Lights
 	if containsModule(part,"ModuleLight") then	
-		addCategory(part,"Light")
+		addToModCategory(part,"Utility/Light")
 	end	
 	--Sensor
 	if containsModule(part,"ModuleEnviroSensor") then	
-		addCategory(part,"Sensor")
+		addToModCategory(part,"Science/Sensor")
 	end	
 	--Antenna
 	if containsModule(part,"ModuleDataTransmitter") then	
-		addCategory(part,"ScienceAntenna")
+		addToModCategory(part,"Science/Antenna")
 	end	
 	--Fuel Duct
 	if part.name == "fuelLine" then	
-		addCategory(part,"FuelTransfer")
+		addToModCategory(part,"Storage/Transfer")
 	end	
 	--SAS
 	if containsModule(part,"ModuleReactionWheel") or containsModule(part,"ModuleSAS") then	
-		addCategory(part,"SAS")
+		addToModCategory(part,"Control/SAS")
 	end	
 	--ScienceExperiment
 	if containsModule(part,"ModuleScienceExperiment") then	
-		addCategory(part,"ScienceExperiment")
+		addToModCategory(part,"Science/Experiment")
 	end	
 	--ScienceLab
 	if containsModule(part,"ModuleScienceLab") then	
-		addCategory(part,"ScienceLab")
+		addToModCategory(part,"Science/Lab")
 	end	
 	--Retractable Ladder
 	if containsModule(part,"RetractableLadder") then	
-		addCategory(part,"RetractableLadder")
+		addToModCategory(part,"Utility/Ladder/Retractable")
 	elseif part.name:lower():find("ladder") then
-		addCategory(part,"StaticLadder")		
+		addToModCategory(part,"Utility/Ladder/Static")
 	end	
 	
 	--Generators
 	for panel in modulesByName(part,"ModuleGenerator") do
 		for output in nodesByName(part,"OUTPUT_RESOURCE") do
-			addCategory(part,"Generator_" .. output.values.name)
+			addToModCategory(part,"Utility/Generator/_"..output.values.name,output.values.name,"Generator"..output.values.name)
 		end
 	end
 	
@@ -188,8 +189,9 @@ for name,part in pairs(PARTS) do
 	local gotOx = false;
 	local gotMonoProp = false;
 	local gotOther = false;
+	local gotEcharge = false;
 	for resource in resources(part) do
-		if( tonumber(resource.values.maxAmount) > 0) then
+		if( tonumber(resource.values.maxAmount) and tonumber(resource.values.maxAmount) > 0) then
 			if resource.values.name == "LiquidFuel" then
 				gotLF = true
 			elseif resource.values.name == "Oxidizer" then
@@ -206,26 +208,25 @@ for name,part in pairs(PARTS) do
 		if gotLF then
 			if gotOx then
 				if gotMonoProp then
-					addCategory(part,"StorageServiceModule");
+					addToModCategory(part,"Storage/ServiceModule")
 				else
-					addCategory(part,"StorageLFOX");
+					addToModCategory(part,"Storage/LFOX")
 				end
 			else
-				addCategory(part,"StorageLF");
+				addToModCategory(part,"Storage/LF")
 			end
 		elseif gotOx then
-			addCategory(part,"StorageOX");
+			addToModCategory(part,"Storage/OX")
 		elseif gotMonoProp then
-			addCategory(part,"Storage_MonoPropellant");			
+			addToModCategory(part,"Storage/_MonoPropellant")	
 		end
 	elseif gotLF and gotOx and gotMonoProp and gotOther then
-		addCategory(part,"StorageServiceModule");		
+		addToModCategory(part,"Storage/ServiceModule","ServiceModule","StorageServiceModule")
 	else
 		for resource in resources(part) do
 			if( tonumber(resource.values.maxAmount) > 0) then
-				addCategory(part,"Storage_"..resource.values.name);
+				addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Storage"..resource.values.name)
 			end
 		end
 	end
 end
-

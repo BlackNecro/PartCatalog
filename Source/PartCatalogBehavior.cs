@@ -50,7 +50,8 @@ namespace PartCatalog
                     ConfigHandlerHandler.Instance.ButtonSize.x = 37;
                     ConfigHandlerHandler.Instance.ButtonSize.y = 26;
                     GUILayoutSettings.Instance.Open();
-                    PartCatalog.Instance.AutoTagByMod();
+                    LuaRuleHandler.Instance.ParseParts();
+                    //PartCatalog.Instance.AutoTagByMod();
                 }
                 EditorPartList.Instance.ShowTabs();
                 EditorPartList.Instance.SelectTab(PartCategories.Pods);

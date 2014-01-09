@@ -318,7 +318,7 @@ namespace PartCatalog
         }
 
         #endregion
-
+              /*
 
         internal void AutoTagByMod()
         {
@@ -378,6 +378,7 @@ namespace PartCatalog
                     }
                 }
             }
+               
             List<PartTag> toDelete = new List<PartTag>();
             foreach (PartTag tag in RootTag.ChildTags)
             {
@@ -400,8 +401,8 @@ namespace PartCatalog
             }
 
             RootTag.Rehash();
-        }
-
+        }          */
+                     /*
         private void CreateAllPartTag()
         {
             List<PartTag> toDelete = new List<PartTag>();
@@ -425,6 +426,7 @@ namespace PartCatalog
             AutoGroupTag(allTag);
         }
 
+        
         internal void AutoGroupTag(PartTag tag)
         {
             if (ConfigHandlerHandler.Instance.UseDynamicRules)
@@ -436,7 +438,7 @@ namespace PartCatalog
                 PartCategorizer.Instance.CreatePartTags(tag);
             }
         }
-
+               */
         public void Dispose()
         {
             SavePartTags();

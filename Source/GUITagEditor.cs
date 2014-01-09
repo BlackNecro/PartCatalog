@@ -1000,25 +1000,27 @@ namespace PartCatalog
         {
             GUILayout.BeginVertical(GUILayout.ExpandHeight(true), GUILayout.Width(windowPosition.width / 6));
             DrawCategoryButton();
-            GUILayout.BeginHorizontal();
+            //GUILayout.BeginHorizontal();
             if (GUILayout.Button("Autotag"))
             {
-                PartCategoryRuleHandler.Instance.ReloadFiles();               
-                PartCatalog.Instance.AutoTagByMod();
-                //LuaRuleHandler.Instance.ParseParts();
+
+                //PartCategoryRuleHandler.Instance.ReloadFiles();               
+                //PartCatalog.Instance.AutoTagByMod();
+                LuaRuleHandler.Instance.ParseParts();
             }
 
-            RegisterHelp("AutoTag");
+            RegisterHelp("AutoTag");   /*
             if (GUILayout.Button("Autogroup"))
             {
                 if (selectedPartTag != null)
                 {
-                    PartCategoryRuleHandler.Instance.AutoGroupPartTag(ref selectedPartTag);
+
+                    //PartCategoryRuleHandler.Instance.AutoGroupPartTag(ref selectedPartTag);
                 }
             }
 
-            RegisterHelp("AutoGroup");
-            GUILayout.EndHorizontal();
+            RegisterHelp("AutoGroup");  */
+            //GUILayout.EndHorizontal();
             
             /* INDEV
             if (GUILayout.Button("Test"))
