@@ -1,9 +1,0 @@
-RULE RemoteTech Antenna
-	MODULE ModuleRTAntenna
-		IF DishAngle == *  
-			CATEGORY ScienceAntennaDish
-		ELSE
-			CATGORY ScienceAntennaOmni
-		END IF
-	END MODULE	
-END RULE

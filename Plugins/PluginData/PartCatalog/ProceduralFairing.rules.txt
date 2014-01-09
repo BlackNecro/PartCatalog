@@ -1,8 +1,0 @@
-RULE Fairings
-	MODULE ProceduralFairingSide
-		Fairing
-	END MODULE
-	MODULE ProceduralFairingBase
-		Fairing
-	END MODULE
-END RULE
