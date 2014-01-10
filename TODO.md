@@ -18,5 +18,6 @@ PartCatalog TODO List
   * Write scripts for default categories - Done
   * Expand rule system
    * different compare rules - Done
-   * variable support
+   * variable support - KILLED
+   * lua support - DONE
  * Lock Editor while in windows
