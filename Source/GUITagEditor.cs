@@ -1007,6 +1007,8 @@ namespace PartCatalog
             HelpTexts["IntersectFilter"] = "By selecting multiple tags with ctrl only parts contained in every selected tags are displayed";
             HelpTexts["HideUnresearchedTags"] = "Select this to hide tags not containing researched parts";
             HelpTexts["HideEmptyCategories"] = "Select this to hide empty categories";
+            HelpTexts["OverlayText"] = "Set the initials displayed when no icon is set on the selected tag";
+            HelpTexts["RenameTag"] = "Set the name of the selected tag";
             HelpTexts[""] = "";
             HelpTexts[""] = "";
         }
@@ -1098,15 +1100,7 @@ namespace PartCatalog
                     selectedPartTag = nextTag;
                 }
             }
-            RegisterHelp("DeleteTag");
-            if (GUILayout.Button("Rename Tag"))
-            {
-                if (selectedPartTag != null && inputText != "")
-                {
-                    selectedPartTag.Name = inputText;
-                }
-            }
-            RegisterHelp("RenameTag");
+            RegisterHelp("DeleteTag");            
             inputText = GUILayout.TextField(inputText);
             RegisterHelp("InputText");
             GUILayout.BeginHorizontal();
@@ -1189,6 +1183,21 @@ namespace PartCatalog
                 RegisterHelp("IndentTag");
 
                 GUILayout.EndHorizontal();
+
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Name");
+                selectedPartTag.Name = GUILayout.TextField(selectedPartTag.Name);
+                RegisterHelp("OverlayText");
+                GUILayout.EndHorizontal();
+                RegisterHelp("RenameTag");
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Initials");
+                selectedPartTag.IconOverlay = GUILayout.TextField(selectedPartTag.IconOverlay);
+                RegisterHelp("OverlayText");
+                GUILayout.EndHorizontal();
+                
 
                 editIcon = GUILayout.Toggle(editIcon, "Edit Icon", HighLogic.Skin.button);
 
