@@ -4,7 +4,7 @@ PartCatalog TODO List
 * Add icon packs ( ask authors first )
 * Text overlay for mods without custom icon - DONE
  * New empty tag icon - DONE
- * Add option to set overlays manually
+ * Add option to set overlays manually - DONE
 * Search bar
  * Search by tag name, part name, part manufacturer, modules?, resources?
  * Hotkey for quick switching to search bar
@@ -21,5 +21,5 @@ PartCatalog TODO List
   * different compare rules - Done
   * variable support - KILLED
   * lua support - DONE
- * flag manual edited parts to allow updating custom groups
-* Lock Editor while in windows
+ * flag manual edited parts to allow updating custom groups - DONE Merge new tag tree with old one
+* Lock Editor while in windows - DONE

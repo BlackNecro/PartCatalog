@@ -288,6 +288,18 @@ namespace PartCatalog
                 child.setCollapsedRecursive(collapsed);        
             }
         }
+
+        public PartTag findChild(string name)
+        {
+            foreach(var tag in ChildTags)
+            {
+                if(tag.Name == name)
+                {
+                    return tag;
+                }
+            }
+            return null;
+        }
         #endregion
         #region Persistance
         public void writeToFile(TextWriter file)

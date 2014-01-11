@@ -48,7 +48,6 @@ namespace PartCatalog
             {
                 if (file.EndsWith(".rule.lua"))
                 {
-                    Debug.Log("Executing " + file);
                     string input = KSP.IO.File.ReadAllText<PartCatalog>(file);
                     luaInstance.DoString(input);
                 }
@@ -58,7 +57,6 @@ namespace PartCatalog
             {
                 if (file.EndsWith(".fallback.lua"))
                 {
-                    Debug.Log("Fallback " + file);
                     string input = KSP.IO.File.ReadAllText<PartCatalog>(file);
                     luaInstance.DoString(input);
                 }
@@ -71,6 +69,7 @@ sortCat(CATEGORIES)");
 
             LuaTable category = luaInstance.GetTable("CATEGORIES");
             LuaTable children = (LuaTable)category["children"];
+            //PartCatalog.Instance.RootTag = new PartTag();
             foreach (var value in children.Values)
             {
                 if (value is LuaTable)
@@ -84,17 +83,35 @@ sortCat(CATEGORIES)");
         {
             if (category != null)
             {
-                PartTag newTag = new PartTag();                               
-                newTag.Name = (string)category["title"];
-                newTag.IconName = ((string)category["icon"]);
-                if (newTag.IconName != "")
+
+                PartTag newTag = parent.findChild((string)category["title"]);
+                if (newTag == null)
                 {
-                    if (!ResourceProxy.Instance.IconExists(newTag.IconName))
+                    newTag = new PartTag();
+                    newTag.Name = (string)category["title"];
+                    newTag.IconName = ((string)category["icon"]);
+                    if (newTag.IconName != "")
                     {
-                        newTag.IconName = "";
+                        if (!ResourceProxy.Instance.IconExists(newTag.IconName))
+                        {
+                            newTag.IconName = "";
+                        }
+                    }
+                    newTag.IconOverlay = (string)category["overlay"];
+                }
+
+                if(String.IsNullOrEmpty(newTag.IconName))
+                {
+                    newTag.IconName = ((string)category["icon"]);
+                    if (newTag.IconName != "")
+                    {
+                        if (!ResourceProxy.Instance.IconExists(newTag.IconName))
+                        {
+                            newTag.IconName = "";
+                        }
                     }
                 }
-                newTag.IconOverlay = (string)category["overlay"];
+                
                 parent.AddChild(newTag);
                 LuaTable parts = (LuaTable)category["parts"];
                 foreach (var value in parts.Keys)
