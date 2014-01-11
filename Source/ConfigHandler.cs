@@ -209,6 +209,9 @@ namespace PartCatalog
         [SaveToConfig(2048)]
         public int PartSerializationBufferSize;
 
+        [SaveToConfig(50)]
+        public int MouseOverDelay;
+
         public int LayoutWindow
         {
             get

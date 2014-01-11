@@ -86,6 +86,10 @@ namespace PartCatalog
             {
                 MouseOverStack.Clear();
             }
+            if(!MouseOverClear)
+            {
+                EditorLockManager.Instance.LockGUI();
+            }
         }
 
 
@@ -143,6 +147,7 @@ namespace PartCatalog
                 }
 
                 Rect configOffsetRect = GetToolbarRectNoConfig();
+
                 GUI.BeginGroup(configOffsetRect);
                 if (ConfigHandler.Instance.AutoHideToolBar)
                 {
@@ -156,8 +161,10 @@ namespace PartCatalog
                 Rect pageOffsetRect = GetToolbarRectNoPageNumber();
                 GUI.BeginGroup(pageOffsetRect);
                 Rect innerRect = new Rect(0, 0, pageOffsetRect.width, pageOffsetRect.height);
-
-                DrawToolBarTags(innerRect);
+                if (!GUITagEditor.Instance.isOpen)
+                {
+                    DrawToolBarTags(innerRect);
+                }
                 GUI.EndGroup();
                 GUI.EndGroup();
                 GUI.EndGroup();
@@ -601,7 +608,7 @@ namespace PartCatalog
             }
             if (!MouseOverClear)
             {
-                MouseOverTimer = 50;
+                MouseOverTimer = ConfigHandler.Instance.MouseOverDelay;                
             }
             else
             {
@@ -637,7 +644,13 @@ namespace PartCatalog
 
         private void HandleKeyBindings()
         {
-            HandleMouseScroll();
+            Vector2 MousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+            bool inToolBar = GetToolbarRectRaw().Contains(MousePos);
+            bool inPartList = GUIConstants.EditorScrollRegion.Contains(MousePos);
+
+
+            HandleMouseScroll(inToolBar | inPartList);
+
             if (ConfigHandler.Instance.EnableShortcuts)
             {
                 for (int i = 0; i < shortCutsKeyCodes.Length; i++)
@@ -657,11 +670,11 @@ namespace PartCatalog
                     }
                 }
             }
-            Vector2 MousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+            
             if (GetToolbarRectRaw().Contains(MousePos))
-            {
+            {    
                 if (CurMouseScroll < 0.0f)
-                {
+                {                    
                     if (nextPageAvailable)
                     {
                         ConfigHandler.Instance.DisplayedPage++;
@@ -678,7 +691,7 @@ namespace PartCatalog
             {
                 if (CurMouseScroll < 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftShift))
                     {
                         MoveCategory(1);
                     }
@@ -689,7 +702,7 @@ namespace PartCatalog
                 }
                 else if (CurMouseScroll > 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftShift))
                     {
                         MoveCategory(-1);
                     }
@@ -702,19 +715,28 @@ namespace PartCatalog
         }
 
 
-        private static void HandleMouseScroll()
+        private static void HandleMouseScroll(bool start)
         {
-            AccumulatedMouseScroll += Input.GetAxis("Mouse ScrollWheel");
-            CurMouseScroll = 0;
-            if (AccumulatedMouseScroll > ConfigHandler.Instance.MouseWheelPrescaler / 10f)
+            if (start && Input.GetKey(KeyCode.LeftControl))
             {
-                CurMouseScroll = 1;
-                AccumulatedMouseScroll = 0;
+                EditorLockManager.Instance.LockUpdate();
+
+                AccumulatedMouseScroll += Input.GetAxis("Mouse ScrollWheel");
+                CurMouseScroll = 0;
+                if (AccumulatedMouseScroll > ConfigHandler.Instance.MouseWheelPrescaler / 10f)
+                {
+                    CurMouseScroll = 1;
+                    AccumulatedMouseScroll = 0;
+                }
+                if (AccumulatedMouseScroll < ConfigHandler.Instance.MouseWheelPrescaler / -10f)
+                {
+                    CurMouseScroll = -1;
+                    AccumulatedMouseScroll = 0;
+                }
             }
-            if (AccumulatedMouseScroll < ConfigHandler.Instance.MouseWheelPrescaler / -10f)
+            else
             {
-                CurMouseScroll = -1;
-                AccumulatedMouseScroll = 0;
+                CurMouseScroll = 0;
             }
         }
         #endregion

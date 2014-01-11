@@ -7,65 +7,95 @@ namespace PartCatalog
     [KSPAddon(KSPAddon.Startup.EditorAny, false)]
     class PartCatalogBehavior : MonoBehaviour
     {
-        public static GameObject GameObjectInstance;
+        //public static GameObject GameObjectInstance;
+
+        private static PartCatalogBehavior instance = null;
 
         private bool launched = false;
 
         public void Awake()
         {
+            instance = this;
+        }
+
+        private bool CheckInstance()
+        {
+            if(instance == this)
+            {
+                return true;
+            }
+            if(instance == null || instance == (UnityEngine.GameObject) null)
+            {
+                instance = this;
+                return true;
+            }
+            return false;
         }
 
         public void OnDestroy()
         {
-            ConfigHandler.Instance.SaveConfig();
-            PartCatalog.Instance.SavePartTags();
+            if (CheckInstance())
+            {
+                ConfigHandler.Instance.SaveConfig();
+                PartCatalog.Instance.SavePartTags();
+            }
         }                                                
 
         public void OnGUI()
         {
-            if (launched && HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH)
-            {                      
-                if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
+            if (CheckInstance())
+            {
+                if (launched && HighLogic.LoadedScene == GameScenes.EDITOR || HighLogic.LoadedScene == GameScenes.SPH)
                 {
-                    GUILayoutSettings.Instance.Draw();
-                    GUIEditorControls.Instance.Draw();
-                    GUITagEditor.Instance.Draw();
+                    if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
+                    {
+                        EditorLockManager.Instance.StartGUIDraw();
+                        GUILayoutSettings.Instance.Draw();
+                        GUIEditorControls.Instance.Draw();
+                        GUITagEditor.Instance.Draw();
+                        EditorLockManager.Instance.EndGUIDraw();
+                    }
                 }
             }
         }
         public void Update()
         {
-            if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null ) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
+            if (CheckInstance())
             {
-                launched = true;                
-
-                Debug.Log("****Loading PartCatalog ****");
-
-                ConfigHandler.Instance.LoadConfig();
-                PartCatalog.Instance.LoadPartTags();
-
-                GUIEditorControls.Instance.UpdateDisplayedTags();
-                PartFilterManager.Instance.EnablePartFilter();
-                if (ConfigHandler.Instance.FirstRun )
+                if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
                 {
-                    ConfigHandler.Instance.FirstRun = false;
-                    ConfigHandler.Instance.ButtonSize.x = 37;
-                    ConfigHandler.Instance.ButtonSize.y = 26;
-                    GUILayoutSettings.Instance.Open();
-                    LuaRuleHandler.Instance.ParseParts();
-                    //PartCatalog.Instance.AutoTagByMod();
+                    launched = true;
+
+                    Debug.Log("****Loading PartCatalog ****");
+
+                    ConfigHandler.Instance.LoadConfig();
+                    PartCatalog.Instance.LoadPartTags();
+
+                    GUIEditorControls.Instance.UpdateDisplayedTags();
+                    PartFilterManager.Instance.EnablePartFilter();
+                    if (ConfigHandler.Instance.FirstRun)
+                    {
+                        ConfigHandler.Instance.FirstRun = false;
+                        ConfigHandler.Instance.ButtonSize.x = 37;
+                        ConfigHandler.Instance.ButtonSize.y = 26;
+                        GUILayoutSettings.Instance.Open();
+                        LuaRuleHandler.Instance.ParseParts();
+                        //PartCatalog.Instance.AutoTagByMod();
+                    }
+                    EditorPartList.Instance.ShowTabs();
+                    EditorPartList.Instance.SelectTab(PartCategories.Pods);
+
+                    Debug.Log("Testing Lua");
+                    Debug.Log("Done Lua");
+
+                    Debug.Log("**** Loaded PartCatalog ****");
                 }
-                EditorPartList.Instance.ShowTabs();
-                EditorPartList.Instance.SelectTab(PartCategories.Pods);
-
-                Debug.Log("Testing Lua");                
-                Debug.Log("Done Lua");
-
-                Debug.Log("**** Loaded PartCatalog ****");
-            }
-            else
-            {
-                GUIEditorControls.Instance.Update();
+                else
+                {
+                    EditorLockManager.Instance.StartUpdate();
+                    GUIEditorControls.Instance.Update();
+                    EditorLockManager.Instance.EndUpdate();
+                }
             }
         }
     }

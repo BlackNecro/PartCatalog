@@ -76,6 +76,7 @@ namespace PartCatalog
         {
             if (display)
             {
+                EditorLockManager.Instance.LockGUI();
                 GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
             }
         }
@@ -993,8 +994,8 @@ namespace PartCatalog
             HelpTexts["Settings"] = "Click to open the settings panel";
             HelpTexts["Help"] = "Turn off this help again";
             HelpTexts["EnableShortcuts"] = "Enable or disable using the number keys 1 to 0 to select tags. Hold down shift to select the next 10 tags";
-            HelpTexts["EnablePartListScrolling"] = "Enables or disables using the mouse wheel to scroll through the editor part list";
-            HelpTexts["EnableCategoryScrolling"] = "Enables or disables using the mouse wheel and holding down ctrl to change editor categries";
+            HelpTexts["EnablePartListScrolling"] = "Enables or disables using the mouse wheel to scroll through the editor part list while holding ctrl";
+            HelpTexts["EnableCategoryScrolling"] = "Enables or disables using the mouse wheel and holding down ctrl and shift to change editor categries";
             HelpTexts["MouseWheelPrescaler"] = "Sets the mousewheel prescaler in order to slow down the mouse scrolling";
             HelpTexts["TagMoveMultiplier"] = "Sets the multiplier used when moving tags up and down the list while holding down shift";
             HelpTexts["AutoGroup"] = "Click to automagically subdivide a tag into a default set of groups";

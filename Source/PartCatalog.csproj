@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigHandler.cs" />
+    <Compile Include="EditorLockManager.cs" />
     <Compile Include="GUIConstants.cs" />
     <Compile Include="GUIEditorControls.cs" />
     <Compile Include="GUILayoutSettings.cs" />
