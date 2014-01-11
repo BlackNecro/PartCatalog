@@ -38,7 +38,7 @@ for name,part in pairs(PARTS) do
 		end
 		if special then
 			for propellant in nodesByName(engine,"PROPELLANT") do
-				addToModCategory(part,"Engine/_"..propellant.values.name,propellant.values.name,"Engine"..propellant.values.name)					
+				addToModCategory(part,"Engine/_"..propellant.values.name,propellant.values.name,"Categories/Engine"..propellant.values.name)					
 			end
 		end		
 	end
@@ -48,7 +48,7 @@ for name,part in pairs(PARTS) do
 	
 	--Intakes	
 	for intake in modulesByName(part,"ModuleResourceIntake") do
-		addToModCategory(part,"Aero/Intake/_"..intake.values.resourceName,intake.values.resourceName,"Intake"..intake.values.resourceName)					
+		addToModCategory(part,"Aero/Intake/_"..intake.values.resourceName,intake.values.resourceName,"Categories/Intake"..intake.values.resourceName)					
 	end
 	
 	--Control Surfaces
@@ -86,7 +86,7 @@ for name,part in pairs(PARTS) do
 	for docking in modulesByName(part,"ModuleDockingNode") do
 		if docking.values.nodeType and string.sub(docking.values.nodeType,1,4) == "size" then
 			local size = string.sub(docking.values.nodeType,5)
-			addToModCategory(part,"Utility/Docking/Size"..size,"Size "..size, "Docking"..size)							
+			addToModCategory(part,"Utility/Docking/Size"..size,"Size "..size, "Categories/Docking"..size)							
 		else
 			addToModCategory(part,"Utility/Docking/Misc")		
 		end
@@ -94,7 +94,7 @@ for name,part in pairs(PARTS) do
 	
 	--RCS
 	for rcs in modulesByName(part,"ModuleRCS") do
-		addToModCategory(part,"Control/RCS/"..rcs.values.resourceName,rcs.values.resourceName, "RCS"..rcs.values.resourceName)						
+		addToModCategory(part,"Control/RCS/"..rcs.values.resourceName,rcs.values.resourceName, "Categories/RCS"..rcs.values.resourceName)						
 	end
 	
 	--Clamp
@@ -180,7 +180,7 @@ for name,part in pairs(PARTS) do
 	--Generators
 	for panel in modulesByName(part,"ModuleGenerator") do
 		for output in nodesByName(part,"OUTPUT_RESOURCE") do
-			addToModCategory(part,"Utility/Generator/_"..output.values.name,output.values.name,"Generator"..output.values.name)
+			addToModCategory(part,"Utility/Generator/_"..output.values.name,output.values.name,"Categories/Generator"..output.values.name)
 		end
 	end
 	
@@ -225,7 +225,7 @@ for name,part in pairs(PARTS) do
 	else
 		for resource in resources(part) do
 			if( tonumber(resource.values.maxAmount) > 0) then
-				addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Storage"..resource.values.name)
+				addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Categories/Storage"..resource.values.name)
 			end
 		end
 	end

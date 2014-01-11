@@ -77,7 +77,7 @@ namespace PartCatalog
             }
 
 
-            HashSet<string> modFolders = new HashSet<string>(DirectoryLister.Instance.ListDirectories(GUIConstants.ModFolderPath));
+            HashSet<string> modFolders = new HashSet<string>(System.IO.Directory.GetDirectories(GUIConstants.ModFolderPath));
             HashSet<string> detectedMods = new HashSet<string>(HashedModCatalog.Keys);
             HashSet<string> perfectMatches = new HashSet<string>(modFolders);
 
@@ -207,6 +207,15 @@ namespace PartCatalog
                                     if (curTag.IconName.Length == 0)
                                     {
                                         Debug.LogError(String.Format("PartCatalog Error Line {0} malformed Icon Name \"{1}\"", lineNum, toParse));
+                                    }
+                                }
+                                else if (trimmed.StartsWith("OVERLAY", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    string toParse = trimmed.Substring("OVERLAY".Length).Trim();
+                                    curTag.IconOverlay = toParse;
+                                    if (curTag.IconName.Length == 0)
+                                    {
+                                        Debug.LogError(String.Format("PartCatalog Error Line {0} malformed Overlay \"{1}\"", lineNum, toParse));
                                     }
                                 }
                                 else if (trimmed.StartsWith("SHOW SPH", StringComparison.OrdinalIgnoreCase))

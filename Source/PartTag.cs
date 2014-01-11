@@ -297,6 +297,10 @@ namespace PartCatalog
             {
                 file.WriteLine("ICON " + IconName);
             }
+            if(IconOverlay != "")
+            {
+                file.WriteLine("OVERLAY " + IconOverlay);
+            }
             file.WriteLine("SHOW SPH " + visibleInSPH.ToString());
             file.WriteLine("SHOW VAB " + visibleInVAB.ToString());
             if (startNewPage)
@@ -319,7 +323,15 @@ namespace PartCatalog
         {
             get                                                                                                              
             {
-                return PartFilterManager.Instance.EnabledTags.Contains(this);
+                if (PartFilterManager.Instance.EnabledTags.Contains(this))
+                {
+                    return true;
+                }
+                if (Parent != null)
+                {
+                    return Parent.Enabled;
+                }
+                return false;
             }
         }
 

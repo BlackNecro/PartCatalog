@@ -86,11 +86,15 @@ sortCat(CATEGORIES)");
             {
                 PartTag newTag = new PartTag();                               
                 newTag.Name = (string)category["title"];
-                newTag.IconName = (string)category["icon"];
-                if(!ResourceProxy.Instance.BufferTexture(newTag.IconName))
+                newTag.IconName = ((string)category["icon"]);
+                if (newTag.IconName != "")
                 {
-                    newTag.IconName = "";
+                    if (!ResourceProxy.Instance.IconExists(newTag.IconName))
+                    {
+                        newTag.IconName = "";
+                    }
                 }
+                newTag.IconOverlay = (string)category["overlay"];
                 parent.AddChild(newTag);
                 LuaTable parts = (LuaTable)category["parts"];
                 foreach (var value in parts.Keys)

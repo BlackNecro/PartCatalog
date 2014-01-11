@@ -62,15 +62,23 @@ function findCategory(path,curcategory)
 	return findOrCreateCategory(path,curcategory)
 end
 
+function setOverlay(path, overlay)
+	local cat = findCategory(path,CATEGORIES)
+	cat.overlay = overlay
+end
 
-function setCategory(path, title, icon,sort)
+function setCategory(path, title, icon,sort,overrideIcon)
 	local cat = findCategory(path,CATEGORIES)
 	if sort ~= nil then
 		cat.sort = sort
 	end
 
 	cat.title = title or cat.title
-	cat.icon = icon or cat.icon
+	if icon then
+		if overrideIcon or cat.icon == "" then
+			cat.icon = icon
+		end
+	end
 	return cat
 end
 
@@ -81,8 +89,8 @@ function addToCategory(part,path,title,icon,sort)
 	return cat
 end
 
-function addToModCategory(part,path,title,icon,sort)
-	setCategory(part.mod, part.mod, part.mod)	
+function addToModCategory(part,path,title,icon,sort,overrideIcon)
+	setCategory(part.mod, part.mod, "Mods/"..part.mod,sort,overrideIcon)	
 	addToCategory(part,string.format("%s/%s",part.mod,path),title,icon,sort)
 	addToCategory(part,string.format("All/%s",path),title,icon,sort)
 	part.assigned = true

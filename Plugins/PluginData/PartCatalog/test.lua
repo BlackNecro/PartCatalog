@@ -10,3 +10,6 @@ dofile("default.fallback.lua")
 clean(CATEGORIES)
 sortCat(CATEGORIES)
 pretty.dump(CATEGORIES,"category.lua")
+for k,v in pairs(CATEGORIES.children) do
+	print(v.name, v.overlay)
+end

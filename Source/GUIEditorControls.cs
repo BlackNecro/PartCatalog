@@ -19,6 +19,17 @@ namespace PartCatalog
         }
         private GUIEditorControls()
         {
+
+            OverlayStyle = new GUIStyle(HighLogic.Skin.label);
+            OverlayStyle.alignment = TextAnchor.MiddleCenter;
+            OverlayStyle.font = HighLogic.Skin.button.font;
+            OverlayStyle.fontSize = 17;
+            OverlayStyle.fontStyle = FontStyle.Bold;
+            OverlayStyle.normal.textColor = Color.black;
+            OverlayStyleEnabled = new GUIStyle(OverlayStyle);
+            OverlayStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
+
+
             LabelStyle = new GUIStyle(HighLogic.Skin.label);
             LabelStyle.alignment = TextAnchor.LowerLeft;
             LabelStyle.fontSize = 10;
@@ -50,6 +61,8 @@ namespace PartCatalog
 
         GUIStyle LabelStyle;
         GUIStyle LabelStyleEnabled;
+        GUIStyle OverlayStyle;
+        GUIStyle OverlayStyleEnabled;
         GUIStyle ButtonStyle;
         GUIStyle ButtonStyleEnabled;
         GUIStyle iconStyle;
@@ -262,7 +275,7 @@ namespace PartCatalog
                     bool pushed = false;
                     if (subTag.IconName != "")
                     {
-                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
                     }
                     pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.ExpandWidth(true));
                     GUILayout.EndHorizontal();
@@ -318,10 +331,21 @@ namespace PartCatalog
                 {
                     PartFilterManager.Instance.ToggleFilter(tag);
                 }
+
+                if(tag.IconName == "" && tag.IconOverlay != "")
+                {
+                    Rect overlayPos = new Rect(curPos);
+                    overlayPos.x -= 1;
+                    overlayPos.y += 2;
+                    GUI.Label(overlayPos, tag.IconOverlay, tag.Enabled ? OverlayStyleEnabled : OverlayStyle);
+                }
+
                 Rect LabelPos = new Rect(curPos);
                 LabelPos.x += 3;
                 LabelPos.y += LabelPos.height * 0.2f;
                 GUI.Label(LabelPos, count.ToString(), tag.Enabled ? LabelStyleEnabled : LabelStyle);
+                
+                
                 if (curPos.Contains(Event.current.mousePosition))
                 {
                     if (MouseOverStack.Count == 0 || MouseOverStack[0].Tag != tag)
@@ -331,6 +355,9 @@ namespace PartCatalog
                     }
                     MouseOverClear = false;
                 }
+
+
+
                 switch (ConfigHandler.Instance.ToolBarDirection)
                 {
                     case ToolBarDirections.Up:

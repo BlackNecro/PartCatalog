@@ -32,9 +32,37 @@ namespace PartCatalog
                 return KSPUtil.ApplicationRootPath + "GameData";
             }
         }
-        public const string ConfigButtonName = "ConfigButton";
-        public const string DefaultIconName = "TagDefault";
-        public const string ErrorIconName = "UnknownIcon";
+
+        public static string IconFolderPath
+        {
+            get
+            {
+                return CatalogDataPath + "/Icons";
+            }
+        }
+
+        public static string ConfigButtonName
+        {
+            get
+            {
+                return "ConfigButton";
+            }
+        }
+        public static string DefaultIconName
+        {
+            get
+            {
+                return "TagBlank";
+            }
+        }
+
+        public static string ErrorIconName
+        {
+            get
+            {
+                return "UnknownIcon";
+            }
+        }
     }
     public enum ToolBarPositions
     {
@@ -46,7 +74,7 @@ namespace PartCatalog
     public enum ConfigButtonPositions
     {
         CompoundStart,
-        CompoundEnd,        
+        CompoundEnd,
         TopMiddle,
         TopLeft,
         BottomLeft,

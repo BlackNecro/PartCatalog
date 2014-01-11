@@ -17,6 +17,8 @@ namespace PartCatalog
 
         public void OnDestroy()
         {
+            ConfigHandler.Instance.SaveConfig();
+            PartCatalog.Instance.SavePartTags();
         }                                                
 
         public void OnGUI()

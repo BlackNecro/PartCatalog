@@ -157,6 +157,8 @@ namespace PartCatalog
             CurHelpField = null;
         }
 
+
+        private HashSet<string> CollapsedPaths = new HashSet<string>();
         private void DrawIconColumn()
         {
             ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1], GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
@@ -164,14 +166,27 @@ namespace PartCatalog
             {
                 selectedPartTag.IconName = "";
             }
-            foreach (string iconName in ResourceProxy.Instance.LoadedTextures.Keys)
+
+            List<string> icons = new List<string>();
+            foreach (var icon in ResourceProxy.Instance.LoadedTextures)
             {
+                string iconName = icon.Key;
+
+                string sanitized = iconName.Replace('\\', '/');
+                if (iconName != sanitized && ResourceProxy.Instance.LoadedTextures.ContainsKey(sanitized))
+                {
+                    continue;
+                }
                 if (iconName != "TagDefault")
                 {
                     GUILayout.BeginHorizontal();
                     bool pushed = false;
                     pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
-                    pushed |= GUILayout.Button(iconName);
+                    if (icon.Value.IsToggle)
+                    {
+                        GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, false), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                    }
+                    pushed |= GUILayout.Button(sanitized);
                     GUILayout.EndHorizontal();
                     RegisterHelp("IconSelect");
                     if (pushed)
