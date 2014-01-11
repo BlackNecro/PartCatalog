@@ -213,7 +213,7 @@ namespace PartCatalog
                                 {
                                     string toParse = trimmed.Substring("OVERLAY".Length).Trim();
                                     curTag.IconOverlay = toParse;
-                                    if (curTag.IconName.Length == 0)
+                                    if (curTag.IconOverlay.Length == 0)
                                     {
                                         Debug.LogError(String.Format("PartCatalog Error Line {0} malformed Overlay \"{1}\"", lineNum, toParse));
                                     }
