@@ -46,16 +46,14 @@ namespace PartCatalog
         #region FilterFunction
         private bool FilterPart(AvailablePart toFilter)
         {
-            if (SearchManager.Instance.InFilter(toFilter))
+            
+            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0)
             {
-                if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0)
-                {
-                    return true;
-                }
-
-                return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
+                return true;
             }
-            return false;
+
+            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
+            
         }
         #endregion
 
