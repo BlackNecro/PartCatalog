@@ -103,12 +103,15 @@ namespace PartCatalog
             }
         }
 
-        public void AddPart(AvailablePart toAdd)
+        public void AddPart(AvailablePart toAdd, bool rehash = true)
         {
             if (!IncludedParts.Contains(toAdd))
             {
                 IncludedParts.Add(toAdd);
-                Rehash();
+                if (rehash)
+                {
+                    Rehash();
+                }
             }
         }
         public void RemovePart(AvailablePart toRemove)

@@ -70,16 +70,39 @@ sortCat(CATEGORIES)");
             LuaTable category = luaInstance.GetTable("CATEGORIES");
             LuaTable children = (LuaTable)category["children"];
             //PartCatalog.Instance.RootTag = new PartTag();
+            HashSet<AvailablePart> leftOvers = new HashSet<AvailablePart>();
+            PartCatalog.Instance.SortedPartList.ForEach((part) => { if (part.category != PartCategories.none) leftOvers.Add(part); });
             foreach (var value in children.Values)
             {
                 if (value is LuaTable)
                 {
-                    ParseCategoryTable((LuaTable)value, PartCatalog.Instance.RootTag);
+                    ParseCategoryTable((LuaTable)value, PartCatalog.Instance.RootTag, leftOvers);
                 }
             }
+
+            if(leftOvers.Count > 0)
+            {
+                PartTag leftOver = PartCatalog.Instance.RootTag.findChild("Uncategorized");
+                if (leftOver == null)
+                {
+                    leftOver = new PartTag();
+                    leftOver.Name = "Uncategorized";
+                    leftOver.IconOverlay = "U";
+                }
+                foreach(var part in leftOvers)
+                {
+                    Debug.Log("Adding " + part.name);
+                    leftOver.AddPart(part);
+                }
+                
+                PartCatalog.Instance.RootTag.AddChild(leftOver);
+            }
+
+            SearchManager.Instance.Refresh();
+
         }
 
-        private static void ParseCategoryTable(LuaTable category, PartTag parent)
+        private static void ParseCategoryTable(LuaTable category, PartTag parent, HashSet<AvailablePart> leftOvers)
         {
             if (category != null)
             {
@@ -124,7 +147,9 @@ sortCat(CATEGORIES)");
                         }
                         else
                         {
-                            newTag.AddPart(PartCatalog.Instance.PartIndex[(string)value]);
+                            AvailablePart part = PartCatalog.Instance.PartIndex[(string)value];
+                            leftOvers.Remove(part);
+                            newTag.AddPart(part,false);
                         }
                     }
                 }
@@ -134,7 +159,7 @@ sortCat(CATEGORIES)");
                 {
                     if (value is LuaTable)
                     {
-                        ParseCategoryTable((LuaTable)value, newTag);
+                        ParseCategoryTable((LuaTable)value, newTag, leftOvers);
                     }
                 }                
             }
