@@ -157,6 +157,11 @@ namespace PartCatalog
 
         DateTime lastSearchTime = DateTime.Now;
 
+
+        public void Refresh()
+        {
+            UpdateSearchText(searchText);
+        }
         public void UpdateSearchText(string newSearchText)
         {
             ////Debug.LogError("Updating Search to " + newSearchText);
@@ -175,14 +180,36 @@ namespace PartCatalog
         {
             if (Event.current.type == EventType.KeyDown)
             {
-                if (open && Event.current.keyCode == KeyCode.Escape)
+                if (open)
                 {
-                    Close();
-                }
-                if (open && Event.current.keyCode == KeyCode.Space && (Event.current.modifiers == EventModifiers.Control))
-                {
-                    Event.current.Use();
-                    Open();
+                    if (Event.current.keyCode == KeyCode.Escape)
+                    {
+                        Close();
+                    }
+                    if (Event.current.modifiers == EventModifiers.Control)
+                    {
+                        if (Event.current.keyCode == KeyCode.Space)
+                        {
+                            Event.current.Use();
+                            Open();
+                        }
+                        else if (Event.current.keyCode == KeyCode.Alpha1)
+                        {
+                            searchNames = !searchNames;
+                        }
+                        else if (Event.current.keyCode == KeyCode.Alpha2)
+                        {
+                            searchTitles = !searchTitles;
+                        }
+                        else if (Event.current.keyCode == KeyCode.Alpha3)
+                        {
+                            searchDescription = !searchDescription;
+                        }
+                        else if (Event.current.keyCode == KeyCode.Alpha4)
+                        {
+                            searchTags = !searchTags;
+                        }
+                    }
                 }
             }
         }
@@ -198,7 +225,7 @@ namespace PartCatalog
             }
         }
 
-        public bool InFilter(AvailablePart part)
+        public bool InFilter(AvailablePart part, PartTag fromTag = null)
         {
             bool toReturn = false;
 
@@ -227,10 +254,9 @@ namespace PartCatalog
                 //Debug.Log(" Description Matched");
                 toReturn = true;
             }
-            else if (!IsFilteringParts)
+            else if (fromTag != null)
             {
-                //Debug.Log(" Not looking for parts");
-                toReturn = true;
+                toReturn = InFilterNoParts(fromTag);
             }
 
             //Debug.Log(" Returning "+ toReturn);
@@ -247,10 +273,9 @@ namespace PartCatalog
             //Debug.Log("Was " + toReturn);
             return toReturn;
         }
-        public bool InFilter(PartTag tag)
+
+        public bool InFilterNoParts(PartTag tag)
         {
-
-
             if (!IsFiltered)
             {
                 return true;
@@ -271,7 +296,16 @@ namespace PartCatalog
                     return FilteredTags[tag] = true;
                 }
             }
-            if (searchNames | searchTitles | searchDescription)
+            return false;
+        }
+        public bool InFilter(PartTag tag)
+        {
+            if (InFilterNoParts(tag))
+            {
+                return true;
+            }
+
+            if (IsFilteringParts)
             {
                 foreach (var child in tag.IncludedParts)
                 {
@@ -283,6 +317,7 @@ namespace PartCatalog
                     }
                 }
             }
+
             return FilteredTags[tag] = false;
         }
 
@@ -318,6 +353,11 @@ namespace PartCatalog
 
         public bool DisplayTag(PartTag tag)
         {
+            if (!IsFiltered)
+            {
+                return true;
+            }
+
             if (DisplayedTags.ContainsKey(tag))
             {
                 return DisplayedTags[tag];

@@ -159,7 +159,7 @@ namespace PartCatalog
                 {
                     //Debug.Log("   Is Researched");
                     newResearched = true;
-                    if (SearchManager.Instance.InFilter(part))
+                    if (SearchManager.Instance.InFilter(part,this))
                     {
                         //Debug.Log("   Is in Filter");
                         FilteredParts.Add(part);

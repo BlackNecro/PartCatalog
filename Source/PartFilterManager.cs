@@ -100,6 +100,7 @@ namespace PartCatalog
                 }
                 Rehash();
             }
+            SearchManager.Instance.Refresh();
         }
 
         public bool CategoryEnabled(PartCategories cat)
