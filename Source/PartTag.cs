@@ -123,21 +123,24 @@ namespace PartCatalog
             //Debug.Log("Rehashing Tag " + this.Name);            
             PartCategories.Clear();
             VisibleParts.Clear();
-            
+            VisiblePartCategories.Clear();
+
             bool newResearched = false;
             foreach (AvailablePart part in IncludedParts)
-            {                
-
+            {
+                PartCategories.Add(part.category);
                 if(!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
                 {
-                    PartCategories.Add(part.category);
-                    VisibleParts.Add(part.name);                                           
                     newResearched = true;
+                    if (SearchManager.Instance.InFilter(part) && Enabled)
+                    {
+                        VisiblePartCategories.Add(part.category);
+                        VisibleParts.Add(part.name);
+                    }
                 }
             }
+          
 
-            VisiblePartCategories.Clear();
-            VisiblePartCategories.UnionWith(PartCategories);
             foreach (PartTag child in ChildTags)
             {
                 VisibleParts.UnionWith(child.VisibleParts);
@@ -152,6 +155,41 @@ namespace PartCatalog
                 Parent.Rehash();
             }
             UpdateTagList();                                       
+        }
+
+        public void RehashDown()
+        {
+           
+            PartCategories.Clear();
+            VisibleParts.Clear();
+            VisiblePartCategories.Clear();
+
+            bool newResearched = false;
+            foreach (AvailablePart part in IncludedParts)
+            {
+                PartCategories.Add(part.category);
+                if (!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
+                {
+                    newResearched = true;
+                    if (SearchManager.Instance.InFilter(part) && Enabled)
+                    {
+                        VisiblePartCategories.Add(part.category);
+                        VisibleParts.Add(part.name);                        
+                    }
+                }
+            }
+
+
+            foreach (PartTag child in ChildTags)
+            {
+                child.RehashDown();
+                VisibleParts.UnionWith(child.VisibleParts);
+                VisiblePartCategories.UnionWith(child.VisiblePartCategories);
+                newResearched |= child.Researched;
+            }
+
+            isResearched = newResearched;
+
         }
 
         private static void UpdateTagList()
@@ -343,7 +381,7 @@ namespace PartCatalog
                 {
                     return Parent.Enabled;
                 }
-                return false;
+                return PartFilterManager.Instance.EnabledTags.Count == 0;
             }
         }
 

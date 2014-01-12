@@ -298,19 +298,22 @@ namespace PartCatalog
             {
                 if (!ConfigHandler.Instance.HideUnresearchedTags || tag.Researched)
                 {
-                    curCount++;
-                    if (curCount == maxNumPerPage || tag.StartNewPage)
+                    if (SearchManager.Instance.DisplayTag(tag))
                     {
+                        curCount++;
+                        if (curCount == maxNumPerPage || tag.StartNewPage)
+                        {
+                            if (page == 0)
+                            {
+                                break;
+                            }
+                            page--;
+                            curCount = 0;
+                        }
                         if (page == 0)
                         {
-                            break;
+                            toReturn.AddLast(tag);
                         }
-                        page--;
-                        curCount = 0;
-                    }
-                    if (page == 0)
-                    {
-                        toReturn.AddLast(tag);
                     }
                 }
             }

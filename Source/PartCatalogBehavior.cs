@@ -53,6 +53,7 @@ namespace PartCatalog
                         GUILayoutSettings.Instance.Draw();
                         GUIEditorControls.Instance.Draw();
                         GUITagEditor.Instance.Draw();
+                        SearchManager.Instance.Draw();
                         EditorLockManager.Instance.EndGUIDraw();
                     }
                 }
@@ -94,6 +95,8 @@ namespace PartCatalog
                 {
                     EditorLockManager.Instance.StartUpdate();
                     GUIEditorControls.Instance.Update();
+                    SearchManager.Instance.Update();
+                    GUITagEditor.Instance.Update();
                     EditorLockManager.Instance.EndUpdate();
                 }
             }

@@ -1410,5 +1410,13 @@ namespace PartCatalog
         }
 
         public bool isOpen { get { return display; } }
+
+        public void Update()
+        {
+            if(display && Input.GetKey(KeyCode.Escape))
+            {
+                Close();
+            }
+        }
     }
 }

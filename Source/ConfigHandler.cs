@@ -233,6 +233,13 @@ namespace PartCatalog
                 return TagEditorWindow + 1;
             }
         }
+        public int SearchWindow
+        {
+            get
+            {
+                return MouseOverWindow + 1;
+            }
+        }
 
         public void Dispose()
         {

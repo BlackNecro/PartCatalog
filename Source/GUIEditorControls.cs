@@ -75,6 +75,14 @@ namespace PartCatalog
         LinkedList<PartTag> currentPageTags = new LinkedList<PartTag>();
         List<MouseOverStackEntry> MouseOverStack = new List<MouseOverStackEntry>();
 
+        public bool MouseOverVisible
+        {
+            get
+            {
+                return MouseOverStack.Count > 0;
+            }
+        }
+
         #region Drawing
 
         public void Draw()
@@ -86,7 +94,7 @@ namespace PartCatalog
             {
                 MouseOverStack.Clear();
             }
-            if(!MouseOverClear)
+            if (!MouseOverClear)
             {
                 EditorLockManager.Instance.LockGUI();
             }
@@ -186,8 +194,23 @@ namespace PartCatalog
             }
             for (int i = 0; i < MouseOverStack.Count; i++)
             {
+                bool containsFiltered = false;
                 MouseOverStackEntry Entry = MouseOverStack[i];
-                if (i != 0 && Entry.Tag.ChildTags.Count == 0)
+                foreach (PartTag subTag in Entry.Tag.ChildTags)
+                {
+
+                    if (!ConfigHandler.Instance.HideUnresearchedTags || subTag.Researched)
+                    {
+                        if (SearchManager.Instance.DisplayTag(subTag))
+                        {
+
+                            containsFiltered = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (i != 0 && (Entry.Tag.ChildTags.Count == 0 || !containsFiltered ))
                 {
                     break;
                 }
@@ -263,7 +286,9 @@ namespace PartCatalog
             if (index < MouseOverStack.Count)
             {
                 MouseOverStackEntry Entry = MouseOverStack[index];
-                if (index == 0 && Entry.Tag.ChildTags.Count == 0)
+
+
+                if (index == 0 && Entry.Tag.ChildTags.Count == 0 && !SearchManager.Instance.DisplayTag(Entry.Tag))
                 {
                     GUILayout.Space(15);
                     GUILayout.BeginHorizontal();
@@ -276,7 +301,11 @@ namespace PartCatalog
                 {
                     if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
                     {
-                       continue;
+                        continue;
+                    }
+                    if (!SearchManager.Instance.DisplayTag(subTag))
+                    {
+                        continue;
                     }
                     GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                     bool pushed = false;
@@ -284,7 +313,7 @@ namespace PartCatalog
                     {
                         pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
                     }
-                    pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.ExpandWidth(true));
+                    pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
                     GUILayout.EndHorizontal();
 
 
@@ -339,7 +368,7 @@ namespace PartCatalog
                     PartFilterManager.Instance.ToggleFilter(tag);
                 }
 
-                if(tag.IconName == "" && tag.IconOverlay != "")
+                if (tag.IconName == "" && tag.IconOverlay != "")
                 {
                     Rect overlayPos = new Rect(curPos);
                     overlayPos.x -= 1;
@@ -351,14 +380,14 @@ namespace PartCatalog
                 LabelPos.x += 3;
                 LabelPos.y += LabelPos.height * 0.2f;
                 GUI.Label(LabelPos, count.ToString(), tag.Enabled ? LabelStyleEnabled : LabelStyle);
-                
-                
+
+
                 if (curPos.Contains(Event.current.mousePosition))
                 {
                     if (MouseOverStack.Count == 0 || MouseOverStack[0].Tag != tag)
                     {
                         MouseOverStack.Clear();
-                        MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));                        
+                        MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
                     }
                     MouseOverClear = false;
                 }
@@ -399,6 +428,71 @@ namespace PartCatalog
                 }
                 GUILayoutSettings.Instance.Close();
             }
+            if (GUI.Button(GetSearchButtonPos(), ResourceProxy.Instance.GetIconTexture(GUIConstants.SearchIconName, SearchManager.Instance.IsFiltered), GUIStyle.none))
+            {
+                SearchManager.Instance.Toggle();
+            }
+        }
+
+        public Rect GetSearchButtonPos()
+        {
+            Rect toReturn = GetConfigButtonPos();
+            ConfigButtonPositions cfgPos = ConfigHandler.Instance.ConfigButtonPreset;
+
+            switch (ConfigHandler.Instance.ConfigButtonPreset)
+            {
+                case ConfigButtonPositions.CompoundStart:
+                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    {
+                        case ToolBarDirections.Up:
+                            toReturn.y -= toReturn.height;
+                            break;
+                        case ToolBarDirections.Down:
+                            toReturn.y += toReturn.height;
+                            break;
+                        case ToolBarDirections.Left:
+                            toReturn.x -= toReturn.width;
+                            break;
+                        case ToolBarDirections.Right:
+                            toReturn.x += toReturn.width;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ConfigButtonPositions.CompoundEnd:
+                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    {
+                        case ToolBarDirections.Up:
+                            toReturn.y += toReturn.height;
+                            break;
+                        case ToolBarDirections.Down:
+                            toReturn.y -= toReturn.height;
+                            break;
+                        case ToolBarDirections.Left:
+                            toReturn.x += toReturn.width;
+                            break;
+                        case ToolBarDirections.Right:
+                            toReturn.x -= toReturn.width;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ConfigButtonPositions.TopLeft:
+                    toReturn.x += toReturn.width;
+                    break;
+                case ConfigButtonPositions.BottomLeft:
+                    toReturn.x += toReturn.width;
+                    break;
+                case ConfigButtonPositions.BottomRight:
+                    toReturn.x -= toReturn.width;
+                    break;
+                default:
+                    break;
+            }
+
+            return toReturn;
         }
 
         #endregion
@@ -448,18 +542,18 @@ namespace PartCatalog
             {
                 if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
                 {
-                    toReturn.width -= ConfigHandler.Instance.ButtonSize.x;
+                    toReturn.width -= ConfigHandler.Instance.ButtonSize.x * 2;
                     if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.x += ConfigHandler.Instance.ButtonSize.x;
+                        toReturn.x += ConfigHandler.Instance.ButtonSize.x * 2;
                     }
                 }
                 else
                 {
-                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y;
+                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y * 2;
                     if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Down && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Up && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.y += ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += ConfigHandler.Instance.ButtonSize.y * 2;
                     }
                 }
             }
@@ -608,13 +702,13 @@ namespace PartCatalog
             }
             if (!MouseOverClear)
             {
-                MouseOverTimer = ConfigHandler.Instance.MouseOverDelay;                
+                MouseOverTimer = ConfigHandler.Instance.MouseOverDelay;
             }
             else
             {
                 if (MouseOverTimer > 0)
                 {
-                    
+
                     MouseOverTimer--;
                 }
             }
@@ -670,11 +764,11 @@ namespace PartCatalog
                     }
                 }
             }
-            
+
             if (GetToolbarRectRaw().Contains(MousePos))
-            {    
+            {
                 if (CurMouseScroll < 0.0f)
-                {                    
+                {
                     if (nextPageAvailable)
                     {
                         ConfigHandler.Instance.DisplayedPage++;

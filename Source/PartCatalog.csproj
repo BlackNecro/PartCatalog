@@ -63,6 +63,7 @@
     <Compile Include="PartTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceProxy.cs" />
+    <Compile Include="SearchManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

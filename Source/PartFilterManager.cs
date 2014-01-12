@@ -41,16 +41,21 @@ namespace PartCatalog
             EditorPartListFilter PartFilter = new EditorPartListFilter("PartCatalogFilter", FilterPart);
             EditorPartList.Instance.ExcludeFilters.AddFilter(PartFilter);
         }
-        #endregion        
+        #endregion
 
         #region FilterFunction
         private bool FilterPart(AvailablePart toFilter)
         {
-            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0 || EnabledTags.Count == 0)
+            if (SearchManager.Instance.InFilter(toFilter))
             {
-                return true;
+                if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0)
+                {
+                    return true;
+                }
+
+                return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
             }
-            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
+            return false;
         }
         #endregion
 
@@ -63,7 +68,7 @@ namespace PartCatalog
                 EnabledTags.Add(toAdd);
                 Rehash();
             }
-            
+
         }
         public void RemoveFilter(PartTag toRemove)
         {
@@ -109,29 +114,52 @@ namespace PartCatalog
             return EnabledCategories.Contains(cat);
         }
         #endregion
-        #region Rehashing        
-        private void Rehash()
+        #region Rehashing
+
+        bool finishedRehash = true;
+        public void Rehash()
         {
-            HashedEnabledPartNames.Clear();
-            EnabledCategories.Clear();
-            bool firstRound = true;
-            foreach (PartTag tag in EnabledTags)
+
+
+            if (!finishedRehash)
             {
-                if (firstRound || ConfigHandler.Instance.UnionFilter)
+                return;
+            }
+            finishedRehash = false;
+
+            SearchManager.Instance.Refresh();
+
+            HashedEnabledPartNames.Clear();
+            EnabledCategories.Clear();            
+            
+
+
+            if (EnabledTags.Count == 0)
+            {
+                EnabledCategories.UnionWith(PartCatalog.Instance.RootTag.VisiblePartCategories);
+                HashedEnabledPartNames.UnionWith(PartCatalog.Instance.RootTag.VisibleParts);
+            }
+            else
+            {
+                bool firstRound = true;
+                foreach (PartTag tag in EnabledTags)
                 {
-                    firstRound = false;
-                    HashedEnabledPartNames.UnionWith(tag.VisibleParts);
-                    EnabledCategories.UnionWith(tag.VisiblePartCategories);
-                }
-                else
-                {
-                    HashedEnabledPartNames.IntersectWith(tag.VisibleParts);
-                    EnabledCategories.IntersectWith(tag.VisiblePartCategories);
+                    if (firstRound || ConfigHandler.Instance.UnionFilter)
+                    {
+                        firstRound = false;
+                        HashedEnabledPartNames.UnionWith(tag.VisibleParts);
+                        EnabledCategories.UnionWith(tag.VisiblePartCategories);
+                    }
+                    else
+                    {
+                        HashedEnabledPartNames.IntersectWith(tag.VisibleParts);
+                        EnabledCategories.IntersectWith(tag.VisiblePartCategories);
+                    }
                 }
             }
-            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && EnabledCategories.Count == 0 || EnabledTags.Count == 0)
+            if (EnabledCategories.Count == 0)
             {
-                EditorPartList.Instance.ShowTabs();                
+                EditorPartList.Instance.ShowTabs();
             }
             else
             {
@@ -152,6 +180,7 @@ namespace PartCatalog
                     }
                 }
             }
+            finishedRehash = true;
         }
         public void RehashFrom(PartTag tag)
         {
