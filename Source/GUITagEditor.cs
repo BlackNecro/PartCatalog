@@ -82,6 +82,11 @@ namespace PartCatalog
         }
         public void DrawWindow(int id)
         {
+            if(Event.current.type == EventType.KeyDown)
+            {
+                Update();
+            }
+
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             DrawTagColumn();
@@ -1413,7 +1418,7 @@ namespace PartCatalog
 
         public void Update()
         {
-            if(display && Input.GetKey(KeyCode.Escape))
+            if(display && Event.current.keyCode == KeyCode.Escape)
             {
                 Close();
             }
