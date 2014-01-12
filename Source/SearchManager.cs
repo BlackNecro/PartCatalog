@@ -135,17 +135,6 @@ namespace PartCatalog
             GUILayout.EndVertical();
         }
 
-        private bool finishedRefresh = true;
-        public void Refresh()
-        {
-            if(!finishedRefresh)
-            {
-                return;
-            }
-            finishedRefresh = false;
-            UpdateSearchText(searchText);
-            finishedRefresh = true;
-        }
         private void UpdateSearchText(string newSearchText)
         {
             searchText = lastSearchText = newSearchText;
@@ -153,11 +142,9 @@ namespace PartCatalog
             FilteredTags.Clear();
             DisplayedTags.Clear();
             PartCatalog.Instance.RootTag.RehashDown(); //Updates visibility lists for all parts
-            //DisplayTag(PartCatalog.Instance.RootTag); //Checks whether PartTag is in filter or parts are in filter
-            
+
             PartFilterManager.Instance.Rehash();
-            EditorPartList.Instance.Refresh();
-            GUIEditorControls.Instance.UpdateDisplayedTags();
+            GUIEditorControls.Instance.UpdateDisplayedTags(); //Updates the Tags in the toolbar
         }
 
 

@@ -102,7 +102,6 @@ namespace PartCatalog
                 }
                 Rehash();
             }
-            EditorPartList.Instance.Refresh();
         }
 
         public bool CategoryEnabled(PartCategories cat)
@@ -116,24 +115,12 @@ namespace PartCatalog
         #endregion
         #region Rehashing
 
-        bool finishedRehash = true;
         public void Rehash()
         {
-
-
-            if (!finishedRehash)
-            {
-                return;
-            }
-            finishedRehash = false;
-
-            SearchManager.Instance.Refresh();
 
             HashedEnabledPartNames.Clear();
             EnabledCategories.Clear();            
             
-
-
             if (EnabledTags.Count == 0)
             {
                 EnabledCategories.UnionWith(PartCatalog.Instance.RootTag.VisiblePartCategories);
@@ -180,7 +167,7 @@ namespace PartCatalog
                     }
                 }
             }
-            finishedRehash = true;
+            EditorPartList.Instance.Refresh();
         }
         public void RehashFrom(PartTag tag)
         {
