@@ -196,25 +196,29 @@ namespace PartCatalog
                         else if (Event.current.keyCode == KeyCode.Alpha1)
                         {
                             searchNames = !searchNames;
+                            Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha2)
                         {
                             searchTitles = !searchTitles;
+                            Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha3)
                         {
                             searchDescription = !searchDescription;
+                            Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha4)
                         {
                             searchTags = !searchTags;
+                            Refresh();
                         }
                     }
                 }
             }
         }
 
-        public void Update()
+        public void OnUpdate()
         {
             if (Event.current.type == EventType.KeyDown)
             {

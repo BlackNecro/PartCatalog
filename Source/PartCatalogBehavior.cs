@@ -93,7 +93,7 @@ namespace PartCatalog
                 {
                     EditorLockManager.Instance.StartUpdate();
                     GUIEditorControls.Instance.Update();
-                    SearchManager.Instance.Update();
+                    SearchManager.Instance.OnUpdate();
                     GUITagEditor.Instance.Update();
                     EditorLockManager.Instance.EndUpdate();
                 }
