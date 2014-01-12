@@ -212,6 +212,15 @@ namespace PartCatalog
         [SaveToConfig(50)]
         public int MouseOverDelay;
 
+        [SaveToConfig(true)]
+        public bool SearchNames;
+        [SaveToConfig(true)]
+        public bool SearchTitles;
+        [SaveToConfig(true)]
+        public bool SearchDescription;
+        [SaveToConfig(true)]
+        public bool SearchTags;
+
         public int LayoutWindow
         {
             get

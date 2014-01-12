@@ -34,7 +34,7 @@ namespace PartCatalog
         {
             get
             {
-                return (searchNames || searchTitles || searchDescription);
+                return (ConfigHandler.Instance.SearchNames || ConfigHandler.Instance.SearchTitles || ConfigHandler.Instance.SearchDescription);
             }
         }
 
@@ -42,7 +42,7 @@ namespace PartCatalog
         {
             get
             {
-                return searchTags;
+                return ConfigHandler.Instance.SearchTags;
             }
         }
 
@@ -76,10 +76,7 @@ namespace PartCatalog
         private Rect windowPos = new Rect(0, 0, 0, 0);
         private string searchText = "";
         private string lastSearchText = "";
-        private bool searchNames = true;
-        private bool searchTitles = true;
-        private bool searchDescription = true;
-        private bool searchTags = true;
+
         private bool setFocus = false;
 
         Dictionary<AvailablePart, bool> FilteredParts = new Dictionary<AvailablePart, bool>();
@@ -117,32 +114,32 @@ namespace PartCatalog
 
 
 
-            bool lastSearchNames = searchNames;
-            bool lastSearchTitles = searchTitles;
-            bool lastSearchTags = searchTags;
-            bool lastSearchDescription = searchDescription;
+            bool lastSearchNames = ConfigHandler.Instance.SearchNames;
+            bool lastSearchTitles = ConfigHandler.Instance.SearchTitles;
+            bool lastSearchTags = ConfigHandler.Instance.SearchTags;
+            bool lastSearchDescription = ConfigHandler.Instance.SearchDescription;
             GUILayout.BeginHorizontal(GUILayout.MinWidth(125));
 
-            searchNames = GUILayout.Toggle(searchNames, "", HighLogic.Skin.toggle);
+            ConfigHandler.Instance.SearchNames = GUILayout.Toggle(ConfigHandler.Instance.SearchNames, "", HighLogic.Skin.toggle);
             GUILayout.Label("ID");
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
-            searchTitles = GUILayout.Toggle(searchTitles, "", HighLogic.Skin.toggle);
+            ConfigHandler.Instance.SearchTitles = GUILayout.Toggle(ConfigHandler.Instance.SearchTitles, "", HighLogic.Skin.toggle);
             GUILayout.Label("Name");
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
-            searchDescription = GUILayout.Toggle(searchDescription, "", HighLogic.Skin.toggle);
+            ConfigHandler.Instance.SearchDescription = GUILayout.Toggle(ConfigHandler.Instance.SearchDescription, "", HighLogic.Skin.toggle);
             GUILayout.Label("Description");
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
 
-            searchTags = GUILayout.Toggle(searchTags, "", HighLogic.Skin.toggle);
+            ConfigHandler.Instance.SearchTags = GUILayout.Toggle(ConfigHandler.Instance.SearchTags, "", HighLogic.Skin.toggle);
             GUILayout.Label("Tags");
             GUILayout.EndHorizontal();
 
-            if (searchNames != lastSearchNames || searchTitles != lastSearchTitles || searchTags != lastSearchTags || searchDescription != lastSearchDescription || searchText != lastSearchText) //We fucking touched anything
+            if (ConfigHandler.Instance.SearchNames != lastSearchNames || ConfigHandler.Instance.SearchTitles != lastSearchTitles || ConfigHandler.Instance.SearchTags != lastSearchTags || ConfigHandler.Instance.SearchDescription != lastSearchDescription || searchText != lastSearchText) //We fucking touched anything
             {
                 if ((DateTime.Now - lastSearchTime).TotalMilliseconds > 250)
                 {
@@ -195,22 +192,22 @@ namespace PartCatalog
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha1)
                         {
-                            searchNames = !searchNames;
+                            ConfigHandler.Instance.SearchNames = !ConfigHandler.Instance.SearchNames;
                             Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha2)
                         {
-                            searchTitles = !searchTitles;
+                            ConfigHandler.Instance.SearchTitles = !ConfigHandler.Instance.SearchTitles;
                             Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha3)
                         {
-                            searchDescription = !searchDescription;
+                            ConfigHandler.Instance.SearchDescription = !ConfigHandler.Instance.SearchDescription;
                             Refresh();
                         }
                         else if (Event.current.keyCode == KeyCode.Alpha4)
                         {
-                            searchTags = !searchTags;
+                            ConfigHandler.Instance.SearchTags = !ConfigHandler.Instance.SearchTags;
                             Refresh();
                         }
                     }
@@ -242,18 +239,18 @@ namespace PartCatalog
             {
                 toReturn = true;
             }
-            else if (searchNames && FilterString(part.name, searchText))
+            else if (ConfigHandler.Instance.SearchNames && FilterString(part.name, searchText))
             {
                 //Debug.Log(" Name Matched");
                 toReturn = true;
             }
-            else if (searchTitles && FilterString(part.title, searchText))
+            else if (ConfigHandler.Instance.SearchTitles && FilterString(part.title, searchText))
             {
                 //Debug.Log(" Title Matched");
                 toReturn = true;
             }
 
-            else if (searchDescription && FilterString(part.description, searchText))
+            else if (ConfigHandler.Instance.SearchDescription && FilterString(part.description, searchText))
             {
                 //Debug.Log(" Description Matched");
                 toReturn = true;
@@ -292,7 +289,7 @@ namespace PartCatalog
 
             //Debug.LogWarning("InFilter Tag " + tag.Name);
 
-            if (searchTags)
+            if (ConfigHandler.Instance.SearchTags)
             {
                 if (FilterString(tag.Name, searchText))
                 {
@@ -372,7 +369,7 @@ namespace PartCatalog
                 return DisplayedTags[tag] = true;
             }
 
-            if ((searchDescription || searchTitles || searchNames) && tag.FilteredParts.Count > 0)
+            if ((IsFilteringParts) && tag.FilteredParts.Count > 0)
             {
                 return true;
             }
