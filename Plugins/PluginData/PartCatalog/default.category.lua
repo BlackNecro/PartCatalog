@@ -15,7 +15,7 @@ table.sort(modsSorted)
 
 function DefaultTags(mod)
 
-	local maxOverlayLength = 4
+	local maxOverlayLength = 3
 	local overlay = ""
 
 	local curPos = 1
