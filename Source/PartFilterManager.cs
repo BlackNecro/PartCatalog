@@ -26,7 +26,7 @@ namespace PartCatalog
         public bool InvertFilter = false;
         #endregion
         #region Performance Hashed
-        public HashSet<string> HashedEnabledPartNames = new HashSet<string>();
+        public HashSet<AvailablePart> HashedEnabledPartNames = new HashSet<AvailablePart>();
         #endregion
         #endregion
 
@@ -52,7 +52,7 @@ namespace PartCatalog
                 return true;
             }
 
-            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
+            return HashedEnabledPartNames.Contains(toFilter) ^ ConfigHandler.Instance.InvertFilter;
             
         }
         #endregion
@@ -142,7 +142,7 @@ namespace PartCatalog
                     }
                 }
             }
-            if (EnabledCategories.Count == 0)
+            if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
             {
                 EditorPartList.Instance.ShowTabs();
             }

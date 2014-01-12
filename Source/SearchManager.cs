@@ -10,7 +10,6 @@ namespace PartCatalog
     {
         private SearchManager()
         {
-
         }
 
         private static SearchManager instance = new SearchManager();
@@ -27,33 +26,50 @@ namespace PartCatalog
         {
             get
             {
-                return searchText != "";
+                return searchText != "" && (IsFilteringParts || IsFilteringTags);
+            }
+        }
+
+        public bool IsFilteringParts
+        {
+            get
+            {
+                return (searchNames || searchTitles || searchDescription);
+            }
+        }
+
+        public bool IsFilteringTags
+        {
+            get
+            {
+                return searchTags;
             }
         }
 
         public void Open()
         {
-            Debug.Log("open " + Event.current.type.ToString());
+            //Debug.Log("open " + Event.current.type.ToString());
             open = true;
             setFocus = true;
+            GUIEditorControls.Instance.KillMouseOver();
             //GUI.FocusWindow(ConfigHandler.Instance.SearchWindow);            
         }
 
         public void Close()
         {
-            Debug.Log("close " + Event.current.type.ToString());
+            //Debug.Log("close " + Event.current.type.ToString());
             open = false;
         }
 
         public void Toggle()
         {
-            if (open)
+            if (!open || GUIEditorControls.Instance.MouseOverVisible)
             {
-                Close();
+                Open();
             }
             else
             {
-                Open();
+                Close();
             }
         }
 
@@ -66,7 +82,7 @@ namespace PartCatalog
         private bool searchTags = true;
         private bool setFocus = false;
 
-        Dictionary<string, bool> FilteredParts = new Dictionary<string, bool>();
+        Dictionary<AvailablePart, bool> FilteredParts = new Dictionary<AvailablePart, bool>();
         Dictionary<PartTag, bool> FilteredTags = new Dictionary<PartTag, bool>();
         Dictionary<PartTag, bool> DisplayedTags = new Dictionary<PartTag, bool>();
 
@@ -128,15 +144,22 @@ namespace PartCatalog
 
             if (searchNames != lastSearchNames || searchTitles != lastSearchTitles || searchTags != lastSearchTags || searchDescription != lastSearchDescription || searchText != lastSearchText) //We fucking touched anything
             {
-                UpdateSearchText(searchText);
+                if ((DateTime.Now - lastSearchTime).TotalMilliseconds > 250)
+                {
+                    lastSearchTime = DateTime.Now;
+                    UpdateSearchText(searchText);
+                }
             }
 
 
             GUILayout.EndVertical();
         }
 
-        private void UpdateSearchText(string newSearchText)
+        DateTime lastSearchTime = DateTime.Now;
+
+        public void UpdateSearchText(string newSearchText)
         {
+            ////Debug.LogError("Updating Search to " + newSearchText);
             searchText = lastSearchText = newSearchText;
             FilteredParts.Clear();
             FilteredTags.Clear();
@@ -179,34 +202,56 @@ namespace PartCatalog
         {
             bool toReturn = false;
 
-            if (FilteredParts.ContainsKey(part.name))
+            if (FilteredParts.ContainsKey(part))
             {
-                return true;
+                return FilteredParts[part];
             }
-            else if (searchText == "")
+            ////Debug.LogWarning("Checking Part " + part.name);
+            if (!IsFiltered)
             {
                 toReturn = true;
             }
             else if (searchNames && FilterString(part.name, searchText))
             {
+                //Debug.Log(" Name Matched");
                 toReturn = true;
             }
             else if (searchTitles && FilterString(part.title, searchText))
             {
+                //Debug.Log(" Title Matched");
                 toReturn = true;
             }
 
             else if (searchDescription && FilterString(part.description, searchText))
             {
+                //Debug.Log(" Description Matched");
+                toReturn = true;
+            }
+            else if (!IsFilteringParts)
+            {
+                //Debug.Log(" Not looking for parts");
                 toReturn = true;
             }
 
-            return FilteredParts[part.name] = toReturn;
+            //Debug.Log(" Returning "+ toReturn);
+            return FilteredParts[part] = toReturn;
+        }
+
+        public bool InFilterRefresh(PartTag tag)
+        {
+            //Debug.LogWarning("Refreshing in filter for " + tag.Name);
+            FilteredTags.Remove(tag);
+            DisplayedTags.Remove(tag);
+
+            bool toReturn = InFilter(tag);
+            //Debug.Log("Was " + toReturn);
+            return toReturn;
         }
         public bool InFilter(PartTag tag)
         {
 
-            if (searchText == "")
+
+            if (!IsFiltered)
             {
                 return true;
             }
@@ -216,24 +261,24 @@ namespace PartCatalog
                 return FilteredTags[tag];
             }
 
+            //Debug.LogWarning("InFilter Tag " + tag.Name);
+
             if (searchTags)
             {
                 if (FilterString(tag.Name, searchText))
                 {
+                    //Debug.Log(" Tag name match");
                     return FilteredTags[tag] = true;
                 }
-                else
-                {
-                    return FilteredTags[tag] = false;
-                }
-
             }
             if (searchNames | searchTitles | searchDescription)
             {
-                foreach (var child in tag.ChildTags)
+                foreach (var child in tag.IncludedParts)
                 {
+                    //Debug.Log(" checking childpart "+ child.name);
                     if (InFilter(child))
                     {
+                        //Debug.Log("  in Filter");
                         return FilteredTags[tag] = true;
                     }
                 }
@@ -273,7 +318,6 @@ namespace PartCatalog
 
         public bool DisplayTag(PartTag tag)
         {
-
             if (DisplayedTags.ContainsKey(tag))
             {
                 return DisplayedTags[tag];
@@ -284,7 +328,7 @@ namespace PartCatalog
                 return DisplayedTags[tag] = true;
             }
 
-            if(tag.VisibleParts.Count > 0)
+            if ((searchDescription || searchTitles || searchNames) && tag.FilteredParts.Count > 0)
             {
                 return true;
             }

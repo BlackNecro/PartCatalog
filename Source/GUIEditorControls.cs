@@ -75,11 +75,16 @@ namespace PartCatalog
         LinkedList<PartTag> currentPageTags = new LinkedList<PartTag>();
         List<MouseOverStackEntry> MouseOverStack = new List<MouseOverStackEntry>();
 
+
+        public void KillMouseOver()
+        {
+            MouseOverTimer = 0;
+        }
         public bool MouseOverVisible
         {
             get
             {
-                return MouseOverStack.Count > 0;
+                return MouseOverTimer > 0;
             }
         }
 

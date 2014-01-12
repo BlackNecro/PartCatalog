@@ -826,7 +826,7 @@ namespace PartCatalog
         {
             if (ConfigHandler.Instance.SearchPartInSubtags)
             {
-                return !tag.VisibleParts.Contains(part.name);
+                return !tag.VisibleParts.Contains(part);
             }
             else
             {

@@ -61,10 +61,12 @@ namespace PartCatalog
         #endregion
         #region Parts
         public HashSet<AvailablePart> IncludedParts = new HashSet<AvailablePart>();
-        public HashSet<string> VisibleParts = new HashSet<string>();
+        public HashSet<AvailablePart> FilteredParts = new HashSet<AvailablePart>();
+        public HashSet<AvailablePart> VisibleParts = new HashSet<AvailablePart>();
         #endregion
         #region PartData
         public HashSet<PartCategories> PartCategories = new HashSet<PartCategories>();
+        public HashSet<PartCategories> FilteredCategories = new HashSet<PartCategories>();
         public HashSet<PartCategories> VisiblePartCategories = new HashSet<PartCategories>();
         #endregion
         private bool isResearched = false;
@@ -120,25 +122,13 @@ namespace PartCatalog
 
         public void Rehash()
         {
+            //Debug.Log("Rehash Tag " + Name);
             //Debug.Log("Rehashing Tag " + this.Name);            
             PartCategories.Clear();
             VisibleParts.Clear();
             VisiblePartCategories.Clear();
 
-            bool newResearched = false;
-            foreach (AvailablePart part in IncludedParts)
-            {
-                PartCategories.Add(part.category);
-                if(!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
-                {
-                    newResearched = true;
-                    if (SearchManager.Instance.InFilter(part) && Enabled)
-                    {
-                        VisiblePartCategories.Add(part.category);
-                        VisibleParts.Add(part.name);
-                    }
-                }
-            }
+            bool newResearched = RehashParts();
           
 
             foreach (PartTag child in ChildTags)
@@ -157,32 +147,54 @@ namespace PartCatalog
             UpdateTagList();                                       
         }
 
-        public void RehashDown()
+        private bool RehashParts()
         {
-           
-            PartCategories.Clear();
-            VisibleParts.Clear();
-            VisiblePartCategories.Clear();
-
+            //Debug.Log(" Rehasing Parts");
             bool newResearched = false;
             foreach (AvailablePart part in IncludedParts)
             {
+                //Debug.Log("  Checking Part "+ part.name);
                 PartCategories.Add(part.category);
                 if (!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
                 {
+                    //Debug.Log("   Is Researched");
                     newResearched = true;
-                    if (SearchManager.Instance.InFilter(part) && Enabled)
+                    if (SearchManager.Instance.InFilter(part))
                     {
-                        VisiblePartCategories.Add(part.category);
-                        VisibleParts.Add(part.name);                        
+                        //Debug.Log("   Is in Filter");
+                        FilteredParts.Add(part);
+                        FilteredCategories.Add(part.category);
                     }
                 }
             }
+            if (Enabled/* && SearchManager.Instance.DisplayTag(this)*/ && SearchManager.Instance.InFilterRefresh(this))
+            {
+                //Debug.Log("Tag Is Enabled and filtered moving visibile stuff");
+                VisiblePartCategories.UnionWith(FilteredCategories);
+                VisibleParts.UnionWith(FilteredParts);                
+            }
+
+            return newResearched;
+        }
+
+        public void RehashDown()
+        {
+            //Debug.Log("Rehash Down Tag " + Name);
+            PartCategories.Clear();            
+            VisibleParts.Clear();
+            VisiblePartCategories.Clear();
+            FilteredParts.Clear();
+            FilteredCategories.Clear();
+
+            bool newResearched = RehashParts();
+            
 
 
             foreach (PartTag child in ChildTags)
             {
                 child.RehashDown();
+                FilteredParts.UnionWith(child.FilteredParts);
+                FilteredCategories.UnionWith(child.FilteredCategories);
                 VisibleParts.UnionWith(child.VisibleParts);
                 VisiblePartCategories.UnionWith(child.VisiblePartCategories);
                 newResearched |= child.Researched;

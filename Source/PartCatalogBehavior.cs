@@ -85,9 +85,7 @@ namespace PartCatalog
                     }
                     EditorPartList.Instance.ShowTabs();
                     EditorPartList.Instance.SelectTab(PartCategories.Pods);
-
-                    Debug.Log("Testing Lua");
-                    Debug.Log("Done Lua");
+                    SearchManager.Instance.UpdateSearchText("");
 
                     Debug.Log("**** Loaded PartCatalog ****");
                 }
