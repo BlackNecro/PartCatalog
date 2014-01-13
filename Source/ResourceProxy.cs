@@ -134,6 +134,12 @@ namespace PartCatalog
                 }
             }
         }
+
+        public void Reload()
+        {
+            LoadedTextures.Clear();
+            LoadIconList();
+        }
     }
 
     internal class DirectoryLister

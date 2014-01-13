@@ -316,7 +316,9 @@ namespace PartCatalog
                     bool pushed = false;
                     if (subTag.IconName != "")
                     {
-                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+
+                        var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled);
+                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));
                     }
                     pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
                     GUILayout.EndHorizontal();

@@ -167,6 +167,7 @@ namespace PartCatalog
         private HashSet<string> CollapsedPaths = new HashSet<string>();
         private void DrawIconColumn()
         {
+            GUILayout.BeginVertical();
             ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1], GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
             if (GUILayout.Button("None"))
             {
@@ -202,6 +203,11 @@ namespace PartCatalog
                 }
             }
             GUILayout.EndScrollView();
+            if(GUILayout.Button("Reload Icons"))
+            {
+                ResourceProxy.Instance.Reload();
+            }
+            GUILayout.EndVertical();
         }
 
         private void DrawFilteredMods()
