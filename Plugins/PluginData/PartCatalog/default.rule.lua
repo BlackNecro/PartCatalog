@@ -32,7 +32,11 @@ for name,part in pairs(PARTS) do
 				special = true
 			end
 		elseif containsNodeTypeName(engine,"PROPELLANT","XenonGas") and containsNodeTypeName(engine,"PROPELLANT","ElectricCharge") then
-			addToModCategory(part,"Engine/Ion")				
+			addToModCategory(part,"Engine/Ion")
+		elseif containsNodeTypeName(engine,"PROPELLANT","SolidFuel") then 	-- EDIT START
+				addToModCategory(part,"Engine/SRB")
+		elseif containsNodeTypeName(engine,"PROPELLANT","MonoPropellant") then 
+				addToModCategory(part,"Engine/MonoProp")		-- EDIT END
 		else
 			special = true
 		end
@@ -122,7 +126,7 @@ for name,part in pairs(PARTS) do
 		end
 	end
 	
-	--Landing Legs
+	--Landing Leg
 	if containsModule(part,"ModuleLandingLeg") or containsModule(part,"HLandingLeg") then	
 		addToModCategory(part,"Utility/Landing/LandingLeg")
 	end
@@ -189,7 +193,11 @@ for name,part in pairs(PARTS) do
 	local gotOx = false;
 	local gotMonoProp = false;
 	local gotOther = false;
+	local gotXenon = false; -- EDIT START
 	local gotEcharge = false;
+	local gotSolidFuel = false; 
+	local gotIntakeAir = false; -- EDIT END
+	
 	for resource in resources(part) do
 		if( tonumber(resource.values.maxAmount) and tonumber(resource.values.maxAmount) > 0) then
 			if resource.values.name == "LiquidFuel" then
@@ -198,6 +206,14 @@ for name,part in pairs(PARTS) do
 				gotOx = true;
 			elseif resource.values.name == "MonoPropellant" then
 				gotMonoProp = true;
+			elseif resource.values.name == "XenonGas" then 	-- EDIT START
+				gotXenon = true;
+			elseif resource.values.name == "ElectricCharge" then 
+				gotEcharge = true;			
+			elseif resource.values.name == "SolidFuel" then	-- workarround to exclude Solid Fuel. Only Engines can have that as Resource
+				gotSolidFuel = true;
+			elseif resource.values.name == "IntakeAir" then	-- workarround to exclude Intake Air. Intake Air cant be stored
+				gotIntakeAir = true;			-- EDIT END
 			else
 				gotOther = true;
 			end 
@@ -218,13 +234,26 @@ for name,part in pairs(PARTS) do
 		elseif gotOx then
 			addToModCategory(part,"Storage/OX")
 		elseif gotMonoProp then
-			addToModCategory(part,"Storage/_MonoPropellant")	
+			addToModCategory(part,"Storage/_MonoPropellant")
+		elseif gotXenon then					-- EDIT START
+			addToModCategory(part,"Storage/XenonGas")
+		elseif gotEcharge then 
+			if part.name:lower():find("battery") or part.description:lower():find("battery") then
+				addToModCategory(part,"Storage/Echarge/BatteryPack")
+			else 
+				addToModCategory(part,"Storage/Echarge/Misc")
+			end						-- EDIT END
 		end
+	
 	elseif gotLF and gotOx and gotMonoProp and gotOther then
 		addToModCategory(part,"Storage/ServiceModule","ServiceModule","StorageServiceModule")
 	else
 		for resource in resources(part) do
 			if( tonumber(resource.values.maxAmount) > 0) then
+				if containsModule(part,"MechJebCore") then		-- EDIT START workarround push MechJebCore to Misc and exclude from creating new ElectricCharge CAT
+					addToModCategory(part,"Storage/Echarge/Misc")
+				end							
+			else								-- EDIT END					
 				addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Categories/Storage"..resource.values.name)
 			end
 		end
