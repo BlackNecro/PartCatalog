@@ -207,6 +207,7 @@ namespace PartCatalog
             {
                 ResourceProxy.Instance.Reload();
             }
+            RegisterHelp("ReloadIcons");
             GUILayout.EndVertical();
         }
 
@@ -1020,7 +1021,7 @@ namespace PartCatalog
             HelpTexts["HideEmptyCategories"] = "Select this to hide empty categories";
             HelpTexts["OverlayText"] = "Set the initials displayed when no icon is set on the selected tag";
             HelpTexts["RenameTag"] = "Set the name of the selected tag";
-            HelpTexts[""] = "";
+            HelpTexts["ReloadIcons"] = "Reload all available icons";
             HelpTexts[""] = "";
         }
         #endregion

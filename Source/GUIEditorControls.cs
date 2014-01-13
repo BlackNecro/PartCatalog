@@ -43,7 +43,7 @@ namespace PartCatalog
 
             iconStyle = new GUIStyle();
             iconStyle.alignment = TextAnchor.MiddleCenter;
-            iconStyle.margin.top = 6;
+            iconStyle.margin.top = 4;
         }
 
         private class MouseOverStackEntry
@@ -316,11 +316,15 @@ namespace PartCatalog
                     bool pushed = false;
                     if (subTag.IconName != "")
                     {
-
                         var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled);
-                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));
+                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));                        
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true),GUILayout.Height(iconTexture.height));                        
                     }
-                    pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
+                    else
+                    {
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
+                    }
+                    
                     GUILayout.EndHorizontal();
 
 
