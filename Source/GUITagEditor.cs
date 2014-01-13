@@ -167,12 +167,14 @@ namespace PartCatalog
         private HashSet<string> CollapsedPaths = new HashSet<string>();
         private void DrawIconColumn()
         {
-            GUILayout.BeginVertical();
-            ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1], GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
+            GUILayout.BeginVertical(GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
             if (GUILayout.Button("None"))
             {
                 selectedPartTag.IconName = "";
             }
+
+            ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1]);
+            
 
             List<string> icons = new List<string>();
             foreach (var icon in ResourceProxy.Instance.LoadedTextures)
