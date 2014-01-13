@@ -60,16 +60,18 @@ function DefaultTags(mod)
 	
 	--Storage
 	setCategory(mod .. "/Storage","Storage","Categories/Storage_LFOX")
+		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/FuelTransfer")
 		setCategory(mod .. "/Storage/LFOX","Rocket Fuel","Categories/Storage_LFOX")
 		setCategory(mod .. "/Storage/LF","Jet Fuel","Categories/Storage_LF")
 		setCategory(mod .. "/Storage/OX","Oxidizer","Categories/Storage_OX")
-		setCategory(mod .. "/Storage/_MonoPropellant","MonoPropellant","Categories/Storage_MonoPropellant")
-		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage_ServiceModule")
+		setCategory(mod .. "/Storage/_MonoPropellant","Mono Propellant","Categories/Storage_MonoPropellant")
+		setCategory(mod .. "/Storage/_ElectricCharge","Electric Charge","Categories/Storage_EC_Battery")
 		setCategory(mod .. "/Storage/XenonGas","XenonGas","Categories/Storage_Xenon") -- EDIT
+		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage_Storage_Xenon_Off")
+		--[[
 		setCategory(mod .. "/Storage/Echarge","ElectricCharge","Categories/Electricity") -- EDIT
 			setCategory(mod .. "/Storage/Echarge/BatteryPack","BatteryPack","Categories/Storage_EC_Battery") -- EDIT
-			setCategory(mod .. "/Storage/Echarge/Misc","Misc","Categories/Electricity") -- EDIT
-		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/FuelTransfer")
+			setCategory(mod .. "/Storage/Echarge/Misc","Misc","Categories/Electricity") -- EDIT]]
 	
 	-- Control
 	setCategory(mod .. "/Control","Control","Categories/Control")
@@ -113,7 +115,7 @@ function DefaultTags(mod)
 	setCategory(mod .. "/Utility/Generator","Generator","Categories/Generator",true)
 		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/SolarPanel")
 			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/SolarPanelStatic") -- Icon fehlt
-				setCategory(mod .. "/Utility/SolarPanel/Deployable","Deployable", "Categories/SolarPanelDeployable") -- Icon fehlt
+			setCategory(mod .. "/Utility/SolarPanel/Deployable","Deployable", "Categories/SolarPanelDeployable") -- Icon fehlt
 		setCategory(mod .. "/Utility/Light","Light","Categories/Light")
 		setCategory(mod .. "/Utility/Misc","Misc", "Categories/Utility_Misc") -- Icon fehlt
 

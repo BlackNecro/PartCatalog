@@ -130,6 +130,16 @@ function nodesByName(tab,name)
 	end
 end
 
+function containsNodeByType(tab, typ)
+	local nodeTable = tab.nodes
+	
+	for k,node in pairs(nodeTable) do
+		if node.name == typ then
+			return true
+		end
+	end
+end
+
 
 function containsNodeTypeName(tab,typ,name)
 	local nodeTable = tab.nodes
@@ -177,7 +187,6 @@ function modulesByName(tab,name)
 		end
 	end
 end
-
 
 
 function resourcesByName(tab,name)
