@@ -210,7 +210,10 @@ namespace PartCatalog
         public int PartSerializationBufferSize;
 
         [SaveToConfig(50)]
-        public int MouseOverDelay;
+        public int MouseOverStopDelay;
+
+        [SaveToConfig(10)]
+        public int MouseOverStartDelay;
 
         [SaveToConfig(true)]
         public bool SearchNames;

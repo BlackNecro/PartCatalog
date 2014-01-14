@@ -69,7 +69,8 @@ namespace PartCatalog
 
         public bool configPressed = false;
         private bool MouseOverClear = true;
-        private int MouseOverTimer = 0;
+        private int MouseOverStopTimer = 0;
+        private int MouseOverStartTimer = 0;
         float shiftAmount = 0;
         bool nextPageAvailable;
         LinkedList<PartTag> currentPageTags = new LinkedList<PartTag>();
@@ -78,15 +79,15 @@ namespace PartCatalog
 
         public void KillMouseOver()
         {
-            MouseOverTimer = 0;
+            MouseOverStopTimer = 0;
         }
         public bool MouseOverVisible
         {
             get
             {
-                return MouseOverTimer > 0;
+                return MouseOverStopTimer > 0;
             }
-        }
+        }        
 
         #region Drawing
 
@@ -95,11 +96,11 @@ namespace PartCatalog
             GUI.skin = HighLogic.Skin;
             MouseOverClear = true;
             DrawToolBar();
-            if (MouseOverTimer == 0)
+            if (!MouseOverVisible)
             {
                 MouseOverStack.Clear();
             }
-            if (!MouseOverClear)
+            if(MouseOverVisible)
             {
                 EditorLockManager.Instance.LockGUI();
             }
@@ -194,6 +195,10 @@ namespace PartCatalog
         private void DrawMouseOverTags()
         {
             if (GUILayoutSettings.Instance.IsOpen)
+            {
+                return;
+            }
+            if(!MouseOverVisible)
             {
                 return;
             }
@@ -712,16 +717,21 @@ namespace PartCatalog
                 }
             }
             if (!MouseOverClear)
-            {
-                MouseOverTimer = ConfigHandler.Instance.MouseOverDelay;
+            {                
+                MouseOverStartTimer = Math.Min(MouseOverStartTimer + 1, ConfigHandler.Instance.MouseOverStartDelay);
+                if(MouseOverStartTimer == ConfigHandler.Instance.MouseOverStartDelay)
+                {
+                    MouseOverStopTimer = ConfigHandler.Instance.MouseOverStopDelay;
+                }
             }
             else
             {
-                if (MouseOverTimer > 0)
+                if (MouseOverStopTimer > 0)
                 {
 
-                    MouseOverTimer--;
+                    MouseOverStopTimer--;
                 }
+                MouseOverStartTimer = 0;
             }
             HandleKeyBindings();
         }

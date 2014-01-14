@@ -924,6 +924,20 @@ namespace PartCatalog
             GUILayout.EndHorizontal();
             RegisterHelp("SmallModSize");
 
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Mouseover Close Delay", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStopDelay.ToString(), GUILayout.Height(40));
+            ConfigHandler.Instance.MouseOverStopDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStopDelay, 0f, 200f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("MouseWheelPrescaler");
+
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Mouseover Open Delay", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStartDelay.ToString(), GUILayout.Height(40));
+            ConfigHandler.Instance.MouseOverStartDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStartDelay, 0f, 200f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("MouseWheelPrescaler");
+
 
             if (GUILayout.Button("Open Layout Options"))
             {
