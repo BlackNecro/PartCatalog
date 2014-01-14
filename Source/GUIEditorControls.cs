@@ -718,10 +718,10 @@ namespace PartCatalog
             }
             if (!MouseOverClear)
             {                
-                MouseOverStartTimer = Math.Min(MouseOverStartTimer + 1, ConfigHandler.Instance.MouseOverStartDelay);
-                if(MouseOverStartTimer == ConfigHandler.Instance.MouseOverStartDelay)
+                MouseOverStartTimer = (int)Math.Min(MouseOverStartTimer + 1, ConfigHandler.Instance.MouseOverStartDelay);
+                if(MouseOverStartTimer >= ConfigHandler.Instance.MouseOverStartDelay)
                 {
-                    MouseOverStopTimer = ConfigHandler.Instance.MouseOverStopDelay;
+                    MouseOverStopTimer = (int)ConfigHandler.Instance.MouseOverStopDelay;
                 }
             }
             else

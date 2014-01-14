@@ -65,8 +65,8 @@ function DefaultTags(mod)
 		setCategory(mod .. "/Storage/LF","Jet Fuel","Categories/Storage/LF")
 		setCategory(mod .. "/Storage/OX","Oxidizer","Categories/Storage/OX")
 		setCategory(mod .. "/Storage/_MonoPropellant","MonoPropellant","Categories/Storage/MonoPropellant")
-		setCategory(mod .. "/Storage/_ElectricCharge","Electric Charge","Categories/Storage_EC_Battery")
 		setCategory(mod .. "/Storage/_XenonGas","XenonGas","Categories/Storage/Xenon")
+		setCategory(mod .. "/Storage/_ElectricCharge","Electric Charge","Categories/Storage/EC_Battery")
 		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage/ServiceModule")
 		--[[
 		setCategory(mod .. "/Storage/Echarge","ElectricCharge","Categories/Utility/Electricity") -- EDIT
@@ -117,7 +117,7 @@ function DefaultTags(mod)
 	setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator",true)
 		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/Utility/SolarPanel")
 			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/Utility/SolarPanel")
-				setCategory(mod .. "/Utility/SolarPanel/Deployable","Deployable", "Categories/Utility/SolarPanelDeployable") -- Icon fehlt
+				setCategory(mod .. "/Utility/SolarPanel/Deployable","Tracking", "Categories/Utility/SolarPanelDeployable") -- Icon fehlt
 		setCategory(mod .. "/Utility/Light","Light","Categories/Utility/Light")
 		setCategory(mod .. "/Utility/Misc","Misc", "Categories/Utility/Utility")
 

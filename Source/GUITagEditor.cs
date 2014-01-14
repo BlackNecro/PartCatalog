@@ -905,36 +905,36 @@ namespace PartCatalog
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouse Wheel Prescaler", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.MouseWheelPrescaler = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseWheelPrescaler, 0f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("MouseWheelPrescaler");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Tag Move Multiplier", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.TagMoveMultiplier = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.TagMoveMultiplier, 2f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("TagMoveMultiplier");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Small mod size", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.SmallModTagPartCount = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.SmallModTagPartCount, 0f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("SmallModSize");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouseover Close Delay", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.MouseOverStopDelay.ToString(), GUILayout.Height(40));
-            ConfigHandler.Instance.MouseOverStopDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStopDelay, 0f, 200f, GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStopDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.MouseOverStopDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStopDelay, 1f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("MouseWheelPrescaler");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouseover Open Delay", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.MouseOverStartDelay.ToString(), GUILayout.Height(40));
-            ConfigHandler.Instance.MouseOverStartDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStartDelay, 0f, 200f, GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStartDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.MouseOverStartDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStartDelay, 1f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("MouseWheelPrescaler");
 
@@ -999,7 +999,7 @@ namespace PartCatalog
             HelpTexts["SortTitle"] = "Parts are sorted by title";
             HelpTexts["SortManufacturer"] = "Parts are sorted by title and grouped by manufacturer";
             HelpTexts["SortMod"] = "Parts are sorted by title and grouped by mod";
-            HelpTexts["AutoTag"] = "Click to automagically create tags based on mods and part class";
+            HelpTexts["AutoTag"] = "Click to automagically create tags based on mods and part class. Hold ctrl to recreate all tags";
             HelpTexts["NewTag"] = "Click to create a new tag";
             HelpTexts["DeleteTag"] = "Click to delete selected tag, you've been warned";
             HelpTexts["RenameTag"] = "Click to rename tag";
@@ -1052,6 +1052,10 @@ namespace PartCatalog
 
                 //PartCategoryRuleHandler.Instance.ReloadFiles();               
                 //PartCatalog.Instance.AutoTagByMod();
+                if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    PartCatalog.Instance.RootTag = new PartTag();
+                }
                 LuaRuleHandler.Instance.ParseParts();
             }
 
