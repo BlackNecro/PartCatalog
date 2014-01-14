@@ -60,16 +60,20 @@ function DefaultTags(mod)
 	
 	--Storage
 	setCategory(mod .. "/Storage","Storage","Categories/Storage/LFOX")
+		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/Storage/FuelTransfer")
 		setCategory(mod .. "/Storage/LFOX","Rocket Fuel","Categories/Storage/LFOX")
 		setCategory(mod .. "/Storage/LF","Jet Fuel","Categories/Storage/LF")
 		setCategory(mod .. "/Storage/OX","Oxidizer","Categories/Storage/OX")
 		setCategory(mod .. "/Storage/_MonoPropellant","MonoPropellant","Categories/Storage/MonoPropellant")
+		setCategory(mod .. "/Storage/_ElectricCharge","Electric Charge","Categories/Storage_EC_Battery")
+		setCategory(mod .. "/Storage/_XenonGas","XenonGas","Categories/Storage/Xenon")
 		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage/ServiceModule")
-		setCategory(mod .. "/Storage/XenonGas","XenonGas","Categories/Storage/Xenon") -- EDIT
+		--[[
 		setCategory(mod .. "/Storage/Echarge","ElectricCharge","Categories/Utility/Electricity") -- EDIT
 			setCategory(mod .. "/Storage/Echarge/BatteryPack","BatteryPack","Categories/Storage/EC_Battery") -- EDIT
 			setCategory(mod .. "/Storage/Echarge/Misc","Misc","Categories/Utility/Electricity") -- EDIT
-		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/Storage/FuelTransfer")
+		]]
+		
 	
 	-- Control
 	setCategory(mod .. "/Control","Control","Categories/Control/Control")
