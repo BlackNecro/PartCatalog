@@ -182,9 +182,22 @@ for name,part in pairs(PARTS) do
 	end	
 	
 	--Generators
-	for panel in modulesByName(part,"ModuleGenerator") do
-		for output in nodesByName(part,"OUTPUT_RESOURCE") do
-			addToModCategory(part,"Utility/Generator/_"..output.values.name,output.values.name,"Categories/Generator"..output.values.name)
+	for generator in modulesByName(part,"ModuleGenerator") do		
+		for output in nodesByName(generator,"OUTPUT_RESOURCE") do	
+			if output.values.name == "ElectricCharge" then				
+				local hasInput = false
+				for input in nodesByName(part,"INPUT_RESOURCE") do
+					hasInput = true
+					addToModCategory(part,"Utility/Generator/_"..input.values.name,input.values.name,"Categories/Generator"..input.values.name)
+				end				
+				if not hasInput then
+					if not isInModCategory(part,"Structural/GroundSupport") then
+						addToModCategory(part,"Utility/Generator/RTG")
+					end
+				end
+			else			
+				addToModCategory(part,"Utility/Generator/Stuff_"..output.values.name,output.values.name)
+			end
 		end
 	end
 	

@@ -62,6 +62,11 @@ function findCategory(path,curcategory)
 	return findOrCreateCategory(path,curcategory)
 end
 
+function isInModCategory(part,path)
+	local cat = findCategory(part.mod.."/"..path,CATEGORIES)
+	return cat.parts[part.name] == true
+end
+
 function setOverlay(path, overlay)
 	local cat = findCategory(path,CATEGORIES)
 	cat.overlay = overlay

@@ -78,7 +78,7 @@ function DefaultTags(mod)
 	-- Control
 	setCategory(mod .. "/Control","Control","Categories/Control/Control")
 		setCategory(mod .. "/Control/SAS","SAS","Categories/Control/SAS")
-		setCategory(mod .. "/Control/RCS","RCS","Categories/Control/RCS",true)
+		setCategory(mod .. "/Control/RCS","RCS","Categories/Control/RCS")
 		setCategory(mod .. "/Control/Misc","Misc","Categories/Control/Control") -- EDIT
 	
 	-- Structural
@@ -103,18 +103,20 @@ function DefaultTags(mod)
 
 	-- Utility
 	setCategory(mod .. "/Utility","Utility", "Categories/Utility/Utility")
-		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Utility/Docking",true)
+		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Utility/Docking")
 		setCategory(mod .. "/Utility/Docking/Misc","Misc", "Categories/Utility/Docking")
 		setCategory(mod .. "/Utility/Landing","Landing","Categories/Utility/Landing") -- Icon fehlt
 			setCategory(mod .. "/Utility/Landing/LandingLeg","Landing Leg","Categories/Utility/LandingLeg")
 			setCategory(mod .. "/Utility/Landing/Wheel","Wheel","Categories/Utility/Wheel")
 			setCategory(mod .. "/Utility/Landing/LandingGear","Landing Gear","Categories/Utility/LandingGear")
 			setCategory(mod .. "/Utility/Landing/Parachute","Parachute","Categories/Utility/Parachute")
+		setCategory(mod .. "/Utility/Ladder","Ladder","Categories/Utility/LadderStatic") -- Icon fehlt
 		setCategory(mod .. "/Utility/Ladder/Retractable","Retractable","Categories/Utility/LadderRetractable") -- Icon fehlt
 		setCategory(mod .. "/Utility/Ladder/Static","Static","Categories/Utility/LadderStatic")
 	
 	-- Utility_Electricity
-	setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator",true)
+	setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator")
+		setCategory(mod .. "/Utility/Generator/RTG","RTG","Categories/Utility/Generator_Nuc")
 		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/Utility/SolarPanel")
 			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/Utility/SolarPanel")
 				setCategory(mod .. "/Utility/SolarPanel/Deployable","Tracking", "Categories/Utility/SolarPanelDeployable") -- Icon fehlt
