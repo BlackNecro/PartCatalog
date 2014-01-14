@@ -44,87 +44,87 @@ function DefaultTags(mod)
 	setCategory(mod, mod, "Mods/"..mod)
 	
 	-- Pods
-	setCategory(mod .. "/Pod" , "Pod", "Categories/Pod")
-		setCategory(mod .. "/Pod/Manned","Manned","Categories/MannedPod")
-		setCategory(mod .. "/Pod/Unmanned","Unmanned","Categories/UnmannedPod")
-		setCategory(mod .. "/Pod/Seat","Seat","Categories/Seat")
+	setCategory(mod .. "/Pod" , "Pod", "Categories/Pods/Pod")
+		setCategory(mod .. "/Pod/Manned","Manned","Categories/Pods/MannedPod")
+		setCategory(mod .. "/Pod/Unmanned","Unmanned","Categories/Pods/UnmannedPod")
+		setCategory(mod .. "/Pod/Seat","Seat","Categories/Pods/Seat")
 	
 	-- Engines
-	setCategory(mod .. "/Engine","Engine","Categories/Engine")
-		setCategory(mod .. "/Engine/LFOX","Rocket","Categories/Engine_LFOX")  
-		setCategory(mod .. "/Engine/SRB","SRB","Categories/Engine_SRB") -- EDIT
-		setCategory(mod .. "/Engine/Jet","Jet","Categories/Engine_Jet")
-		setCategory(mod .. "/Engine/Ion","Ion","Categories/Engine_Ion")
-		setCategory(mod .. "/Engine/MonoProp","MonoPropellant","Categories/Engine_MonoPropellant") -- EDIT
-		setCategory(mod .. "/Engine/MultiMode","MultiMode","Categories/Engine_MultiMode")
+	setCategory(mod .. "/Engine","Engine","Categories/Engine/Engine")
+		setCategory(mod .. "/Engine/LFOX","Rocket","Categories/Engine/LFOX")  
+		setCategory(mod .. "/Engine/SRB","SRB","Categories/Engine/SRB") -- EDIT
+		setCategory(mod .. "/Engine/Jet","Jet","Categories/Engine/Jet")
+		setCategory(mod .. "/Engine/Ion","Ion","Categories/Engine/Ion")
+		setCategory(mod .. "/Engine/MonoProp","MonoPropellant","Categories/Engine/MonoPropellant") -- EDIT
+		setCategory(mod .. "/Engine/MultiMode","MultiMode","Categories/Engine/MultiMode")-- fehlt noch
 	
 	--Storage
-	setCategory(mod .. "/Storage","Storage","Categories/Storage_LFOX")
-		setCategory(mod .. "/Storage/LFOX","Rocket Fuel","Categories/Storage_LFOX")
-		setCategory(mod .. "/Storage/LF","Jet Fuel","Categories/Storage_LF")
-		setCategory(mod .. "/Storage/OX","Oxidizer","Categories/Storage_OX")
-		setCategory(mod .. "/Storage/_MonoPropellant","MonoPropellant","Categories/Storage_MonoPropellant")
-		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage_ServiceModule")
-		setCategory(mod .. "/Storage/XenonGas","XenonGas","Categories/Storage_Xenon") -- EDIT
-		setCategory(mod .. "/Storage/Echarge","ElectricCharge","Categories/Electricity") -- EDIT
-			setCategory(mod .. "/Storage/Echarge/BatteryPack","BatteryPack","Categories/Storage_EC_Battery") -- EDIT
-			setCategory(mod .. "/Storage/Echarge/Misc","Misc","Categories/Electricity") -- EDIT
-		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/FuelTransfer")
+	setCategory(mod .. "/Storage","Storage","Categories/Storage/LFOX")
+		setCategory(mod .. "/Storage/LFOX","Rocket Fuel","Categories/Storage/LFOX")
+		setCategory(mod .. "/Storage/LF","Jet Fuel","Categories/Storage/LF")
+		setCategory(mod .. "/Storage/OX","Oxidizer","Categories/Storage/OX")
+		setCategory(mod .. "/Storage/_MonoPropellant","MonoPropellant","Categories/Storage/MonoPropellant")
+		setCategory(mod .. "/Storage/ServiceModule","ServiceModule","Categories/Storage/ServiceModule")
+		setCategory(mod .. "/Storage/XenonGas","XenonGas","Categories/Storage/Xenon") -- EDIT
+		setCategory(mod .. "/Storage/Echarge","ElectricCharge","Categories/Utility/Electricity") -- EDIT
+			setCategory(mod .. "/Storage/Echarge/BatteryPack","BatteryPack","Categories/Storage/EC_Battery") -- EDIT
+			setCategory(mod .. "/Storage/Echarge/Misc","Misc","Categories/Utility/Electricity") -- EDIT
+		setCategory(mod .. "/Storage/Transfer","Transfer","Categories/Storage/FuelTransfer")
 	
 	-- Control
-	setCategory(mod .. "/Control","Control","Categories/Control")
-		setCategory(mod .. "/Control/SAS","SAS","Categories/SAS")
-		setCategory(mod .. "/Control/RCS","RCS","Categories/RCS",true)
-		setCategory(mod .. "/Control/Misc","Misc","Categories/Control") -- EDIT
+	setCategory(mod .. "/Control","Control","Categories/Control/Control")
+		setCategory(mod .. "/Control/SAS","SAS","Categories/Control/SAS")
+		setCategory(mod .. "/Control/RCS","RCS","Categories/Control/RCS",true)
+		setCategory(mod .. "/Control/Misc","Misc","Categories/Control/Control") -- EDIT
 	
 	-- Structural
-	setCategory(mod .. "/Structural","Structural", "Categories/Structural")
-		setCategory(mod .. "/Structural/Misc","Main", "Categories/Structural")
-		setCategory(mod .. "/Structural/Decoupler","Decoupler", "Categories/Decoupler")
-			setCategory(mod .. "/Structural/Decoupler/Separator","Separator", "Categories/Separator")
-			setCategory(mod .. "/Structural/Decoupler/Stack","Stack", "Categories/Decoupler")
-			setCategory(mod .. "/Structural/Decoupler/Radial","Radial", "Categories/DecouplerRadial")
-		setCategory(mod .. "/Structural/GroundSupport","Ground Support", "Categories/GroundSupport")
-		setCategory(mod .. "/Structural/StrutConnector","Strut Connector", "Categories/StrutConnector")
+	setCategory(mod .. "/Structural","Structural", "Categories/Structural/Structural")
+		setCategory(mod .. "/Structural/Misc","Main", "Categories/Structural/Structural")
+		setCategory(mod .. "/Structural/Decoupler","Decoupler", "Categories/Structural/Decoupler")
+			setCategory(mod .. "/Structural/Decoupler/Separator","Separator", "Categories/Structural/Separator")
+			setCategory(mod .. "/Structural/Decoupler/Stack","Stack", "Categories/Structural/Decoupler")
+			setCategory(mod .. "/Structural/Decoupler/Radial","Radial", "Categories/Structural/DecouplerRadial")
+		setCategory(mod .. "/Structural/GroundSupport","Ground Support", "Categories/Structural/GroundSupport")
+		setCategory(mod .. "/Structural/StrutConnector","Strut Connector", "Categories/Structural/StrutConnector")
 
 	-- Aero
-	setCategory(mod .. "/Aero","Aero","Categories/Aero")
-		setCategory(mod .. "/Aero/ControlSurface","Control Surface","Categories/Aero_ControlSurface")
-		setCategory(mod .. "/Aero/Winglet","Winglet", "Categories/Aero_Winglet")
-		setCategory(mod .. "/Aero/Wing","Wing", "Categories/Aero_Wing")
-		setCategory(mod .. "/Aero/Intake","AirIntake","Categories/AirIntake") -- EDIT
-		setCategory(mod .. "/Aero/NoseCone","Nose Cone","Categories/Aero_NoseCone")
-		setCategory(mod .. "/Aero/Misc","Misc", "Categories/Aero")
+	setCategory(mod .. "/Aero","Aero","Categories/Aero/Aero")
+		setCategory(mod .. "/Aero/ControlSurface","Control Surface","Categories/Aero/ControlSurface")
+		setCategory(mod .. "/Aero/Winglet","Winglet", "Categories/Aero/Winglet")
+		setCategory(mod .. "/Aero/Wing","Wing", "Categories/Aero/Wing")
+		setCategory(mod .. "/Aero/Intake","AirIntake","Categories/Aero/AirIntake") -- EDIT
+		setCategory(mod .. "/Aero/NoseCone","Nose Cone","Categories/Aero/NoseCone")
+		setCategory(mod .. "/Aero/Misc","Misc", "Categories/Aero/Aero")
 		
 
 	-- Utility
-	setCategory(mod .. "/Utility","Utility", "Categories/Utility")
-		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Docking",true)
-		setCategory(mod .. "/Utility/Docking/Misc","Misc", "Categories/Docking")
-		setCategory(mod .. "/Utility/Landing","Landing","Categories/Landing") -- Icon fehlt
-			setCategory(mod .. "/Utility/Landing/LandingLeg","Landing Leg","Categories/LandingLeg")
-			setCategory(mod .. "/Utility/Landing/Wheel","Wheel","Categories/Wheel")
-			setCategory(mod .. "/Utility/Landing/LandingGear","Landing Gear","Categories/LandingGear")
-			setCategory(mod .. "/Utility/Landing/Parachute","Parachute","Categories/Parachute")
-		setCategory(mod .. "/Utility/Ladder/Retractable","Retractable","Categories/RetractableLadder") -- Icon fehlt
-		setCategory(mod .. "/Utility/Ladder/Static","Static","Categories/StaticLadder")
+	setCategory(mod .. "/Utility","Utility", "Categories/Utility/Utility")
+		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Utility/Docking",true)
+		setCategory(mod .. "/Utility/Docking/Misc","Misc", "Categories/Utility/Docking")
+		setCategory(mod .. "/Utility/Landing","Landing","Categories/Utility/Landing") -- Icon fehlt
+			setCategory(mod .. "/Utility/Landing/LandingLeg","Landing Leg","Categories/Utility/LandingLeg")
+			setCategory(mod .. "/Utility/Landing/Wheel","Wheel","Categories/Utility/Wheel")
+			setCategory(mod .. "/Utility/Landing/LandingGear","Landing Gear","Categories/Utility/LandingGear")
+			setCategory(mod .. "/Utility/Landing/Parachute","Parachute","Categories/Utility/Parachute")
+		setCategory(mod .. "/Utility/Ladder/Retractable","Retractable","Categories/Utility/LadderRetractable") -- Icon fehlt
+		setCategory(mod .. "/Utility/Ladder/Static","Static","Categories/Utility/LadderStatic")
 	
 	-- Utility_Electricity
-	setCategory(mod .. "/Utility/Generator","Generator","Categories/Generator",true)
-		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/SolarPanel")
-			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/SolarPanelStatic") -- Icon fehlt
-				setCategory(mod .. "/Utility/SolarPanel/Deployable","Deployable", "Categories/SolarPanelDeployable") -- Icon fehlt
-		setCategory(mod .. "/Utility/Light","Light","Categories/Light")
-		setCategory(mod .. "/Utility/Misc","Misc", "Categories/Utility_Misc") -- Icon fehlt
+	setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator",true)
+		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/Utility/SolarPanel")
+			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/Utility/SolarPanel")
+				setCategory(mod .. "/Utility/SolarPanel/Deployable","Deployable", "Categories/Utility/SolarPanelDeployable") -- Icon fehlt
+		setCategory(mod .. "/Utility/Light","Light","Categories/Utility/Light")
+		setCategory(mod .. "/Utility/Misc","Misc", "Categories/Utility/Utility")
 
 	-- Utility_Science
-	setCategory(mod .. "/Science","Science","Categories/Science")
-	setCategory(mod .. "/Science/Sensor","Sensor","Categories/Sensor")
-	setCategory(mod .. "/Science/Antenna","Antenna","Categories/Antenna")
+	setCategory(mod .. "/Science","Science","Categories/Science/Science")
+	setCategory(mod .. "/Science/Sensor","Sensor","Categories/Science/Sensor")
+	setCategory(mod .. "/Science/Antenna","Antenna","Categories/Science/Antenna")
 	-- Omni, Dish, Com fehlt
-	setCategory(mod .. "/Science/Experiment","Experiment","Categories/Experiment")
-	setCategory(mod .. "/Science/Lab","Lab","Categories/Lab")
-	setCategory(mod .. "/Science/Misc","Misc","Categories/ScienceMisc") -- Icon fehlt
+	setCategory(mod .. "/Science/Experiment","Experiment","Categories/Science/Experiment")
+	setCategory(mod .. "/Science/Lab","Lab","Categories/Science/Lab")
+	setCategory(mod .. "/Science/Misc","Misc","Categories/Science/Science")
 
 end
 
