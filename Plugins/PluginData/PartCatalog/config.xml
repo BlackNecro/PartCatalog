@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <int name="tagButtonTextAlignment">3</int>
+    <int name="SortNumber">3</int>
+    <int name="DisplayedPage">0</int>
+    <bool name="VerticalLayout">0</bool>
+    <bool name="InvertFilter">0</bool>
+    <bool name="UnionFilter">1</bool>
+    <bool name="SynchronizePartCategories">0</bool>
+    <int name="TagMoveMultiplier">5</int>
+    <int name="MouseWheelPrescaler">1</int>
+    <bool name="EnableCategoryScrolling">1</bool>
+    <bool name="EnablePartListScrolling">1</bool>
+    <bool name="EnableShortcuts">1</bool>
+    <int name="toolBarPreset">2</int>
+    <bool name="FirstRun">0</bool>
+    <bool name="AutoHideToolBar">0</bool>
+    <int name="configButtonPreset">3</int>
+    <int name="toolBarDirection">1</int>
+    <vector2 name="ConfigButtonPosition">
+        <x>0</x>
+        <y>0</y>
+    </vector2>
+    <bool name="PageNumberOnToolbarEnd">1</bool>
+    <bool name="SearchPartInSubtags">1</bool>
+    <vector2 name="ButtonSize">
+        <x>37</x>
+        <y>26</y>
+    </vector2>
+    <int name="ToolbarShiftSpeed">50</int>
+    <int name="SmallModTagPartCount">0</int>
+    <bool name="HelpActive">1</bool>
+    <bool name="DisplayAllOnEmptyFilter">0</bool>
+    <bool name="AutotagOnlyUntagged">1</bool>
+    <bool name="HideUnresearchedTags">1</bool>
+    <bool name="HideEmptyCategories">1</bool>
+    <int name="WindowIndexOffset">408321</int>
+    <bool name="UseDynamicRules">1</bool>
+    <int name="PartSerializationBufferSize">2048</int>
+    <bool name="SearchNames">1</bool>
+    <bool name="SearchTitles">1</bool>
+    <bool name="SearchDescription">1</bool>
+    <bool name="SearchTags">1</bool>
+</config>
