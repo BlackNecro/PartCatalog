@@ -154,3 +154,9 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+#PartCatalog Dynamic stuff
+catalog.txt
+category.lua
+partString.lua
+config.xml

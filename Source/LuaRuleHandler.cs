@@ -237,6 +237,7 @@ sortCat(CATEGORIES)");
                     .Append("rescaleFactor = [[" ).Append(part.partPrefab.rescaleFactor ).Append("]],")
                     .Append("scaleFactor = [[" ).Append(part.partPrefab.scaleFactor ).Append("]],")
                     .Append("stagingIcon = [[" ).Append(part.partPrefab.stagingIcon ).Append("]],")
+                    .Append("stackSymmetry = [[").Append(part.partPrefab.stackSymmetry).Append("]],")
                     .Append("assigned = false,")
                     .Append("isPart = true,");
             if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
