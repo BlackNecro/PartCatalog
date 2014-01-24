@@ -211,3 +211,7 @@ function resourcesByName(tab,name)
 		end
 	end
 end
+
+function iconExists(path)
+	return ICONS and ICONS[path] or false
+end

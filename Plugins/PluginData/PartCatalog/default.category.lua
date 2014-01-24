@@ -112,7 +112,7 @@ function DefaultTags(mod)
 
 	-- Utility
 	setCategory(mod .. "/Utility","Utility", "Categories/Utility/Utility")
-		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Utility/Docking")
+		setCategory(mod .. "/Utility/Docking","Docking", "Categories/Utility/Docking",true)
 		setCategory(mod .. "/Utility/Docking/Misc","Misc", "Categories/Utility/Docking")
 		setCategory(mod .. "/Utility/Landing","Landing","Categories/Utility/Parachute")					 -- EDIT set Parachute as Icon
 			setCategory(mod .. "/Utility/Landing/LandingLeg","Landing Leg","Categories/Utility/LandingLeg")

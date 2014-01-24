@@ -221,7 +221,7 @@ sortCat(CATEGORIES)");
                 {
                     toRun.Append(",");
                 }
-                toRun.Append(texture);
+                toRun.Append("[ [[").Append(texture.Replace(@"\","/")).Append("]] ]").Append(" = true");
             }
             toRun.Append("}");
 
