@@ -50,6 +50,7 @@ namespace PartCatalog
         {
             public PartTag Tag;
             private Vector2 position;
+            public  Vector2 ScrollPos = new Vector2();
 
             public Vector2 Position
             {
@@ -224,7 +225,7 @@ namespace PartCatalog
                 {
                     break;
                 }
-                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name, GUILayout.MinHeight(200), GUILayout.MinWidth(200), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name, GUILayout.MinHeight(200),GUILayout.MaxHeight(Screen.height), GUILayout.MinWidth(200), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
                 if (i > 0)
                 {
                     MouseOverStackEntry LastEntry = MouseOverStack[i - 1];
@@ -237,6 +238,8 @@ namespace PartCatalog
                         Entry.WindowPos.x = Entry.Position.x + LastEntry.WindowPos.width;
                     }
                     Entry.WindowPos.y = Entry.Position.y - Entry.WindowPos.height * 0.5f;
+
+                    Entry.WindowPos.y = Math.Min(Math.Max(Entry.WindowPos.y, GUIConstants.EditorToolbarHeight + GUIConstants.PageNumberWidth), Screen.height-Entry.WindowPos.height);
                 }
                 else
                 {
@@ -306,6 +309,7 @@ namespace PartCatalog
                     GUILayout.EndHorizontal();
                     //GUILayout.Label(Entry.Tag.Name, GUILayout.ExpandWidth(true));
                 }
+                //Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos, GUILayout.MinWidth(Entry.Tag.Name.Length * 9));
                 GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9));
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
                 {

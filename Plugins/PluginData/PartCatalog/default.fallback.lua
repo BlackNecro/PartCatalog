@@ -1,12 +1,12 @@
 local counter = 0
 
 for name,part in pairs(PARTS) do
+	--Modular Fuel
+	if not part.assigned and part.category ~= "none" then
+		if containsModule(part,"ModuleFuelTanks") then
+			addToModCategory(part,"Storage/Modular")
+		end
 
-
-
-	if not part.assigned  and part.category ~= "none" then
-	
-	
 		--Storage
 		if containsNodeByType(part,"RESOURCE") then
 		
@@ -53,6 +53,7 @@ for name,part in pairs(PARTS) do
 				end
 			end		
 		end
+		
 	end
 	
 	if not part.assigned  and part.category ~= "none" then

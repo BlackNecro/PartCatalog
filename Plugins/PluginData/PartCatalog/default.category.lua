@@ -50,6 +50,8 @@ function DefaultTags(mod)
 		setCategory(mod .. "/Pod/Seat","Seat","Categories/Pods/Seat")
 		setCategory(mod .. "/Pod/Misc","Misc","Categories/Pods/Misc")							-- EDIT added Pods/Misc Cat
 	
+	setCategory(mod .. "/Propulsion","Propulsion","Categories/Engine/Misc")
+		setCategory(mod .. "/Propulsion/Misc","Propulsion","Categories/Engine/Misc")
 	-- Engines
 	setCategory(mod .. "/Engine","Engine","Categories/Engine/Engine")
 		setCategory(mod .. "/Engine/LFOX","Rocket","Categories/Engine/LFOX")  
@@ -122,8 +124,8 @@ function DefaultTags(mod)
 		setCategory(mod .. "/Utility/Ladder/Static","Static","Categories/Utility/LadderStatic")
 	
 	-- Utility_Electricity
-		setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator")
-			setCategory(mod .. "/Utility/Generator/RTG","RTG","Categories/Utility/Generator_Nuc")
+		setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator/Generator")
+			setCategory(mod .. "/Utility/Generator/RTG","RTG","Categories/Utility/Generator/Nuc")
 		setCategory(mod .. "/Utility/Converter","Converter","Categories/Utility/Converter/Converter")
 		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/Utility/SolarPanel")
 			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/Utility/SolarPanel")

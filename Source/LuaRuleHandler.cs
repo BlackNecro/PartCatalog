@@ -30,7 +30,7 @@ namespace PartCatalog
         {
             PartString = CreatePartString();
             KSP.IO.File.WriteAllText<PartCatalog>(PartString, "partString.lua");
-            SetupNamespace();            
+            SetupNamespace();
         }
         private static LuaRuleHandler instance = new LuaRuleHandler();
         public static LuaRuleHandler Instance
@@ -80,7 +80,7 @@ sortCat(CATEGORIES)");
                 }
             }
 
-            if(leftOvers.Count > 0)
+            if (leftOvers.Count > 0)
             {
                 PartTag leftOver = PartCatalog.Instance.RootTag.findChild("Uncategorized");
                 if (leftOver == null)
@@ -89,12 +89,12 @@ sortCat(CATEGORIES)");
                     leftOver.Name = "Uncategorized";
                     leftOver.IconOverlay = "U";
                 }
-                foreach(var part in leftOvers)
+                foreach (var part in leftOvers)
                 {
                     Debug.Log("Adding " + part.name);
                     leftOver.AddPart(part);
                 }
-                
+
                 PartCatalog.Instance.RootTag.AddChild(leftOver);
             }
 
@@ -123,7 +123,7 @@ sortCat(CATEGORIES)");
                     newTag.IconOverlay = (string)category["overlay"];
                 }
 
-                if(String.IsNullOrEmpty(newTag.IconName))
+                if (String.IsNullOrEmpty(newTag.IconName))
                 {
                     newTag.IconName = ((string)category["icon"]);
                     if (newTag.IconName != "")
@@ -134,7 +134,7 @@ sortCat(CATEGORIES)");
                         }
                     }
                 }
-                
+
                 parent.AddChild(newTag);
                 LuaTable parts = (LuaTable)category["parts"];
                 foreach (var value in parts.Keys)
@@ -149,7 +149,7 @@ sortCat(CATEGORIES)");
                         {
                             AvailablePart part = PartCatalog.Instance.PartIndex[(string)value];
                             leftOvers.Remove(part);
-                            newTag.AddPart(part,false);
+                            newTag.AddPart(part, false);
                         }
                     }
                 }
@@ -161,7 +161,7 @@ sortCat(CATEGORIES)");
                     {
                         ParseCategoryTable((LuaTable)value, newTag, leftOvers);
                     }
-                }                
+                }
             }
         }
 
@@ -179,7 +179,7 @@ sortCat(CATEGORIES)");
 
             toRun.Append("PARTS = {");
             UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
-            toRun.EnsureCapacity(configs.Length * ConfigHandler.Instance.PartSerializationBufferSize);
+            toRun.EnsureCapacity((configs.Length + ResourceProxy.Instance.LoadedTextures.Count) * ConfigHandler.Instance.PartSerializationBufferSize);
             bool first = true;
             foreach (var config in configs)
             {
@@ -192,9 +192,13 @@ sortCat(CATEGORIES)");
                     AvailablePart part = PartCatalog.Instance.PartIndex[config.name.Replace('_', '.')];
                     if (part != null)
                     {
-                        if (!first)
+                        if (first)
                         {
-                            toRun.Append(",");
+                            first = false;
+                        }   
+                        else
+                        {
+                            toRun.AppendLine(",");
                         }
                         first = false;
                         SerializeAvailablePart(toRun, part, config.config);
@@ -202,41 +206,60 @@ sortCat(CATEGORIES)");
                 }
 
             }
+            toRun.AppendLine("}");
+
+            toRun.Append("ICONS = {");
+            first = true;
+            foreach(var texture in ResourceProxy.Instance.LoadedTextures.Keys)
+            {
+                
+                if(first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    toRun.Append(",");
+                }
+                toRun.Append(texture);
+            }
             toRun.Append("}");
+
+
             return toRun.ToString();
         }
 
         private static void SerializeAvailablePart(StringBuilder toRun, AvailablePart part, ConfigNode node)
         {
-            toRun   .Append("[ [[").Append(part.name).Append("]] ] = {")
+            toRun.Append("[ [[").Append(part.name).Append("]] ] = {")
                     .Append("name = [[").Append(part.name).Append("]],")
-                    .Append("title = [[" ).Append(part.title ).Append("]],")
-                    .Append("mod = [[" ).Append(PartCatalog.Instance.GetPartMod(part) ).Append("]],")
-                    .Append("manufacturer = [[" ).Append(part.manufacturer ).Append("]],")
-                    .Append("author = [[" ).Append(part.author ).Append("]],")
-                    .Append("category = [[" ).Append(part.category ).Append("]],")
-                    .Append("cost = [[" ).Append(part.cost ).Append("]],")
-                    .Append("description = [[" ).Append(part.description ).Append("]],")
-                    .Append("entryCost = [[" ).Append(part.entryCost ).Append("]],")
-                    .Append("techRequired = [[" ).Append(part.TechRequired ).Append("]],")
-                    .Append("angularDrag = [[" ).Append(part.partPrefab.angularDrag ).Append("]],")
-                    .Append("breakingForce = [[" ).Append(part.partPrefab.breakingForce ).Append("]],")
-                    .Append("breakingTorque = [[" ).Append(part.partPrefab.breakingTorque ).Append("]],")
-                    .Append("buoyancy = [[" ).Append(part.partPrefab.buoyancy ).Append("]],")
-                    .Append("crashTolerance = [[" ).Append(part.partPrefab.crashTolerance ).Append("]],")
-                    .Append("crewCapacity = [[" ).Append(part.partPrefab.CrewCapacity ).Append("]],")
-                    .Append("dragModelType = [[" ).Append(part.partPrefab.dragModelType ).Append("]],") //Determines whether we got stock aero or not
-                    .Append("explosionPotential = [[" ).Append(part.partPrefab.explosionPotential ).Append("]],")
-                    .Append("fuelCrossFeed = [[" ).Append(part.partPrefab.fuelCrossFeed ).Append("]],")
-                    .Append("heatConductivity = [[" ).Append(part.partPrefab.heatConductivity ).Append("]],")
-                    .Append("heatDissipation = [[" ).Append(part.partPrefab.heatDissipation ).Append("]],")
-                    .Append("mass = [[" ).Append(part.partPrefab.mass ).Append("]],")
-                    .Append("minimum_drag = [[" ).Append(part.partPrefab.minimum_drag ).Append("]],")
-                    .Append("maximum_drag = [[" ).Append(part.partPrefab.maximum_drag ).Append("]],")
-                    .Append("maxTemp = [[" ).Append(part.partPrefab.maxTemp ).Append("]],")
-                    .Append("rescaleFactor = [[" ).Append(part.partPrefab.rescaleFactor ).Append("]],")
-                    .Append("scaleFactor = [[" ).Append(part.partPrefab.scaleFactor ).Append("]],")
-                    .Append("stagingIcon = [[" ).Append(part.partPrefab.stagingIcon ).Append("]],")
+                    .Append("title = [[").Append(part.title).Append("]],")
+                    .Append("mod = [[").Append(PartCatalog.Instance.GetPartMod(part)).Append("]],")
+                    .Append("manufacturer = [[").Append(part.manufacturer).Append("]],")
+                    .Append("author = [[").Append(part.author).Append("]],")
+                    .Append("category = [[").Append(part.category).Append("]],")
+                    .Append("cost = [[").Append(part.cost).Append("]],")
+                    .Append("description = [[").Append(part.description).Append("]],")
+                    .Append("entryCost = [[").Append(part.entryCost).Append("]],")
+                    .Append("techRequired = [[").Append(part.TechRequired).Append("]],")
+                    .Append("angularDrag = [[").Append(part.partPrefab.angularDrag).Append("]],")
+                    .Append("breakingForce = [[").Append(part.partPrefab.breakingForce).Append("]],")
+                    .Append("breakingTorque = [[").Append(part.partPrefab.breakingTorque).Append("]],")
+                    .Append("buoyancy = [[").Append(part.partPrefab.buoyancy).Append("]],")
+                    .Append("crashTolerance = [[").Append(part.partPrefab.crashTolerance).Append("]],")
+                    .Append("crewCapacity = [[").Append(part.partPrefab.CrewCapacity).Append("]],")
+                    .Append("dragModelType = [[").Append(part.partPrefab.dragModelType).Append("]],") //Determines whether we got stock aero or not
+                    .Append("explosionPotential = [[").Append(part.partPrefab.explosionPotential).Append("]],")
+                    .Append("fuelCrossFeed = [[").Append(part.partPrefab.fuelCrossFeed).Append("]],")
+                    .Append("heatConductivity = [[").Append(part.partPrefab.heatConductivity).Append("]],")
+                    .Append("heatDissipation = [[").Append(part.partPrefab.heatDissipation).Append("]],")
+                    .Append("mass = [[").Append(part.partPrefab.mass).Append("]],")
+                    .Append("minimum_drag = [[").Append(part.partPrefab.minimum_drag).Append("]],")
+                    .Append("maximum_drag = [[").Append(part.partPrefab.maximum_drag).Append("]],")
+                    .Append("maxTemp = [[").Append(part.partPrefab.maxTemp).Append("]],")
+                    .Append("rescaleFactor = [[").Append(part.partPrefab.rescaleFactor).Append("]],")
+                    .Append("scaleFactor = [[").Append(part.partPrefab.scaleFactor).Append("]],")
+                    .Append("stagingIcon = [[").Append(part.partPrefab.stagingIcon).Append("]],")
                     .Append("stackSymmetry = [[").Append(part.partPrefab.stackSymmetry).Append("]],")
                     .Append("assigned = false,")
                     .Append("isPart = true,");
@@ -262,7 +285,7 @@ sortCat(CATEGORIES)");
                     toRun.Append(",");
                 }
                 firstNode = false;
-                toRun   .Append("{")
+                toRun.Append("{")
                         .Append("name = [[").Append(childNode.name).Append("]],")
                         .Append("values = {");
                 bool first = true;
@@ -273,7 +296,7 @@ sortCat(CATEGORIES)");
                         toRun.Append(",");
                     }
                     first = false;
-                    toRun.Append("[ [[" ).Append(val.name).Append("]] ] = [[").Append(val.value).Append("]]");
+                    toRun.Append("[ [[").Append(val.name).Append("]] ] = [[").Append(val.value).Append("]]");
                 }
                 toRun.Append("},");
 
