@@ -183,6 +183,9 @@ for name,part in pairs(PARTS) do
 	
 	--Generators
 	for generator in modulesByName(part,"ModuleGenerator") do		
+		
+		local inputs = {}
+		local outputs = {}
 		for output in nodesByName(generator,"OUTPUT_RESOURCE") do	
 			if output.values.name == "ElectricCharge" then				
 				local hasInput = false
@@ -195,10 +198,13 @@ for name,part in pairs(PARTS) do
 						addToModCategory(part,"Utility/Generator/RTG")
 					end
 				end
-			else			
-				addToModCategory(part,"Utility/Generator/Stuff_"..output.values.name,output.values.name)
+			else	
+				outputs[output.values.name] = true
+				for input in nodesByName(part,"INPUT_RESOURCE") do
+					inputs[input.values.name] = true
+				end
 			end
-		end
+		end		
 	end
 	
 end

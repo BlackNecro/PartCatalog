@@ -114,23 +114,24 @@ function DefaultTags(mod)
 		setCategory(mod .. "/Utility/Ladder/Retractable","Retractable","Categories/Utility/LadderRetractable") -- Icon fehlt
 		setCategory(mod .. "/Utility/Ladder/Static","Static","Categories/Utility/LadderStatic")
 	
-	-- Utility_Electricity
-	setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator")
-		setCategory(mod .. "/Utility/Generator/RTG","RTG","Categories/Utility/Generator_Nuc")
+		-- Utility_Electricity
+		setCategory(mod .. "/Utility/Generator","Generator","Categories/Utility/Generator")
+			setCategory(mod .. "/Utility/Generator/RTG","RTG","Categories/Utility/Generator_Nuc")
+		setCategory(mod .. "/Utility/Converter","Converter","Categories/Utility/Converter/Converter")
 		setCategory(mod .. "/Utility/SolarPanel","Solar Panel","Categories/Utility/SolarPanel")
 			setCategory(mod .. "/Utility/SolarPanel/Static","Static", "Categories/Utility/SolarPanel")
 				setCategory(mod .. "/Utility/SolarPanel/Deployable","Tracking", "Categories/Utility/SolarPanelDeployable") -- Icon fehlt
 		setCategory(mod .. "/Utility/Light","Light","Categories/Utility/Light")
 		setCategory(mod .. "/Utility/Misc","Misc", "Categories/Utility/Utility")
 
-	-- Utility_Science
-	setCategory(mod .. "/Science","Science","Categories/Science/Science")
-	setCategory(mod .. "/Science/Sensor","Sensor","Categories/Science/Sensor")
-	setCategory(mod .. "/Science/Antenna","Antenna","Categories/Science/Antenna")
-	-- Omni, Dish, Com fehlt
-	setCategory(mod .. "/Science/Experiment","Experiment","Categories/Science/Experiment")
-	setCategory(mod .. "/Science/Lab","Lab","Categories/Science/Lab")
-	setCategory(mod .. "/Science/Misc","Misc","Categories/Science/Science")
+		-- Utility_Science
+		setCategory(mod .. "/Science","Science","Categories/Science/Science")
+		setCategory(mod .. "/Science/Sensor","Sensor","Categories/Science/Sensor")
+		setCategory(mod .. "/Science/Antenna","Antenna","Categories/Science/Antenna")
+		-- Omni, Dish, Com fehlt
+		setCategory(mod .. "/Science/Experiment","Experiment","Categories/Science/Experiment")
+		setCategory(mod .. "/Science/Lab","Lab","Categories/Science/Lab")
+		setCategory(mod .. "/Science/Misc","Misc","Categories/Science/Science")
 
 end
 
