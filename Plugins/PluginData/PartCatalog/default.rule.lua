@@ -33,10 +33,10 @@ for name,part in pairs(PARTS) do
 			end
 		elseif containsNodeTypeName(engine,"PROPELLANT","XenonGas") and containsNodeTypeName(engine,"PROPELLANT","ElectricCharge") then
 			addToModCategory(part,"Engine/Ion")
-		elseif containsNodeTypeName(engine,"PROPELLANT","SolidFuel") then 	-- EDIT START
+		elseif containsNodeTypeName(engine,"PROPELLANT","SolidFuel") then 	
 				addToModCategory(part,"Engine/SRB")
 		elseif containsNodeTypeName(engine,"PROPELLANT","MonoPropellant") then 
-				addToModCategory(part,"Engine/MonoProp")		-- EDIT END
+				addToModCategory(part,"Engine/MonoProp")		
 		else
 			special = true
 		end
@@ -52,7 +52,7 @@ for name,part in pairs(PARTS) do
 	
 	--Intakes	
 	for intake in modulesByName(part,"ModuleResourceIntake") do
-		addToModCategory(part,"Aero/Intake/_"..intake.values.resourceName,intake.values.resourceName,"Categories/Intake"..intake.values.resourceName)					
+		addToModCategory(part,"Aero/Intake/_"..intake.values.resourceName,intake.values.resourceName,"Categories/Intake"..intake.values.resourceName)		-- (check with iconExist)			
 	end
 	
 	--Control Surfaces
@@ -85,6 +85,35 @@ for name,part in pairs(PARTS) do
 	if containsModule(part,"ModuleAnchoredDecoupler") then	
 		addToModCategory(part,"Structural/Decoupler/Radial")				
 	end
+	
+	--Adapter							-- EDIT START added Adapter Cat
+	if part.category == "Structural" then
+		if part.title:lower():find("adapter") then
+			addToModCategory(part,"Structural/Adapter")
+		end
+	end								-- EDIT END
+	
+	
+	--Coupler							-- EDIT START added Coupler Cat	
+	if part.category == "Structural" then
+		if part.name:lower():find("coupler") and part.stackSymmetry then
+			local stsym = tonumber(part.stackSymmetry) 
+			if stsym then
+				if stsym > 0 then
+					addToModCategory(part,"Structural/Coupler")
+				end
+			end
+		end
+	end								-- EDIT END
+	
+	--Crew-/Cargo-Compartment & Cargo Bay				-- EDIT START added Cat
+	if part.title:lower():find("compartment") or part.title:lower():find("cargo bay") then
+		if part.title:lower():find("crew compartment") then
+			addToModCategory(part,"Pod/Misc")
+		else
+			addToModCategory(part,"Structural/Compartment")
+		end
+	end								-- EDIT END
 	
 	--Docking
 	for docking in modulesByName(part,"ModuleDockingNode") do
@@ -181,7 +210,7 @@ for name,part in pairs(PARTS) do
 		addToModCategory(part,"Utility/Ladder/Static")
 	end	
 	
-	--Generators
+	--Generators / Converter
 	for generator in modulesByName(part,"ModuleGenerator") do		
 		
 		local inputs = {}
@@ -189,22 +218,23 @@ for name,part in pairs(PARTS) do
 		for output in nodesByName(generator,"OUTPUT_RESOURCE") do	
 			if output.values.name == "ElectricCharge" then				
 				local hasInput = false
-				for input in nodesByName(part,"INPUT_RESOURCE") do
+				for input in nodesByName(generator,"INPUT_RESOURCE") do -- EDIT TYPO changed part to generator in nodesByName
 					hasInput = true
-					addToModCategory(part,"Utility/Generator/_"..input.values.name,input.values.name,"Categories/Generator"..input.values.name)
+					addToModCategory(part,"Utility/Generator/_"..input.values.name,input.values.name,"Categories/Utility/Generator/"..input.values.name)	-- EDIT (check with iconExist)
 				end				
 				if not hasInput then
 					if not isInModCategory(part,"Structural/GroundSupport") then
 						addToModCategory(part,"Utility/Generator/RTG")
 					end
 				end
-			else	
+			else			
+				addToModCategory(part,"Utility/Converter/_"..output.values.name,output.values.name,"Categories/Utility/Converter/Out_"..output.values.name) --EDIT added Converter Cat (check with iconExist)
 				outputs[output.values.name] = true
 				for input in nodesByName(part,"INPUT_RESOURCE") do
 					inputs[input.values.name] = true
 				end
 			end
-		end		
+		end
 	end
 	
 end
