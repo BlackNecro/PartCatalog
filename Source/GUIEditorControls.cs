@@ -19,6 +19,17 @@ namespace PartCatalog
         }
         private GUIEditorControls()
         {
+
+            OverlayStyle = new GUIStyle(HighLogic.Skin.label);
+            OverlayStyle.alignment = TextAnchor.MiddleCenter;
+            OverlayStyle.font = HighLogic.Skin.button.font;
+            OverlayStyle.fontSize = 17;
+            OverlayStyle.fontStyle = FontStyle.Bold;
+            OverlayStyle.normal.textColor = Color.black;
+            OverlayStyleEnabled = new GUIStyle(OverlayStyle);
+            OverlayStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
+
+
             LabelStyle = new GUIStyle(HighLogic.Skin.label);
             LabelStyle.alignment = TextAnchor.LowerLeft;
             LabelStyle.fontSize = 10;
@@ -32,7 +43,7 @@ namespace PartCatalog
 
             iconStyle = new GUIStyle();
             iconStyle.alignment = TextAnchor.MiddleCenter;
-            iconStyle.margin.top = 6;
+            iconStyle.margin.top = 4;
         }
 
         private class MouseOverStackEntry
@@ -50,17 +61,33 @@ namespace PartCatalog
 
         GUIStyle LabelStyle;
         GUIStyle LabelStyleEnabled;
+        GUIStyle OverlayStyle;
+        GUIStyle OverlayStyleEnabled;
         GUIStyle ButtonStyle;
         GUIStyle ButtonStyleEnabled;
         GUIStyle iconStyle;
 
         public bool configPressed = false;
         private bool MouseOverClear = true;
-        private int MouseOverTimer = 0;
+        private int MouseOverStopTimer = 0;
+        private int MouseOverStartTimer = 0;
         float shiftAmount = 0;
         bool nextPageAvailable;
         LinkedList<PartTag> currentPageTags = new LinkedList<PartTag>();
         List<MouseOverStackEntry> MouseOverStack = new List<MouseOverStackEntry>();
+
+
+        public void KillMouseOver()
+        {
+            MouseOverStopTimer = 0;
+        }
+        public bool MouseOverVisible
+        {
+            get
+            {
+                return MouseOverStopTimer > 0;
+            }
+        }        
 
         #region Drawing
 
@@ -69,9 +96,13 @@ namespace PartCatalog
             GUI.skin = HighLogic.Skin;
             MouseOverClear = true;
             DrawToolBar();
-            if (MouseOverTimer == 0)
+            if (!MouseOverVisible)
             {
                 MouseOverStack.Clear();
+            }
+            if(MouseOverVisible)
+            {
+                EditorLockManager.Instance.LockGUI();
             }
         }
 
@@ -130,6 +161,7 @@ namespace PartCatalog
                 }
 
                 Rect configOffsetRect = GetToolbarRectNoConfig();
+
                 GUI.BeginGroup(configOffsetRect);
                 if (ConfigHandler.Instance.AutoHideToolBar)
                 {
@@ -143,8 +175,10 @@ namespace PartCatalog
                 Rect pageOffsetRect = GetToolbarRectNoPageNumber();
                 GUI.BeginGroup(pageOffsetRect);
                 Rect innerRect = new Rect(0, 0, pageOffsetRect.width, pageOffsetRect.height);
-
-                DrawToolBarTags(innerRect);
+                if (!GUITagEditor.Instance.isOpen)
+                {
+                    DrawToolBarTags(innerRect);
+                }
                 GUI.EndGroup();
                 GUI.EndGroup();
                 GUI.EndGroup();
@@ -164,10 +198,29 @@ namespace PartCatalog
             {
                 return;
             }
+            if(!MouseOverVisible)
+            {
+                return;
+            }
             for (int i = 0; i < MouseOverStack.Count; i++)
             {
+                bool containsFiltered = false;
                 MouseOverStackEntry Entry = MouseOverStack[i];
-                if (i != 0 && Entry.Tag.ChildTags.Count == 0)
+                foreach (PartTag subTag in Entry.Tag.ChildTags)
+                {
+
+                    if (!ConfigHandler.Instance.HideUnresearchedTags || subTag.Researched)
+                    {
+                        if (SearchManager.Instance.DisplayTag(subTag))
+                        {
+
+                            containsFiltered = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (i != 0 && (Entry.Tag.ChildTags.Count == 0 || !containsFiltered ))
                 {
                     break;
                 }
@@ -243,7 +296,9 @@ namespace PartCatalog
             if (index < MouseOverStack.Count)
             {
                 MouseOverStackEntry Entry = MouseOverStack[index];
-                if (index == 0 && Entry.Tag.ChildTags.Count == 0)
+
+
+                if (index == 0 && Entry.Tag.ChildTags.Count == 0 && !SearchManager.Instance.DisplayTag(Entry.Tag))
                 {
                     GUILayout.Space(15);
                     GUILayout.BeginHorizontal();
@@ -256,15 +311,25 @@ namespace PartCatalog
                 {
                     if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
                     {
-                       continue;
+                        continue;
+                    }
+                    if (!SearchManager.Instance.DisplayTag(subTag))
+                    {
+                        continue;
                     }
                     GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                     bool pushed = false;
                     if (subTag.IconName != "")
                     {
-                        pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(subTag.IconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                        var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled);
+                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));                        
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true),GUILayout.Height(iconTexture.height));                        
                     }
-                    pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.ExpandWidth(true));
+                    else
+                    {
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
+                    }
+                    
                     GUILayout.EndHorizontal();
 
 
@@ -318,16 +383,33 @@ namespace PartCatalog
                 {
                     PartFilterManager.Instance.ToggleFilter(tag);
                 }
+
+                if (tag.IconName == "" && tag.IconOverlay != "")
+                {
+                    Rect overlayPos = new Rect(curPos);
+                    overlayPos.x -= 1;
+                    overlayPos.y += 2;
+                    GUI.Label(overlayPos, tag.IconOverlay, tag.Enabled ? OverlayStyleEnabled : OverlayStyle);
+                }
+
                 Rect LabelPos = new Rect(curPos);
                 LabelPos.x += 3;
                 LabelPos.y += LabelPos.height * 0.2f;
                 GUI.Label(LabelPos, count.ToString(), tag.Enabled ? LabelStyleEnabled : LabelStyle);
+
+
                 if (curPos.Contains(Event.current.mousePosition))
                 {
-                    MouseOverStack.Clear();
-                    MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
+                    if (MouseOverStack.Count == 0 || MouseOverStack[0].Tag != tag)
+                    {
+                        MouseOverStack.Clear();
+                        MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
+                    }
                     MouseOverClear = false;
                 }
+
+
+
                 switch (ConfigHandler.Instance.ToolBarDirection)
                 {
                     case ToolBarDirections.Up:
@@ -362,6 +444,71 @@ namespace PartCatalog
                 }
                 GUILayoutSettings.Instance.Close();
             }
+            if (GUI.Button(GetSearchButtonPos(), ResourceProxy.Instance.GetIconTexture(GUIConstants.SearchIconName, SearchManager.Instance.IsFiltered), GUIStyle.none))
+            {
+                SearchManager.Instance.Toggle();
+            }
+        }
+
+        public Rect GetSearchButtonPos()
+        {
+            Rect toReturn = GetConfigButtonPos();
+            ConfigButtonPositions cfgPos = ConfigHandler.Instance.ConfigButtonPreset;
+
+            switch (ConfigHandler.Instance.ConfigButtonPreset)
+            {
+                case ConfigButtonPositions.CompoundStart:
+                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    {
+                        case ToolBarDirections.Up:
+                            toReturn.y -= toReturn.height;
+                            break;
+                        case ToolBarDirections.Down:
+                            toReturn.y += toReturn.height;
+                            break;
+                        case ToolBarDirections.Left:
+                            toReturn.x -= toReturn.width;
+                            break;
+                        case ToolBarDirections.Right:
+                            toReturn.x += toReturn.width;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ConfigButtonPositions.CompoundEnd:
+                    switch (ConfigHandler.Instance.ToolBarDirection)
+                    {
+                        case ToolBarDirections.Up:
+                            toReturn.y += toReturn.height;
+                            break;
+                        case ToolBarDirections.Down:
+                            toReturn.y -= toReturn.height;
+                            break;
+                        case ToolBarDirections.Left:
+                            toReturn.x += toReturn.width;
+                            break;
+                        case ToolBarDirections.Right:
+                            toReturn.x -= toReturn.width;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case ConfigButtonPositions.TopLeft:
+                    toReturn.x += toReturn.width;
+                    break;
+                case ConfigButtonPositions.BottomLeft:
+                    toReturn.x += toReturn.width;
+                    break;
+                case ConfigButtonPositions.BottomRight:
+                    toReturn.x -= toReturn.width;
+                    break;
+                default:
+                    break;
+            }
+
+            return toReturn;
         }
 
         #endregion
@@ -411,18 +558,18 @@ namespace PartCatalog
             {
                 if (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right || ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left)
                 {
-                    toReturn.width -= ConfigHandler.Instance.ButtonSize.x;
+                    toReturn.width -= ConfigHandler.Instance.ButtonSize.x * 2;
                     if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Right && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Left && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.x += ConfigHandler.Instance.ButtonSize.x;
+                        toReturn.x += ConfigHandler.Instance.ButtonSize.x * 2;
                     }
                 }
                 else
                 {
-                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y;
+                    toReturn.height -= ConfigHandler.Instance.ButtonSize.y * 2;
                     if ((ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Down && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundStart) || (ConfigHandler.Instance.ToolBarDirection == ToolBarDirections.Up && ConfigHandler.Instance.ConfigButtonPreset == ConfigButtonPositions.CompoundEnd))
                     {
-                        toReturn.y += ConfigHandler.Instance.ButtonSize.y;
+                        toReturn.y += ConfigHandler.Instance.ButtonSize.y * 2;
                     }
                 }
             }
@@ -570,16 +717,21 @@ namespace PartCatalog
                 }
             }
             if (!MouseOverClear)
-            {
-                MouseOverTimer = 50;
+            {                
+                MouseOverStartTimer = (int)Math.Min(MouseOverStartTimer + 1, ConfigHandler.Instance.MouseOverStartDelay);
+                if(MouseOverStartTimer >= ConfigHandler.Instance.MouseOverStartDelay)
+                {
+                    MouseOverStopTimer = (int)ConfigHandler.Instance.MouseOverStopDelay;
+                }
             }
             else
             {
-                if (MouseOverTimer > 0)
+                if (MouseOverStopTimer > 0)
                 {
-                    
-                    MouseOverTimer--;
+
+                    MouseOverStopTimer--;
                 }
+                MouseOverStartTimer = 0;
             }
             HandleKeyBindings();
         }
@@ -607,7 +759,13 @@ namespace PartCatalog
 
         private void HandleKeyBindings()
         {
-            HandleMouseScroll();
+            Vector2 MousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+            bool inToolBar = GetToolbarRectRaw().Contains(MousePos);
+            bool inPartList = GUIConstants.EditorScrollRegion.Contains(MousePos);
+
+
+            HandleMouseScroll(inToolBar | inPartList);
+
             if (ConfigHandler.Instance.EnableShortcuts)
             {
                 for (int i = 0; i < shortCutsKeyCodes.Length; i++)
@@ -627,7 +785,7 @@ namespace PartCatalog
                     }
                 }
             }
-            Vector2 MousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+
             if (GetToolbarRectRaw().Contains(MousePos))
             {
                 if (CurMouseScroll < 0.0f)
@@ -648,7 +806,7 @@ namespace PartCatalog
             {
                 if (CurMouseScroll < 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftShift))
                     {
                         MoveCategory(1);
                     }
@@ -659,7 +817,7 @@ namespace PartCatalog
                 }
                 else if (CurMouseScroll > 0.0f)
                 {
-                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftControl))
+                    if (ConfigHandler.Instance.EnableCategoryScrolling && Input.GetKey(KeyCode.LeftShift))
                     {
                         MoveCategory(-1);
                     }
@@ -672,19 +830,28 @@ namespace PartCatalog
         }
 
 
-        private static void HandleMouseScroll()
+        private static void HandleMouseScroll(bool start)
         {
-            AccumulatedMouseScroll += Input.GetAxis("Mouse ScrollWheel");
-            CurMouseScroll = 0;
-            if (AccumulatedMouseScroll > ConfigHandler.Instance.MouseWheelPrescaler / 10f)
+            if (start && Input.GetKey(KeyCode.LeftControl))
             {
-                CurMouseScroll = 1;
-                AccumulatedMouseScroll = 0;
+                EditorLockManager.Instance.LockUpdate();
+
+                AccumulatedMouseScroll += Input.GetAxis("Mouse ScrollWheel");
+                CurMouseScroll = 0;
+                if (AccumulatedMouseScroll > ConfigHandler.Instance.MouseWheelPrescaler / 10f)
+                {
+                    CurMouseScroll = 1;
+                    AccumulatedMouseScroll = 0;
+                }
+                if (AccumulatedMouseScroll < ConfigHandler.Instance.MouseWheelPrescaler / -10f)
+                {
+                    CurMouseScroll = -1;
+                    AccumulatedMouseScroll = 0;
+                }
             }
-            if (AccumulatedMouseScroll < ConfigHandler.Instance.MouseWheelPrescaler / -10f)
+            else
             {
-                CurMouseScroll = -1;
-                AccumulatedMouseScroll = 0;
+                CurMouseScroll = 0;
             }
         }
         #endregion

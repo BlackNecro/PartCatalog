@@ -12,7 +12,7 @@ namespace PartCatalog
 
         private ConfigHandler()
         {
-            LoadConfig();
+            LoadConfig();            
         }
 
         
@@ -203,6 +203,27 @@ namespace PartCatalog
         [SaveToConfig(408321)]
         public int WindowIndexOffset;
 
+        [SaveToConfig(true)]
+        public bool UseDynamicRules;
+
+        [SaveToConfig(2048)]
+        public int PartSerializationBufferSize;
+
+        [SaveToConfig(50f)]
+        public float MouseOverStopDelay;
+
+        [SaveToConfig(10f)]
+        public float MouseOverStartDelay;
+
+        [SaveToConfig(true)]
+        public bool SearchNames;
+        [SaveToConfig(true)]
+        public bool SearchTitles;
+        [SaveToConfig(true)]
+        public bool SearchDescription;
+        [SaveToConfig(true)]
+        public bool SearchTags;
+
         public int LayoutWindow
         {
             get
@@ -222,6 +243,13 @@ namespace PartCatalog
             get
             {
                 return TagEditorWindow + 1;
+            }
+        }
+        public int SearchWindow
+        {
+            get
+            {
+                return MouseOverWindow + 1;
             }
         }
 

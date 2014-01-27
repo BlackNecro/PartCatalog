@@ -26,7 +26,7 @@ namespace PartCatalog
         public bool InvertFilter = false;
         #endregion
         #region Performance Hashed
-        public HashSet<string> HashedEnabledPartNames = new HashSet<string>();
+        public HashSet<AvailablePart> HashedEnabledPartNames = new HashSet<AvailablePart>();
         #endregion
         #endregion
 
@@ -41,16 +41,19 @@ namespace PartCatalog
             EditorPartListFilter PartFilter = new EditorPartListFilter("PartCatalogFilter", FilterPart);
             EditorPartList.Instance.ExcludeFilters.AddFilter(PartFilter);
         }
-        #endregion        
+        #endregion
 
         #region FilterFunction
         private bool FilterPart(AvailablePart toFilter)
         {
-            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0 || EnabledTags.Count == 0)
+            
+            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0)
             {
                 return true;
             }
-            return HashedEnabledPartNames.Contains(toFilter.name) ^ ConfigHandler.Instance.InvertFilter;
+
+            return HashedEnabledPartNames.Contains(toFilter) ^ ConfigHandler.Instance.InvertFilter;
+            
         }
         #endregion
 
@@ -63,7 +66,7 @@ namespace PartCatalog
                 EnabledTags.Add(toAdd);
                 Rehash();
             }
-            
+
         }
         public void RemoveFilter(PartTag toRemove)
         {
@@ -97,7 +100,7 @@ namespace PartCatalog
                 }
                 Rehash();
             }
-            EditorPartList.Instance.Refresh();
+            SearchManager.Instance.Refresh();
         }
 
         public bool CategoryEnabled(PartCategories cat)
@@ -109,30 +112,40 @@ namespace PartCatalog
             return EnabledCategories.Contains(cat);
         }
         #endregion
-        #region Rehashing        
-        private void Rehash()
+        #region Rehashing
+
+        public void Rehash()
         {
-            //TODO Filter out unresearched parts
+
             HashedEnabledPartNames.Clear();
-            EnabledCategories.Clear();
-            bool firstRound = true;
-            foreach (PartTag tag in EnabledTags)
+            EnabledCategories.Clear();            
+            
+            if (EnabledTags.Count == 0)
             {
-                if (firstRound || ConfigHandler.Instance.UnionFilter)
+                EnabledCategories.UnionWith(PartCatalog.Instance.RootTag.VisiblePartCategories);
+                HashedEnabledPartNames.UnionWith(PartCatalog.Instance.RootTag.VisibleParts);
+            }
+            else
+            {
+                bool firstRound = true;
+                foreach (PartTag tag in EnabledTags)
                 {
-                    firstRound = false;
-                    HashedEnabledPartNames.UnionWith(tag.VisibleParts);
-                    EnabledCategories.UnionWith(tag.VisiblePartCategories);
-                }
-                else
-                {
-                    HashedEnabledPartNames.IntersectWith(tag.VisibleParts);
-                    EnabledCategories.IntersectWith(tag.VisiblePartCategories);
+                    if (firstRound || ConfigHandler.Instance.UnionFilter)
+                    {
+                        firstRound = false;
+                        HashedEnabledPartNames.UnionWith(tag.VisibleParts);
+                        EnabledCategories.UnionWith(tag.VisiblePartCategories);
+                    }
+                    else
+                    {
+                        HashedEnabledPartNames.IntersectWith(tag.VisibleParts);
+                        EnabledCategories.IntersectWith(tag.VisiblePartCategories);
+                    }
                 }
             }
-            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && EnabledCategories.Count == 0 || EnabledTags.Count == 0)
+            if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
             {
-                EditorPartList.Instance.ShowTabs();                
+                EditorPartList.Instance.ShowTabs();
             }
             else
             {
@@ -153,6 +166,7 @@ namespace PartCatalog
                     }
                 }
             }
+            EditorPartList.Instance.Refresh();
         }
         public void RehashFrom(PartTag tag)
         {

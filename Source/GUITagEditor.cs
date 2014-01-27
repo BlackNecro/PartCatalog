@@ -76,11 +76,17 @@ namespace PartCatalog
         {
             if (display)
             {
+                EditorLockManager.Instance.LockGUI();
                 GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
             }
         }
         public void DrawWindow(int id)
         {
+            if(Event.current.type == EventType.KeyDown)
+            {
+                Update();
+            }
+
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             DrawTagColumn();
@@ -157,21 +163,39 @@ namespace PartCatalog
             CurHelpField = null;
         }
 
+
+        private HashSet<string> CollapsedPaths = new HashSet<string>();
         private void DrawIconColumn()
         {
-            ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1], GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
+            GUILayout.BeginVertical(GUILayout.Width((float)(windowPosition.width / 4 * 3 / 2)));
             if (GUILayout.Button("None"))
             {
                 selectedPartTag.IconName = "";
             }
-            foreach (string iconName in ResourceProxy.Instance.LoadedTextures.Keys)
+
+            ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1]);
+            
+
+            List<string> icons = new List<string>();
+            foreach (var icon in ResourceProxy.Instance.LoadedTextures)
             {
+                string iconName = icon.Key;
+
+                string sanitized = iconName.Replace('\\', '/');
+                if (iconName != sanitized && ResourceProxy.Instance.LoadedTextures.ContainsKey(sanitized))
+                {
+                    continue;
+                }
                 if (iconName != "TagDefault")
                 {
                     GUILayout.BeginHorizontal();
                     bool pushed = false;
                     pushed |= GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, true), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
-                    pushed |= GUILayout.Button(iconName);
+                    if (icon.Value.IsToggle)
+                    {
+                        GUILayout.Button(ResourceProxy.Instance.GetIconTexture(iconName, false), iconStyle, GUILayout.Width(ConfigHandler.Instance.ButtonSize.x), GUILayout.Height(ConfigHandler.Instance.ButtonSize.y));
+                    }
+                    pushed |= GUILayout.Button(sanitized);
                     GUILayout.EndHorizontal();
                     RegisterHelp("IconSelect");
                     if (pushed)
@@ -181,6 +205,12 @@ namespace PartCatalog
                 }
             }
             GUILayout.EndScrollView();
+            if(GUILayout.Button("Reload Icons"))
+            {
+                ResourceProxy.Instance.Reload();
+            }
+            RegisterHelp("ReloadIcons");
+            GUILayout.EndVertical();
         }
 
         private void DrawFilteredMods()
@@ -810,7 +840,7 @@ namespace PartCatalog
         {
             if (ConfigHandler.Instance.SearchPartInSubtags)
             {
-                return !tag.VisibleParts.Contains(part.name);
+                return !tag.VisibleParts.Contains(part);
             }
             else
             {
@@ -875,24 +905,38 @@ namespace PartCatalog
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouse Wheel Prescaler", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.MouseWheelPrescaler.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.MouseWheelPrescaler = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseWheelPrescaler, 0f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("MouseWheelPrescaler");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Tag Move Multiplier", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.TagMoveMultiplier.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.TagMoveMultiplier = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.TagMoveMultiplier, 2f, 20f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("TagMoveMultiplier");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Small mod size", GUILayout.Height(40), GUILayout.Width(100));
-            GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40));
+            GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.SmallModTagPartCount = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.SmallModTagPartCount, 0f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("SmallModSize");
+
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Mouseover Close Delay", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStopDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.MouseOverStopDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStopDelay, 1f, 100f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("MouseWheelPrescaler");
+
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Mouseover Open Delay", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.MouseOverStartDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.MouseOverStartDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStartDelay, 1f, 100f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("MouseWheelPrescaler");
 
 
             if (GUILayout.Button("Open Layout Options"))
@@ -955,7 +999,7 @@ namespace PartCatalog
             HelpTexts["SortTitle"] = "Parts are sorted by title";
             HelpTexts["SortManufacturer"] = "Parts are sorted by title and grouped by manufacturer";
             HelpTexts["SortMod"] = "Parts are sorted by title and grouped by mod";
-            HelpTexts["AutoTag"] = "Click to automagically create tags based on mods and part class";
+            HelpTexts["AutoTag"] = "Click to automagically create tags based on mods and part class. Hold ctrl to recreate all tags";
             HelpTexts["NewTag"] = "Click to create a new tag";
             HelpTexts["DeleteTag"] = "Click to delete selected tag, you've been warned";
             HelpTexts["RenameTag"] = "Click to rename tag";
@@ -978,8 +1022,8 @@ namespace PartCatalog
             HelpTexts["Settings"] = "Click to open the settings panel";
             HelpTexts["Help"] = "Turn off this help again";
             HelpTexts["EnableShortcuts"] = "Enable or disable using the number keys 1 to 0 to select tags. Hold down shift to select the next 10 tags";
-            HelpTexts["EnablePartListScrolling"] = "Enables or disables using the mouse wheel to scroll through the editor part list";
-            HelpTexts["EnableCategoryScrolling"] = "Enables or disables using the mouse wheel and holding down ctrl to change editor categries";
+            HelpTexts["EnablePartListScrolling"] = "Enables or disables using the mouse wheel to scroll through the editor part list while holding ctrl";
+            HelpTexts["EnableCategoryScrolling"] = "Enables or disables using the mouse wheel and holding down ctrl and shift to change editor categries";
             HelpTexts["MouseWheelPrescaler"] = "Sets the mousewheel prescaler in order to slow down the mouse scrolling";
             HelpTexts["TagMoveMultiplier"] = "Sets the multiplier used when moving tags up and down the list while holding down shift";
             HelpTexts["AutoGroup"] = "Click to automagically subdivide a tag into a default set of groups";
@@ -991,7 +1035,9 @@ namespace PartCatalog
             HelpTexts["IntersectFilter"] = "By selecting multiple tags with ctrl only parts contained in every selected tags are displayed";
             HelpTexts["HideUnresearchedTags"] = "Select this to hide tags not containing researched parts";
             HelpTexts["HideEmptyCategories"] = "Select this to hide empty categories";
-            HelpTexts[""] = "";
+            HelpTexts["OverlayText"] = "Set the initials displayed when no icon is set on the selected tag";
+            HelpTexts["RenameTag"] = "Set the name of the selected tag";
+            HelpTexts["ReloadIcons"] = "Reload all available icons";
             HelpTexts[""] = "";
         }
         #endregion
@@ -1000,24 +1046,31 @@ namespace PartCatalog
         {
             GUILayout.BeginVertical(GUILayout.ExpandHeight(true), GUILayout.Width(windowPosition.width / 6));
             DrawCategoryButton();
-            GUILayout.BeginHorizontal();
+            //GUILayout.BeginHorizontal();
             if (GUILayout.Button("Autotag"))
             {
-                PartCatalog.Instance.BuildCatalogs();
-                PartCatalog.Instance.AutoTagByMod();
+
+                //PartCategoryRuleHandler.Instance.ReloadFiles();               
+                //PartCatalog.Instance.AutoTagByMod();
+                if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    PartCatalog.Instance.RootTag = new PartTag();
+                }
+                LuaRuleHandler.Instance.ParseParts();
             }
 
-            RegisterHelp("AutoTag");
+            RegisterHelp("AutoTag");   /*
             if (GUILayout.Button("Autogroup"))
             {
                 if (selectedPartTag != null)
                 {
-                    PartCatalog.Instance.AutoGroupTag(selectedPartTag);
+
+                    //PartCategoryRuleHandler.Instance.AutoGroupPartTag(ref selectedPartTag);
                 }
             }
 
-            RegisterHelp("AutoGroup");
-            GUILayout.EndHorizontal();
+            RegisterHelp("AutoGroup");  */
+            //GUILayout.EndHorizontal();
             
             /* INDEV
             if (GUILayout.Button("Test"))
@@ -1079,15 +1132,7 @@ namespace PartCatalog
                     selectedPartTag = nextTag;
                 }
             }
-            RegisterHelp("DeleteTag");
-            if (GUILayout.Button("Rename Tag"))
-            {
-                if (selectedPartTag != null && inputText != "")
-                {
-                    selectedPartTag.Name = inputText;
-                }
-            }
-            RegisterHelp("RenameTag");
+            RegisterHelp("DeleteTag");            
             inputText = GUILayout.TextField(inputText);
             RegisterHelp("InputText");
             GUILayout.BeginHorizontal();
@@ -1170,6 +1215,21 @@ namespace PartCatalog
                 RegisterHelp("IndentTag");
 
                 GUILayout.EndHorizontal();
+
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Name");
+                selectedPartTag.Name = GUILayout.TextField(selectedPartTag.Name);
+                RegisterHelp("OverlayText");
+                GUILayout.EndHorizontal();
+                RegisterHelp("RenameTag");
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Initials");
+                selectedPartTag.IconOverlay = GUILayout.TextField(selectedPartTag.IconOverlay);
+                RegisterHelp("OverlayText");
+                GUILayout.EndHorizontal();
+                
 
                 editIcon = GUILayout.Toggle(editIcon, "Edit Icon", HighLogic.Skin.button);
 
@@ -1382,5 +1442,13 @@ namespace PartCatalog
         }
 
         public bool isOpen { get { return display; } }
+
+        public void Update()
+        {
+            if(display && Event.current.keyCode == KeyCode.Escape)
+            {
+                Close();
+            }
+        }
     }
 }

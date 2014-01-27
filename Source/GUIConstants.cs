@@ -15,6 +15,7 @@ namespace PartCatalog
         public const int EditorButtonsHeight = 40;
         public const int EditorToolbarTop = 1;
         public const int PageNumberWidth = 25;
+        public const int EditorToolbarTopOffset = 30;
 
         public readonly static Rect EditorScrollRegion = new Rect(0, 0, EditorPartListWidth, Screen.height);
 
@@ -32,9 +33,45 @@ namespace PartCatalog
                 return KSPUtil.ApplicationRootPath + "GameData";
             }
         }
-        public const string ConfigButtonName = "ConfigButton";
-        public const string DefaultIconName = "TagDefault";
-        public const string ErrorIconName = "UnknownIcon";
+
+        public static string IconFolderPath
+        {
+            get
+            {
+                return CatalogDataPath + "/Icons";
+            }
+        }
+
+        public static string ConfigButtonName
+        {
+            get
+            {
+                return "ConfigButton";
+            }
+        }
+        public static string DefaultIconName
+        {
+            get
+            {
+                return "TagBlank";
+            }
+        }
+
+        public static string ErrorIconName
+        {
+            get
+            {
+                return "UnknownIcon";
+            }
+        }
+
+        public static string SearchIconName
+        {
+            get
+            {
+                return "Search";
+            }
+        }
     }
     public enum ToolBarPositions
     {
@@ -46,7 +83,7 @@ namespace PartCatalog
     public enum ConfigButtonPositions
     {
         CompoundStart,
-        CompoundEnd,        
+        CompoundEnd,
         TopMiddle,
         TopLeft,
         BottomLeft,
