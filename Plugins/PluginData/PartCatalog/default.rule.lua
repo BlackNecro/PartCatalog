@@ -96,7 +96,7 @@ for name,part in pairs(PARTS) do
 	
 	--Coupler							-- EDIT START added Coupler Cat	
 	if part.category == "Structural" then
-		if part.name:lower():find("coupler") and part.stackSymmetry then
+		if part.name:lower():find("coupler") then
 			local stsym = tonumber(part.stackSymmetry) 
 			if stsym then
 				if stsym > 0 then
@@ -106,12 +106,16 @@ for name,part in pairs(PARTS) do
 		end
 	end								-- EDIT END
 	
-	--Crew-/Cargo-Compartment & Cargo Bay				-- EDIT START added Cat
+	--Crew-/Cargo-Compartment & Cargo Bay				-- EDIT START added Compartment Cat
 	if part.title:lower():find("compartment") or part.title:lower():find("cargo bay") then
 		if part.title:lower():find("crew compartment") then
-			addToModCategory(part,"Pod/Misc")
+			if containsModule(part,"ModuleCommand") then
+				addToModCategory(part,"Pod/Manned")
+			else
+				addToModCategory(part,"Pod/Misc")
+			end
 		else
-			addToModCategory(part,"Structural/Compartment")
+			addToModCategory(part,"Structural/Cargo")
 		end
 	end								-- EDIT END
 	
