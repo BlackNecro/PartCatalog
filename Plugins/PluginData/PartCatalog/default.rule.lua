@@ -42,7 +42,7 @@ for name,part in pairs(PARTS) do
 		end
 		if special then
 			for propellant in nodesByName(engine,"PROPELLANT") do
-				addToModCategory(part,"Engine/_"..propellant.values.name,propellant.values.name,"Categories/Engine"..propellant.values.name)					
+				addToModCategory(part,"Engine/_"..propellant.values.name,propellant.values.name,"Categories/Engine/Misc")	-- EDIT set Icon to Misc				
 			end
 		end		
 	end
@@ -86,17 +86,17 @@ for name,part in pairs(PARTS) do
 		addToModCategory(part,"Structural/Decoupler/Radial")				
 	end
 	
-	--Adapter							-- EDIT START added Adapter Cat
+	--Adapter							
 	if part.category == "Structural" then
 		if part.title:lower():find("adapter") then
 			addToModCategory(part,"Structural/Adapter")
 		end
-	end								-- EDIT END
+	end								
 	
 	
-	--Coupler							-- EDIT START added Coupler Cat	
+	--Coupler								
 	if part.category == "Structural" then
-		if part.name:lower():find("coupler") and part.stackSymmetry then
+		if part.name:lower():find("coupler") then
 			local stsym = tonumber(part.stackSymmetry) 
 			if stsym then
 				if stsym > 0 then
@@ -104,16 +104,20 @@ for name,part in pairs(PARTS) do
 				end
 			end
 		end
-	end								-- EDIT END
+	end								
 	
-	--Crew-/Cargo-Compartment & Cargo Bay				-- EDIT START added Cat
+	--Crew-/Cargo-Compartment & Cargo Bay				
 	if part.title:lower():find("compartment") or part.title:lower():find("cargo bay") then
 		if part.title:lower():find("crew compartment") then
-			addToModCategory(part,"Pod/Misc")
+			if containsModule(part,"ModuleCommand") then
+				addToModCategory(part,"Pod/Manned")
+			else
+				addToModCategory(part,"Pod/Misc")
+			end
 		else
-			addToModCategory(part,"Structural/Compartment")
+			addToModCategory(part,"Structural/Cargo")
 		end
-	end								-- EDIT END
+	end								
 	
 	--Docking
 	for docking in modulesByName(part,"ModuleDockingNode") do
@@ -127,7 +131,11 @@ for name,part in pairs(PARTS) do
 	
 	--RCS
 	for rcs in modulesByName(part,"ModuleRCS") do
-		addToModCategory(part,"Control/RCS/"..rcs.values.resourceName,rcs.values.resourceName, "Categories/RCS"..rcs.values.resourceName)						
+		if containsNodeTypeName(rcs,"resourceName","MonoPropellant") then						-- EDIT START (check with iconExist)
+			addToModCategory(part,"Control/RCS/MonoPropellant")
+		else
+			addToModCategory(part,"Control/RCS/"..rcs.values.resourceName,rcs.values.resourceName, "Categories/Control/RCS_Misc")
+		end														-- EDIT END
 	end
 	
 	--Clamp
@@ -212,27 +220,28 @@ for name,part in pairs(PARTS) do
 	
 	--Generators / Converter
 	for generator in modulesByName(part,"ModuleGenerator") do		
-		
-		local inputs = {}
-		local outputs = {}
 		for output in nodesByName(generator,"OUTPUT_RESOURCE") do	
 			if output.values.name == "ElectricCharge" then				
 				local hasInput = false
-				for input in nodesByName(generator,"INPUT_RESOURCE") do -- EDIT TYPO changed part to generator in nodesByName
+				for input in nodesByName(generator,"INPUT_RESOURCE") do 
 					hasInput = true
-					addToModCategory(part,"Utility/Generator/_"..input.values.name,input.values.name,"Categories/Utility/Generator/"..input.values.name)	-- EDIT (check with iconExist)
+					if iconExists("Categories/Utility/Generator/"..input.values.name) then										-- EDIT START (check with iconExist)
+						addToModCategory(part,"Utility/Generator/_"..input.values.name,input.values.name,"Categories/Utility/Generator/"..input.values.name)	
+					else
+						addToModCategory(part,"Utility/Generator/Misc","Misc","Categories/Utility/Generator/Misc")
+					end																		-- EDIT END
 				end				
 				if not hasInput then
 					if not isInModCategory(part,"Structural/GroundSupport") then
 						addToModCategory(part,"Utility/Generator/RTG")
 					end
 				end
-			else			
-				addToModCategory(part,"Utility/Converter/_"..output.values.name,output.values.name,"Categories/Utility/Converter/Out_"..output.values.name) --EDIT added Converter Cat (check with iconExist)
-				outputs[output.values.name] = true
-				for input in nodesByName(part,"INPUT_RESOURCE") do
-					inputs[input.values.name] = true
-				end
+			else	
+				if iconExists("Categories/Utility/Converter/Out_"..output.values.name) then										 --EDIT START (check with iconExist)
+					addToModCategory(part,"Utility/Converter/_"..output.values.name,output.values.name,"Categories/Utility/Converter/Out_"..output.values.name)
+				else 
+					addToModCategory(part,"Utility/Converter/Misc","Misc","Categories/Utility/Converter/Out_Misc")	
+				end																			 --EDIT END
 			end
 		end
 	end
