@@ -221,7 +221,7 @@ sortCat(CATEGORIES)");
                 {
                     toRun.Append(",");
                 }
-                toRun.Append("[ [[").Append(texture.Replace(@"\","/")).Append("]] ]").Append(" = true");
+                toRun.Append("[ \"").Append(escapeString(texture.Replace(@"\", "/"))).Append("\" ]").Append(" = true");
             }
             toRun.Append("}");
 
@@ -229,44 +229,49 @@ sortCat(CATEGORIES)");
             return toRun.ToString();
         }
 
+        private static string escapeString(object toEscape)
+        {
+            return toEscape.ToString().Replace("\"", "\\\"");
+        }
+
         private static void SerializeAvailablePart(StringBuilder toRun, AvailablePart part, ConfigNode node)
         {
-            toRun.Append("[ [[").Append(part.name).Append("]] ] = {")
-                    .Append("name = [[").Append(part.name).Append("]],")
-                    .Append("title = [[").Append(part.title).Append("]],")
-                    .Append("mod = [[").Append(PartCatalog.Instance.GetPartMod(part)).Append("]],")
-                    .Append("manufacturer = [[").Append(part.manufacturer).Append("]],")
-                    .Append("author = [[").Append(part.author).Append("]],")
-                    .Append("category = [[").Append(part.category).Append("]],")
-                    .Append("cost = [[").Append(part.cost).Append("]],")
-                    .Append("description = [[").Append(part.description).Append("]],")
-                    .Append("entryCost = [[").Append(part.entryCost).Append("]],")
-                    .Append("techRequired = [[").Append(part.TechRequired).Append("]],")
-                    .Append("angularDrag = [[").Append(part.partPrefab.angularDrag).Append("]],")
-                    .Append("breakingForce = [[").Append(part.partPrefab.breakingForce).Append("]],")
-                    .Append("breakingTorque = [[").Append(part.partPrefab.breakingTorque).Append("]],")
-                    .Append("buoyancy = [[").Append(part.partPrefab.buoyancy).Append("]],")
-                    .Append("crashTolerance = [[").Append(part.partPrefab.crashTolerance).Append("]],")
-                    .Append("crewCapacity = [[").Append(part.partPrefab.CrewCapacity).Append("]],")
-                    .Append("dragModelType = [[").Append(part.partPrefab.dragModelType).Append("]],") //Determines whether we got stock aero or not
-                    .Append("explosionPotential = [[").Append(part.partPrefab.explosionPotential).Append("]],")
-                    .Append("fuelCrossFeed = [[").Append(part.partPrefab.fuelCrossFeed).Append("]],")
-                    .Append("heatConductivity = [[").Append(part.partPrefab.heatConductivity).Append("]],")
-                    .Append("heatDissipation = [[").Append(part.partPrefab.heatDissipation).Append("]],")
-                    .Append("mass = [[").Append(part.partPrefab.mass).Append("]],")
-                    .Append("minimum_drag = [[").Append(part.partPrefab.minimum_drag).Append("]],")
-                    .Append("maximum_drag = [[").Append(part.partPrefab.maximum_drag).Append("]],")
-                    .Append("maxTemp = [[").Append(part.partPrefab.maxTemp).Append("]],")
-                    .Append("rescaleFactor = [[").Append(part.partPrefab.rescaleFactor).Append("]],")
-                    .Append("scaleFactor = [[").Append(part.partPrefab.scaleFactor).Append("]],")
-                    .Append("stagingIcon = [[").Append(part.partPrefab.stagingIcon).Append("]],")
-                    .Append("stackSymmetry = [[").Append(part.partPrefab.stackSymmetry).Append("]],")
+            toRun.Append("[ \"").Append(escapeString(part.name)).Append("\" ] = {")
+                    .Append("name = \"").Append(escapeString(part.name)).Append("\",")
+                    .Append("title = \"").Append(escapeString(part.title)).Append("\",")
+                    .Append("mod = \"").Append(escapeString(PartCatalog.Instance.GetPartMod(part))).Append("\",")
+                    .Append("manufacturer = \"").Append(escapeString(part.manufacturer)).Append("\",")
+                    .Append("author = \"").Append(escapeString(part.author)).Append("\",")
+                    .Append("category = \"").Append(escapeString(part.category)).Append("\",")
+                    .Append("cost = \"").Append(escapeString(part.cost)).Append("\",")
+                    .Append("description = \"").Append(escapeString(part.description)).Append("\",")
+                    .Append("entryCost = \"").Append(escapeString(part.entryCost)).Append("\",")
+                    .Append("techRequired = \"").Append(escapeString(part.TechRequired)).Append("\",")
+                    .Append("angularDrag = \"").Append(escapeString(part.partPrefab.angularDrag)).Append("\",")
+                    .Append("breakingForce = \"").Append(escapeString(part.partPrefab.breakingForce)).Append("\",")
+                    .Append("breakingTorque = \"").Append(escapeString(part.partPrefab.breakingTorque)).Append("\",")
+                    .Append("buoyancy = \"").Append(escapeString(part.partPrefab.buoyancy)).Append("\",")
+                    .Append("crashTolerance = \"").Append(escapeString(part.partPrefab.crashTolerance)).Append("\",")
+                    .Append("crewCapacity = \"").Append(escapeString(part.partPrefab.CrewCapacity)).Append("\",")
+                    .Append("dragModelType = \"").Append(escapeString(part.partPrefab.dragModelType)).Append("\",") //Determines whether we got stock aero or not
+                    .Append("explosionPotential = \"").Append(escapeString(part.partPrefab.explosionPotential)).Append("\",")
+                    .Append("fuelCrossFeed = \"").Append(escapeString(part.partPrefab.fuelCrossFeed)).Append("\",")
+                    .Append("heatConductivity = \"").Append(escapeString(part.partPrefab.heatConductivity)).Append("\",")
+                    .Append("heatDissipation = \"").Append(escapeString(part.partPrefab.heatDissipation)).Append("\",")
+                    .Append("mass = \"").Append(escapeString(part.partPrefab.mass)).Append("\",")
+                    .Append("minimum_drag = \"").Append(escapeString(part.partPrefab.minimum_drag)).Append("\",")
+                    .Append("maximum_drag = \"").Append(escapeString(part.partPrefab.maximum_drag)).Append("\",")
+                    .Append("maxTemp = \"").Append(escapeString(part.partPrefab.maxTemp)).Append("\",")
+                    .Append("rescaleFactor = \"").Append(escapeString(part.partPrefab.rescaleFactor)).Append("\",")
+                    .Append("scaleFactor = \"").Append(escapeString(part.partPrefab.scaleFactor)).Append("\",")
+                    .Append("stagingIcon = \"").Append(escapeString(part.partPrefab.stagingIcon)).Append("\",")
+                    .Append("stackSymmetry = \"").Append(escapeString(part.partPrefab.stackSymmetry)).Append("\",")
                     .Append("assigned = false,")
                     .Append("isPart = true,");
             if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
             {
-                toRun.Append("dragCoeff = [[").Append(((Winglet)part.partPrefab).dragCoeff).Append("]],")
-                     .Append("deflectionLiftCoeff = [[").Append(((Winglet)part.partPrefab).deflectionLiftCoeff).Append("]],");
+                toRun.Append("dragCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).dragCoeff)).Append("\",")
+                     .Append("deflectionLiftCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).deflectionLiftCoeff)).Append("\",");
             }
 
             SerializeConfigNode(toRun, node);
@@ -286,7 +291,7 @@ sortCat(CATEGORIES)");
                 }
                 firstNode = false;
                 toRun.Append("{")
-                        .Append("name = [[").Append(childNode.name).Append("]],")
+                        .Append("name = \"").Append(escapeString(childNode.name)).Append("\",")
                         .Append("values = {");
                 bool first = true;
                 foreach (ConfigNode.Value val in childNode.values)
@@ -296,7 +301,7 @@ sortCat(CATEGORIES)");
                         toRun.Append(",");
                     }
                     first = false;
-                    toRun.Append("[ [[").Append(val.name).Append("]] ] = [[").Append(val.value).Append("]]");
+                    toRun.Append("[ \"").Append(escapeString(val.name)).Append("\" ] = \"").Append(escapeString(val.value)).Append("\"");
                 }
                 toRun.Append("},");
 
