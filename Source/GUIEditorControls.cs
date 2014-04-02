@@ -330,6 +330,13 @@ namespace PartCatalog
                 GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9),GUILayout.MaxHeight(Screen.height * 0.8f));
                 Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos,false,true,GUILayout.Width(Entry.innerSize.width + 34),GUILayout.Height((float)Math.Min(Screen.height * 0.85,(Entry.innerSize.height + 10))));
                 GUILayout.BeginVertical();
+                /*if (Entry.Tag.ChildTags.Count == 0 )
+                {
+                    GUILayout.Space(15);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(Entry.Tag.Name.Length * 10);
+                    GUILayout.EndHorizontal();
+                }    */
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
                 {
                     if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
@@ -390,8 +397,8 @@ namespace PartCatalog
                 GUILayout.EndVertical();
             }
             else
-            {
-                GUILayout.Space(1);
+            {                
+                GUILayout.Space(10);
             }
         }
 

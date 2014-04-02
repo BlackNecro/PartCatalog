@@ -98,6 +98,21 @@ sortCat(CATEGORIES)");
                 PartCatalog.Instance.RootTag.AddChild(leftOver);
             }
 
+            PartTag noConfigTag = PartCatalog.Instance.RootTag.findChild("NoConfigNode");
+            if(noConfigTag != null)
+            {
+                noConfigTag.Delete();
+            }
+            if (PartCatalog.Instance.UnlistedParts.Count > 0)
+            {
+                noConfigTag = new PartTag();
+                noConfigTag.Name = "ERROR: Parts without DataBase Config";
+                noConfigTag.IconOverlay = "ERR";
+                noConfigTag.AddParts(PartCatalog.Instance.UnlistedParts);
+                PartCatalog.Instance.RootTag.AddChild(noConfigTag);
+            }
+
+
             SearchManager.Instance.Refresh();
 
         }
@@ -181,6 +196,9 @@ sortCat(CATEGORIES)");
             UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
             toRun.EnsureCapacity((configs.Length + ResourceProxy.Instance.LoadedTextures.Count) * ConfigHandler.Instance.PartSerializationBufferSize);
             bool first = true;
+
+            HashSet<AvailablePart> HandledParts = new HashSet<AvailablePart>();
+            PartCatalog.Instance.UnlistedParts.Clear();
             foreach (var config in configs)
             {
                 if (!PartCatalog.Instance.PartIndex.ContainsKey(config.name.Replace('_', '.')))
@@ -192,6 +210,7 @@ sortCat(CATEGORIES)");
                     AvailablePart part = PartCatalog.Instance.PartIndex[config.name.Replace('_', '.')];
                     if (part != null)
                     {
+                        HandledParts.Add(part);
                         if (first)
                         {
                             first = false;
@@ -206,6 +225,18 @@ sortCat(CATEGORIES)");
                 }
 
             }
+
+            foreach(var part in PartCatalog.Instance.SortedPartList)
+            {
+                if(part.category != PartCategories.none)
+                { 
+                if(!HandledParts.Contains(part))
+                {
+                    PartCatalog.Instance.UnlistedParts.Add(part);
+                }
+            }
+            }
+
             toRun.AppendLine("}");
 
             toRun.Append("ICONS = {");
@@ -339,11 +370,6 @@ sortCat(CATEGORIES)");
 
             }
             toRun.Append("}");
-        }
-
-        public void Test()
-        {
-            Debug.Log(luaInstance.DoString("return 1+1")[0]);
         }
 
     }

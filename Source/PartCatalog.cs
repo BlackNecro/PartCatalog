@@ -34,6 +34,9 @@ namespace PartCatalog
         public List<AvailablePart> SortedPartList = new List<AvailablePart>();
         public Dictionary<string, AvailablePart> PartIndex = new Dictionary<string, AvailablePart>();
 
+        public HashSet<AvailablePart> UnlistedParts = new HashSet<AvailablePart>();
+
+
         public SortedDictionary<string, HashSet<AvailablePart>> HashedManufacturerCatalog = new SortedDictionary<string, HashSet<AvailablePart>>();
         public SortedDictionary<string, HashSet<AvailablePart>> HashedModCatalog = new SortedDictionary<string, HashSet<AvailablePart>>();
         public Dictionary<AvailablePart, string> PartModIndex = new Dictionary<AvailablePart, string>();
