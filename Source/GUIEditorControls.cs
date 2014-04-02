@@ -57,6 +57,8 @@ namespace PartCatalog
                 get { return GUIUtility.ScreenToGUIPoint(position); }
             }
             public Rect WindowPos = new Rect(0, 0, 40, 40);
+
+            public Rect innerSize;
             public MouseOverStackEntry(PartTag tag, Vector2 pos) { Tag = tag; position = GUIUtility.GUIToScreenPoint(pos); }
         }
 
@@ -76,6 +78,8 @@ namespace PartCatalog
         bool nextPageAvailable;
         LinkedList<PartTag> currentPageTags = new LinkedList<PartTag>();
         List<MouseOverStackEntry> MouseOverStack = new List<MouseOverStackEntry>();
+        MouseOverStackEntry newMouseOverEntry = null;
+        int newMouseOverEntryIndex = 0;
 
 
         public void KillMouseOver()
@@ -203,6 +207,10 @@ namespace PartCatalog
             {
                 return;
             }
+            if (Event.current.type == EventType.Repaint)
+            {
+                newMouseOverEntry = null;
+            }
             for (int i = 0; i < MouseOverStack.Count; i++)
             {
                 bool containsFiltered = false;
@@ -291,15 +299,24 @@ namespace PartCatalog
                     MouseOverClear = false;
                 }
             }
+            if(newMouseOverEntry != null)
+            {
+                
+                if(MouseOverStack.Count > newMouseOverEntryIndex)
+                {
+                    MouseOverStack.RemoveRange(newMouseOverEntryIndex, MouseOverStack.Count - (newMouseOverEntryIndex));
+                }
+                MouseOverStack.Add(newMouseOverEntry);
+                newMouseOverEntry = null;
+            }
         }
 
         private void DrawMouseOverWindow(int id)
         {
             int index = id - ConfigHandler.Instance.MouseOverWindow;
             if (index < MouseOverStack.Count)
-            {
+            {                
                 MouseOverStackEntry Entry = MouseOverStack[index];
-
 
                 if (index == 0 && Entry.Tag.ChildTags.Count == 0 && !SearchManager.Instance.DisplayTag(Entry.Tag))
                 {
@@ -309,8 +326,10 @@ namespace PartCatalog
                     GUILayout.EndHorizontal();
                     //GUILayout.Label(Entry.Tag.Name, GUILayout.ExpandWidth(true));
                 }
-                //Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos, GUILayout.MinWidth(Entry.Tag.Name.Length * 9));
-                GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9));
+                //Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos, GUILayout.MinWidth(Entry.Tag.Name.Length * 9));                
+                GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9),GUILayout.MaxHeight(Screen.height * 0.8f));
+                Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos,false,true,GUILayout.Width(Entry.innerSize.width + 34),GUILayout.Height((float)Math.Min(Screen.height * 0.85,(Entry.innerSize.height + 10))));
+                GUILayout.BeginVertical();
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
                 {
                     if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
@@ -327,14 +346,14 @@ namespace PartCatalog
                     {
                         var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled);
                         pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));                        
-                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true),GUILayout.Height(iconTexture.height));                        
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.Height(iconTexture.height));                        
                     }
                     else
                     {
-                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle, GUILayout.ExpandWidth(true));
+                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle);
                     }
                     
-                    GUILayout.EndHorizontal();
+                    GUILayout.EndHorizontal();                      
 
 
 
@@ -345,15 +364,29 @@ namespace PartCatalog
                     //GUILayout.Box(ResourceProxy.Instance.GetTagIcon(subTag)); 
                     if (Event.current.type == EventType.Repaint && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                     {
+                        /*
                         while (index + 1 < MouseOverStack.Count)
                         {
                             MouseOverStack.RemoveAt(index + 1);
                         }
 
-                        MouseOverStack.Insert(index + 1, new MouseOverStackEntry(subTag, new Vector2(0, GUILayoutUtility.GetLastRect().y + GUILayoutUtility.GetLastRect().height * 0.5f)));
-                        MouseOverClear = false;
+                        MouseOverStack.Insert(index + 1, );
+                       
+                         */
+                        if (MouseOverStack.Count <= index + 1 || MouseOverStack[index + 1].Tag != subTag)
+                        {
+                            newMouseOverEntry = new MouseOverStackEntry(subTag, new Vector2(-15, GUILayoutUtility.GetLastRect().y + GUILayoutUtility.GetLastRect().height * 0.5f));
+                            newMouseOverEntryIndex = index + 1;
+                            MouseOverClear = false;
+                        }
                     }
                 }
+                GUILayout.EndVertical();
+                if (Event.current.type == EventType.Repaint)
+                {
+                    Entry.innerSize = GUILayoutUtility.GetLastRect();
+                }                
+                GUILayout.EndScrollView();
                 GUILayout.EndVertical();
             }
             else

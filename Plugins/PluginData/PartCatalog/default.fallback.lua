@@ -61,6 +61,6 @@ for name,part in pairs(PARTS) do
 	end
 	
 	for k,node in pairs(part.attachNodes) do
-		addToCategory(part,"Size/"..tostring(node.size),tostring(node.size))
+		addToCategory(part,"Size/"..tostring(node.size),"Size " ..tostring(node.size))
 	end
 end
