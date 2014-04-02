@@ -144,8 +144,10 @@ function DefaultTags(mod)
 
 end
 
-DefaultTags("All")
+setOverlay("Size","S")
+setCategory("Size", "Size", "Star",true)
 
+DefaultTags("All")
 DefaultTags("Squad")
 for _,mod in pairs(modsSorted) do
 	DefaultTags(mod)

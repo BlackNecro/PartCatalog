@@ -268,11 +268,38 @@ sortCat(CATEGORIES)");
                     .Append("stackSymmetry = \"").Append(escapeString(part.partPrefab.stackSymmetry)).Append("\",")
                     .Append("assigned = false,")
                     .Append("isPart = true,");
-            if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
+
+            if (part.partPrefab != null)
             {
-                toRun.Append("dragCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).dragCoeff)).Append("\",")
-                     .Append("deflectionLiftCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).deflectionLiftCoeff)).Append("\",");
+                if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
+                {
+                    toRun.Append("dragCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).dragCoeff)).Append("\",")
+                         .Append("deflectionLiftCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).deflectionLiftCoeff)).Append("\",");
+                }
+
+
+                toRun.Append("attachNodes = {");
+                    bool firstNode = true;
+                    foreach (var attachnode in part.partPrefab.attachNodes)
+                    {
+                        if(firstNode)
+                        {
+                            firstNode = false;
+                        }
+                        else
+                        {
+                            toRun.Append(",");
+                        }
+                        toRun.Append("{ ")
+                            .Append("offset = { x = ").Append(attachnode.offset.x).Append(", y = ").Append(attachnode.offset.y).Append(", z = ").Append(attachnode.offset.z).Append(" } ")
+                            .Append(",orientation = { x = ").Append(attachnode.orientation.x).Append(", y = ").Append(attachnode.orientation.y).Append(", z = ").Append(attachnode.orientation.z).Append(" } ")
+                            .Append(",size = ").Append(attachnode.size)
+                            .Append(",radius= ").Append(attachnode.radius)
+                            .Append("}");
+                    }
+                   toRun.Append("},");
             }
+
 
             SerializeConfigNode(toRun, node);
 

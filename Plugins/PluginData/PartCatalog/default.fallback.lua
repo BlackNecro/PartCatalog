@@ -60,5 +60,7 @@ for name,part in pairs(PARTS) do
 		addToModCategory(part,part.category .. "/Misc")
 	end
 	
-	
+	for k,node in pairs(part.attachNodes) do
+		addToCategory(part,"Size/"..tostring(node.size),tostring(node.size))
+	end
 end

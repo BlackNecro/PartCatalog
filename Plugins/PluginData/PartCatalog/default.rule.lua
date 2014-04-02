@@ -20,7 +20,7 @@ for name,part in pairs(PARTS) do
 	
 	
 	--Engines
-	for engine in modulesByName(part,"ModuleEngines") do	
+	for engine in modulesByName(part,{"ModuleEngines","ModuleEnginesFX"}) do	
 		
 		local special = false
 		if containsNodeTypeName(engine,"PROPELLANT","LiquidFuel") then
@@ -86,25 +86,35 @@ for name,part in pairs(PARTS) do
 		addToModCategory(part,"Structural/Decoupler/Radial")				
 	end
 	
-	--Adapter							
+	--Adapter / Coupler
 	if part.category == "Structural" then
-		if part.title:lower():find("adapter") then
-			addToModCategory(part,"Structural/Adapter")
-		end
-	end								
-	
-	
-	--Coupler								
-	if part.category == "Structural" then
-		if part.name:lower():find("coupler") then
-			local stsym = tonumber(part.stackSymmetry) 
-			if stsym then
-				if stsym > 0 then
-					addToModCategory(part,"Structural/Coupler")
+		
+		
+		if #part.attachNodes == 2 then 
+			if part.attachNodes[1].size ~= part.attachNodes[2].size or part.name:lower():find("adapter")then
+				addToModCategory(part,"Structural/Adapter")			
+			end
+		elseif #part.attachNodes > 2 then
+			local dir1 = nil
+			local dir2 = nil		
+			local addToCoupler = true
+			for _,attachNode in pairs(part.attachNodes) do
+				if dir1 == nil then
+					dir1 = attachNode.orientation
+				elseif dir2 == nil then
+					dir2 = attachNode.orientation
+				else
+					if not (tableEqual(attachNode.orientation,dir1) or tableEqual(attachNode.orientation,dir1)) then
+						addToCoupler = false
+						break
+					end
 				end
 			end
+			if addToCoupler then
+				addToModCategory(part,"Structural/Coupler")
+			end
 		end
-	end								
+	end											
 	
 	--Crew-/Cargo-Compartment & Cargo Bay				
 	if part.title:lower():find("compartment") or part.title:lower():find("cargo bay") then

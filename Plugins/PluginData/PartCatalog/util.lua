@@ -101,6 +101,17 @@ function addToModCategory(part,path,title,icon,sort,overrideIcon)
 	part.assigned = true
 end
 
+function containsName(toCheck,names)
+	if(type(names) == "table") then
+		for k,v in pairs(names) do
+			if(v == toCheck) then
+				return true
+			end
+		end
+	end
+	return names == toCheck
+end
+
 function nodesByTypeName(tab,typ,name)
 	local nodeTable = tab.nodes
 	
@@ -111,7 +122,7 @@ function nodesByTypeName(tab,typ,name)
 		repeat
 			curNode = curNode + 1		
 			node = nodeTable[curNode]
-		until curNode > maxNode or ((node.name == typ) and node.values.name == name)
+		until curNode > maxNode or (containsName(node.name,typ) and containsName(node.values.name,name))
 		
 		if curNode <= maxNode then
 			return node
@@ -127,7 +138,7 @@ function nodesByName(tab,name)
 	return function()
 		repeat
 			curNode = curNode + 1
-		until curNode > maxNode or nodeTable[curNode].name == name
+		until curNode > maxNode or containsName(nodeTable[curNode].name,name)
 		
 		if curNode <= maxNode then
 			return nodeTable[curNode]
@@ -139,7 +150,7 @@ function containsNodeByType(tab, typ)
 	local nodeTable = tab.nodes
 	
 	for k,node in pairs(nodeTable) do
-		if node.name == typ then
+		if containsName(node.name,typ) then
 			return true
 		end
 	end
@@ -150,7 +161,7 @@ function containsNodeTypeName(tab,typ,name)
 	local nodeTable = tab.nodes
 
 	for k,node in pairs(nodeTable) do
-		if (node.name == typ) and (node.values.name == name) then
+		if containsName(node.name,typ) and containsName(node.values.name, name) then
 			return true
 		end
 	end
@@ -185,7 +196,7 @@ function modulesByName(tab,name)
 		repeat
 			curNode = curNode + 1		
 			node = nodeTable[curNode]
-		until curNode > maxNode or ((node.name == "MODULE") and node.values.name == name)
+		until curNode > maxNode or ((node.name == "MODULE") and containsName(node.values.name,name))
 		
 		if curNode <= maxNode then
 			return node
@@ -204,12 +215,26 @@ function resourcesByName(tab,name)
 		repeat
 			curNode = curNode + 1		
 			node = nodeTable[curNode]
-		until curNode > maxNode or ((node.name == "RESOURCE") and node.values.name == name)
+		until curNode > maxNode or ((node.name == "RESOURCE") and containsName(node.values.name, name))
 		
 		if curNode <= maxNode then
 			return node
 		end
 	end
+end
+
+function tableEqual(tab1,tab2)
+	for k,v in pairs(tab1) do
+		if tab2[k] ~= v then
+			return false
+		end
+	end
+	for k,v in pairs(tab2) do
+		if tab1[k] == nil then
+			return false
+		end
+	end
+	return true
 end
 
 function iconExists(path)
