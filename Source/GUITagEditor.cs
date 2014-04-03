@@ -74,7 +74,7 @@ namespace PartCatalog
 
         public void Draw()
         {
-            if (PartCatalog.Instance.NewPartsAvailable)
+            if (PartCatalog.Instance.NewPartsAvailable && !GUILayoutSettings.Instance.IsOpen)
             {
                 if (display)
                 {
