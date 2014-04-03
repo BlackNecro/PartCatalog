@@ -26,16 +26,19 @@ namespace PartCatalog
             OverlayStyle.fontSize = 17;
             OverlayStyle.fontStyle = FontStyle.Bold;
             OverlayStyle.normal.textColor = Color.black;
-            OverlayStyleEnabled = new GUIStyle(OverlayStyle);
-            OverlayStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
-
+            OverlayStyleIncluded = new GUIStyle(OverlayStyle);
+            OverlayStyleIncluded.normal.textColor = Color.green;
+            OverlayStyleExcluded = new GUIStyle(OverlayStyle);
+            OverlayStyleExcluded.normal.textColor = Color.red;
 
             LabelStyle = new GUIStyle(HighLogic.Skin.label);
             LabelStyle.alignment = TextAnchor.LowerLeft;
             LabelStyle.fontSize = 10;
             LabelStyle.normal.textColor = Color.white;
-            LabelStyleEnabled = new GUIStyle(LabelStyle);
-            LabelStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
+            LabelStyleIncluded = new GUIStyle(LabelStyle);
+            LabelStyleIncluded.normal.textColor = Color.green;
+            LabelStyleExcluded = new GUIStyle(LabelStyle);
+            LabelStyleExcluded.normal.textColor = Color.red;
 
             ButtonStyle = new GUIStyle(HighLogic.Skin.button);
             ButtonStyleIncluded = new GUIStyle(HighLogic.Skin.button);
@@ -69,9 +72,11 @@ namespace PartCatalog
         }
 
         GUIStyle LabelStyle;
-        GUIStyle LabelStyleEnabled;
+        GUIStyle LabelStyleIncluded;
+        GUIStyle LabelStyleExcluded;
         GUIStyle OverlayStyle;
-        GUIStyle OverlayStyleEnabled;
+        GUIStyle OverlayStyleIncluded;
+        GUIStyle OverlayStyleExcluded;
         GUIStyle ButtonStyle;
         GUIStyle ButtonStyleIncluded;
         GUIStyle ButtonStyleExcluded;
@@ -467,13 +472,31 @@ namespace PartCatalog
                     Rect overlayPos = new Rect(curPos);
                     overlayPos.x -= 1;
                     overlayPos.y += 2;
-                    GUI.Label(overlayPos, tag.IconOverlay, tag.IncludedInFilter ? OverlayStyleEnabled : OverlayStyle);
+                    var overlayStyle = OverlayStyle;
+                    if(tag.ExcludedFromFilter)
+                    {
+                        OverlayStyle = OverlayStyleExcluded;
+                    }
+                    else if(tag.IncludedInFilter)
+                    {
+                        OverlayStyle = OverlayStyleIncluded;
+                    }
+                    GUI.Label(overlayPos, tag.IconOverlay, overlayStyle);
                 }
 
                 Rect LabelPos = new Rect(curPos);
                 LabelPos.x += 3;
                 LabelPos.y += LabelPos.height * 0.2f;
-                GUI.Label(LabelPos, count.ToString(), tag.IncludedInFilter ? LabelStyleEnabled : LabelStyle);
+                var labelStyle = LabelStyle;
+                if (tag.ExcludedFromFilter)
+                {
+                    labelStyle = LabelStyleExcluded;
+                }
+                else if (tag.IncludedInFilter)
+                {
+                    labelStyle = LabelStyleIncluded;
+                }
+                GUI.Label(LabelPos, count.ToString(), labelStyle);
 
 
                 if (curPos.Contains(Event.current.mousePosition))
