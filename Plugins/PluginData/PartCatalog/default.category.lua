@@ -144,8 +144,8 @@ function DefaultTags(mod)
 
 end
 
-setOverlay("Size","S")
-setCategory("Size", "Size", "Star",true)
+setOverlay("Attach","A")
+setCategory("Attach", "Attach Method", "Star",true)
 
 DefaultTags("All")
 DefaultTags("Squad")

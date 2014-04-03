@@ -308,8 +308,9 @@ sortCat(CATEGORIES)");
                          .Append("deflectionLiftCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).deflectionLiftCoeff)).Append("\",");
                 }
 
+                toRun.Append("attachSurface = ").Append(part.partPrefab.attachRules.allowSrfAttach).Append(",")
 
-                toRun.Append("attachNodes = {");
+                .Append("attachNodes = {");
                     bool firstNode = true;
                     foreach (var attachnode in part.partPrefab.attachNodes)
                     {

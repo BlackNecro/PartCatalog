@@ -59,8 +59,11 @@ for name,part in pairs(PARTS) do
 	if not part.assigned  and part.category ~= "none" then
 		addToModCategory(part,part.category .. "/Misc")
 	end
+	if part.attachSurface then
+		addToCategory(part,"Attach/Surface","Surface Attachment")
+	end
 	
 	for k,node in pairs(part.attachNodes) do
-		addToCategory(part,"Size/"..tostring(node.size),"Size " ..tostring(node.size))
+		addToCategory(part,"Attach/"..tostring(node.size),"Node Size " ..tostring(node.size))
 	end
 end
