@@ -61,7 +61,15 @@ namespace PartCatalog
         #region FilterManipulation
         #region Enabled Manipulation
         public void AddIncludeFilter(PartTag toAdd)
-        {
+        {            
+
+            if (ExcludeTags.Contains(toAdd))
+            {
+                RemoveExcludeFilter(toAdd);
+            } else if(toAdd.ExcludedFromFilter)
+            {
+                return;
+            }
             if (!IncludeTags.Contains(toAdd))
             {
                 IncludeTags.Add(toAdd);
@@ -77,6 +85,10 @@ namespace PartCatalog
         }
         public void AddExcludeFilter(PartTag toAdd)
         {
+            if (IncludeTags.Contains(toAdd))
+            {
+                RemoveIncludeFilter(toAdd);
+            }
             if (!ExcludeTags.Contains(toAdd))
             {
                 ExcludeTags.Add(toAdd);
@@ -93,41 +105,41 @@ namespace PartCatalog
 
         private PartTag lastToggledFilter = null;
         private bool lastToggleAdded = false;
-        
+
         public void PartTagToggleClick(PartTag toToggle)
         {
-            var modifiedTags = new HashSet<PartTag>();    
+            var modifiedTags = new HashSet<PartTag>();
 
-            if(Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                if(lastToggledFilter != null && lastToggledFilter != toToggle && lastToggledFilter.Parent == toToggle.Parent) 
+                if (lastToggledFilter != null && lastToggledFilter != toToggle && lastToggledFilter.Parent == toToggle.Parent)
                 {
                     PartTag parent = lastToggledFilter.Parent;
                     bool found = false;
                     bool forward = false;
-                    foreach(var node in parent.ChildTags)
+                    foreach (var node in parent.ChildTags)
                     {
-                       if(node == lastToggledFilter)
-                       {
-                           if(found)
-                           {
-                               forward = false;
-                               break;
-                           }
-                           found = true;                           
-                       }
-                       else if ( node == toToggle)
-                       {
-                           if (found)
-                           {
-                               forward = true;
-                               break;
-                           }
-                           found = true;    
-                       }
+                        if (node == lastToggledFilter)
+                        {
+                            if (found)
+                            {
+                                forward = false;
+                                break;
+                            }
+                            found = true;
+                        }
+                        else if (node == toToggle)
+                        {
+                            if (found)
+                            {
+                                forward = true;
+                                break;
+                            }
+                            found = true;
+                        }
                     }
-                    LinkedListNode<PartTag> listNode,endNode;
-                    if(forward)
+                    LinkedListNode<PartTag> listNode, endNode;
+                    if (forward)
                     {
                         listNode = parent.ChildTags.Find(lastToggledFilter);
                         endNode = parent.ChildTags.Find(toToggle);
@@ -137,8 +149,8 @@ namespace PartCatalog
                         listNode = parent.ChildTags.Find(toToggle);
                         endNode = parent.ChildTags.Find(lastToggledFilter);
                     }
-                                        
-                    while(listNode != null)
+
+                    while (listNode != null)
                     {
                         if (lastToggleAdded)
                         {
@@ -154,7 +166,7 @@ namespace PartCatalog
                             break;
                         }
                         listNode = listNode.Next;
-                    } 
+                    }
                 }
             }
             else
@@ -163,10 +175,49 @@ namespace PartCatalog
                 modifiedTags.Add(toToggle);
             }
 
-            if(!Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftAlt))
             {
-                IncludeTags.IntersectWith(modifiedTags);
-                ExcludeTags.IntersectWith(modifiedTags);
+
+                if (toToggle.Parent != null)
+                {
+                    HashSet<PartTag> oldModified = new HashSet<PartTag>(modifiedTags);
+                    modifiedTags.Clear();
+
+                    bool addRemove = lastToggleAdded;
+                    bool first = true;
+
+                    foreach (var tag in toToggle.Parent.ChildTags)
+                    {
+                        if (first)
+                        {
+                            first = false;
+                            ToggleTag(tag);
+                            addRemove = lastToggleAdded;
+                        }
+                        else
+                        {
+                            if (addRemove)
+                            {
+                                AddTag(tag);
+                            }
+                            else
+                            {
+                                RemoveTag(tag);
+                            }
+                        }
+
+                    }
+                }
+
+            }
+            else
+            {
+
+                if (!Input.GetKey(KeyCode.LeftControl))
+                {
+                    IncludeTags.IntersectWith(modifiedTags);
+                    ExcludeTags.IntersectWith(modifiedTags);
+                }
             }
 
             Rehash();
@@ -212,10 +263,6 @@ namespace PartCatalog
 
         private void ToggleExcludeTag(PartTag toToggle)
         {
-            if (IncludeTags.Contains(toToggle))
-            {
-                RemoveIncludeFilter(toToggle);
-            }
             if (ExcludeTags.Contains(toToggle))
             {
                 RemoveExcludeFilter(toToggle);
@@ -271,14 +318,13 @@ namespace PartCatalog
             {
                 foreach (PartTag tag in IncludeTags)
                 {
-                    Debug.Log(tag.Name);
                     DisplayedParts.UnionWith(tag.VisibleParts);
                 }
             }
             foreach (PartTag tag in ExcludeTags)
             {
                 DisplayedParts.ExceptWith(tag.VisibleParts);
-            }   
+            }
             foreach (var part in DisplayedParts)
             {
                 DisplayedCategories.Add(part.category);
