@@ -477,11 +477,11 @@ namespace PartCatalog
                     var overlayStyle = OverlayStyle;
                     if(tag.ExcludedFromFilter)
                     {
-                        OverlayStyle = OverlayStyleExcluded;
+                        overlayStyle = OverlayStyleExcluded;
                     }
                     else if(tag.IncludedInFilter)
                     {
-                        OverlayStyle = OverlayStyleIncluded;
+                        overlayStyle = OverlayStyleIncluded;
                     }
                     GUI.Label(overlayPos, tag.IconOverlay, overlayStyle);
                 }
