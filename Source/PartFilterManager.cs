@@ -163,14 +163,14 @@ namespace PartCatalog
                 {
                     DisplayedParts.UnionWith(tag.VisibleParts);
                 }
-                foreach (PartTag tag in ExcludeTags)
-                {
-                    DisplayedParts.ExceptWith(tag.VisibleParts);
-                }
-                foreach (var part in DisplayedParts)
-                {
-                    DisplayedCategories.Add(part.category);
-                }
+            }
+            foreach (PartTag tag in ExcludeTags)
+            {
+                DisplayedParts.ExceptWith(tag.VisibleParts);
+            }
+            foreach (var part in DisplayedParts)
+            {
+                DisplayedCategories.Add(part.category);
             }
 
             if (DisplayedCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
@@ -198,13 +198,6 @@ namespace PartCatalog
                 }
             }
             EditorPartList.Instance.Refresh();
-        }
-        public void RehashFrom(PartTag tag)
-        {
-            if (IncludeTags.Contains(tag))
-            {
-                Rehash();
-            }
         }
         #endregion
         #endregion

@@ -920,23 +920,7 @@ namespace PartCatalog
             ConfigHandler.Instance.HideEmptyCategories = GUILayout.Toggle(ConfigHandler.Instance.HideEmptyCategories, "Hide empty categories");
             GUILayout.EndHorizontal();
             RegisterHelp("HideEmptyCategories");
-            */
-            if (ConfigHandler.Instance.UnionFilter)
-            {
-                if (GUILayout.Button("Union tags"))
-                {
-                    ConfigHandler.Instance.UnionFilter = false;
-                }
-                RegisterHelp("UnionFilter");
-            }
-            else
-            {
-                if (GUILayout.Button("Intersect tags"))
-                {
-                    ConfigHandler.Instance.UnionFilter = true;
-                }
-                RegisterHelp("IntersectFilter");
-            }
+            */           
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouse Wheel Prescaler", GUILayout.Height(40), GUILayout.Width(100));
@@ -964,14 +948,14 @@ namespace PartCatalog
             GUILayout.Label(ConfigHandler.Instance.MouseOverStopDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.MouseOverStopDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStopDelay, 1f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
-            RegisterHelp("MouseWheelPrescaler");
+            RegisterHelp("MouseCloseDelay");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouseover Open Delay", GUILayout.Height(40), GUILayout.Width(100));
             GUILayout.Label(ConfigHandler.Instance.MouseOverStartDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.MouseOverStartDelay = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MouseOverStartDelay, 1f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
-            RegisterHelp("MouseWheelPrescaler");
+            RegisterHelp("MouseOpenDelay");
 
 
             if (GUILayout.Button("Open Layout Options"))
@@ -1073,6 +1057,9 @@ namespace PartCatalog
             HelpTexts["OverlayText"] = "Set the initials displayed when no icon is set on the selected tag";
             HelpTexts["RenameTag"] = "Set the name of the selected tag";
             HelpTexts["ReloadIcons"] = "Reload all available icons";
+            HelpTexts["MouseCloseDelay"] = "";
+            HelpTexts["MouseOpenDelay"] = "";
+            HelpTexts[""] = "";
             HelpTexts[""] = "";
         }
         #endregion
