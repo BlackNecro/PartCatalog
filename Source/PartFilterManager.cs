@@ -21,12 +21,13 @@ namespace PartCatalog
         }
         #endregion
         #region Basic Members
-        public HashSet<PartTag> EnabledTags = new HashSet<PartTag>();
-        HashSet<PartCategories> EnabledCategories = new HashSet<PartCategories>();
+        public HashSet<PartTag> IncludeTags = new HashSet<PartTag>();
+        public HashSet<PartTag> ExcludeTags = new HashSet<PartTag>();
         public bool InvertFilter = false;
         #endregion
         #region Performance Hashed
-        public HashSet<AvailablePart> HashedEnabledPartNames = new HashSet<AvailablePart>();
+        public HashSet<AvailablePart> DisplayedParts = new HashSet<AvailablePart>();
+        HashSet<PartCategories> DisplayedCategories = new HashSet<PartCategories>();
         #endregion
         #endregion
 
@@ -46,70 +47,102 @@ namespace PartCatalog
         #region FilterFunction
         private bool FilterPart(AvailablePart toFilter)
         {
-            
-            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && HashedEnabledPartNames.Count == 0)
+
+            if (ConfigHandler.Instance.DisplayAllOnEmptyFilter && DisplayedParts.Count == 0)
             {
                 return true;
             }
 
-            return HashedEnabledPartNames.Contains(toFilter) ^ ConfigHandler.Instance.InvertFilter;
-            
+            return DisplayedParts.Contains(toFilter) ^ ConfigHandler.Instance.InvertFilter;
+
         }
         #endregion
 
         #region FilterManipulation
         #region Enabled Manipulation
-        public void AddFilter(PartTag toAdd)
+        public void AddIncludeFilter(PartTag toAdd)
         {
-            if (!EnabledTags.Contains(toAdd))
+            if (!IncludeTags.Contains(toAdd))
             {
-                EnabledTags.Add(toAdd);
+                IncludeTags.Add(toAdd);
                 Rehash();
             }
 
         }
-        public void RemoveFilter(PartTag toRemove)
+        public void RemoveIncludeFilter(PartTag toRemove)
         {
-            if (EnabledTags.Contains(toRemove))
+            if (IncludeTags.Contains(toRemove))
             {
-                EnabledTags.Remove(toRemove);
+                IncludeTags.Remove(toRemove);
+                Rehash();
+            }
+        }
+        public void AddExcludeFilter(PartTag toAdd)
+        {
+            if (!ExcludeTags.Contains(toAdd))
+            {
+                ExcludeTags.Add(toAdd);
+                Rehash();
+            }
+
+        }
+        public void RemoveExcludeFilter(PartTag toRemove)
+        {
+            if (ExcludeTags.Contains(toRemove))
+            {
+                ExcludeTags.Remove(toRemove);
                 Rehash();
             }
         }
 
         public void ToggleFilter(PartTag toToggle)
         {
-            if (Input.GetKey(KeyCode.LeftControl))
+            if (Event.current.button == 0) //Add Enabled filter
             {
-                if (EnabledTags.Contains(toToggle))
+                if (Input.GetKey(KeyCode.LeftControl))
                 {
-                    RemoveFilter(toToggle);
+                    if (IncludeTags.Contains(toToggle))
+                    {
+                        RemoveIncludeFilter(toToggle);
+                    }
+                    else
+                    {
+                        AddIncludeFilter(toToggle);
+                    }
                 }
                 else
                 {
-                    AddFilter(toToggle);
+                    bool add = !IncludeTags.Contains(toToggle);
+                    IncludeTags.Clear();
+                    ExcludeTags.Clear();
+                    if (add)
+                    {
+                        IncludeTags.Add(toToggle);
+                    }
+                    Rehash();
                 }
             }
-            else
+            else if (Event.current.button == 1) //Add Disabled filter
             {
-                bool add = !EnabledTags.Contains(toToggle);
-                EnabledTags.Clear();
-                if (add)
+                if (ExcludeTags.Contains(toToggle))
                 {
-                    EnabledTags.Add(toToggle);
+                    RemoveExcludeFilter(toToggle);
                 }
-                Rehash();
+                else
+                {
+                    AddExcludeFilter(toToggle);
+                }
             }
             SearchManager.Instance.Refresh();
         }
 
         public bool CategoryEnabled(PartCategories cat)
         {
-            if (EnabledCategories.Count == 0)
+            if (DisplayedCategories.Count == 0)
             {
                 return true;
             }
-            return EnabledCategories.Contains(cat);
+            return DisplayedCategories.Contains(cat);
         }
         #endregion
         #region Rehashing
@@ -117,49 +150,45 @@ namespace PartCatalog
         public void Rehash()
         {
 
-            HashedEnabledPartNames.Clear();
-            EnabledCategories.Clear();            
-            
-            if (EnabledTags.Count == 0)
+            DisplayedParts.Clear();
+            DisplayedCategories.Clear();
+
+            if (IncludeTags.Count == 0)
             {
-                EnabledCategories.UnionWith(PartCatalog.Instance.RootTag.VisiblePartCategories);
-                HashedEnabledPartNames.UnionWith(PartCatalog.Instance.RootTag.VisibleParts);
+                DisplayedParts.UnionWith(PartCatalog.Instance.RootTag.VisibleParts);
             }
             else
             {
-                bool firstRound = true;
-                foreach (PartTag tag in EnabledTags)
+                foreach (PartTag tag in IncludeTags)
                 {
-                    if (firstRound || ConfigHandler.Instance.UnionFilter)
-                    {
-                        firstRound = false;
-                        HashedEnabledPartNames.UnionWith(tag.VisibleParts);
-                        EnabledCategories.UnionWith(tag.VisiblePartCategories);
-                    }
-                    else
-                    {
-                        HashedEnabledPartNames.IntersectWith(tag.VisibleParts);
-                        EnabledCategories.IntersectWith(tag.VisiblePartCategories);
-                    }
+                    DisplayedParts.UnionWith(tag.VisibleParts);
+                }
+                foreach (PartTag tag in ExcludeTags)
+                {
+                    DisplayedParts.ExceptWith(tag.VisibleParts);
+                }
+                foreach (var part in DisplayedParts)
+                {
+                    DisplayedCategories.Add(part.category);
                 }
             }
-            
-            if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
+
+            if (DisplayedCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
             {
                 EditorPartList.Instance.ShowTabs();
             }
-             
+
             else
             {
                 PartCategories selectedCategory = (PartCategories)EditorPartList.Instance.categorySelected;
                 EditorPartList.Instance.HideTabs();
                 EditorPartList.Instance.ShowTab(EditorPartList.Instance.tabs.Length - 1);
-                foreach (PartCategories category in EnabledCategories)
+                foreach (PartCategories category in DisplayedCategories)
                 {
 
                     if (category != PartCategories.none)
                     {
-                        if (!EnabledCategories.Contains((PartCategories)EditorPartList.Instance.categorySelected))
+                        if (!DisplayedCategories.Contains((PartCategories)EditorPartList.Instance.categorySelected))
                         {
                             EditorPartList.Instance.ForceSelectTab(category);
                             selectedCategory = category;
@@ -172,7 +201,7 @@ namespace PartCatalog
         }
         public void RehashFrom(PartTag tag)
         {
-            if (EnabledTags.Contains(tag))
+            if (IncludeTags.Contains(tag))
             {
                 Rehash();
             }
@@ -183,22 +212,17 @@ namespace PartCatalog
         public void Update()
         {
             EditorPartList.Instance.ShowTabs();
-            
-            foreach(PartCategories enumVal in Enum.GetValues(typeof(PartCategories)))
+
+            foreach (PartCategories enumVal in Enum.GetValues(typeof(PartCategories)))
             {
                 if (enumVal != PartCategories.none)
                 {
-                    if (!EnabledCategories.Contains(enumVal))
+                    if (!DisplayedCategories.Contains(enumVal))
                     {
                         EditorPartList.Instance.HideTab((int)enumVal);
                     }
                 }
             }
-            /*
-            foreach (var cat in EnabledCategories)
-            {
-                EditorPartList.Instance.ShowTab(cat);
-            }      */      
         }
     }
 }

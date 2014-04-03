@@ -103,9 +103,9 @@ namespace PartCatalog
         {
             if (string.IsNullOrEmpty(tag.IconName))
             {
-                return GetIconTexture(GUIConstants.DefaultIconName, tag.Enabled);
+                return GetIconTexture(GUIConstants.DefaultIconName, tag.IncludedInFilter);
             }
-            return GetIconTexture(tag.IconName, tag.Enabled);
+            return GetIconTexture(tag.IconName, tag.IncludedInFilter);
         }
 
         public bool IconExists(string name)

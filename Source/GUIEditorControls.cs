@@ -38,8 +38,14 @@ namespace PartCatalog
             LabelStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
 
             ButtonStyle = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleEnabled = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleEnabled.normal.textColor = HighLogic.Skin.label.normal.textColor;
+            ButtonStyleIncluded = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleIncluded.normal.textColor = Color.green;
+            ButtonStyleExcluded = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleExcluded.normal.textColor = Color.red;
+            ButtonStyleIncludedInherited = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleIncludedInherited.normal.textColor = Color.Lerp(Color.green,Color.black, 0.2f);
+            ButtonStyleExcludedInherited = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleExcludedInherited.normal.textColor = Color.Lerp(Color.red, Color.black, 0.2f);
 
             iconStyle = new GUIStyle();
             iconStyle.alignment = TextAnchor.MiddleCenter;
@@ -67,7 +73,10 @@ namespace PartCatalog
         GUIStyle OverlayStyle;
         GUIStyle OverlayStyleEnabled;
         GUIStyle ButtonStyle;
-        GUIStyle ButtonStyleEnabled;
+        GUIStyle ButtonStyleIncluded;
+        GUIStyle ButtonStyleExcluded;
+        GUIStyle ButtonStyleIncludedInherited;
+        GUIStyle ButtonStyleExcludedInherited;
         GUIStyle iconStyle;
 
         public bool configPressed = false;
@@ -348,15 +357,41 @@ namespace PartCatalog
                     }
                     GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                     bool pushed = false;
+                    bool included = subTag.IncludedInFilter;
+                    bool excluded = subTag.ExcludedFromFilter;
+                    var buttonStyle = ButtonStyle;
+                    if(excluded)
+                    {
+                        if (PartFilterManager.Instance.ExcludeTags.Contains(subTag))
+                        {
+                            buttonStyle = ButtonStyleExcluded;
+                        }
+                        else
+                        {
+                            buttonStyle = ButtonStyleExcludedInherited;
+                        }
+                    }
+                    else if(included)
+                    {
+                        if (PartFilterManager.Instance.IncludeTags.Contains(subTag))
+                        {
+                            buttonStyle = ButtonStyleIncluded;
+                        }
+                        else
+                        {
+                            buttonStyle = ButtonStyleIncludedInherited;
+                        }
+                    }
+
                     if (subTag.IconName != "")
                     {
-                        var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, subTag.Enabled);
-                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));                        
-                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle,GUILayout.Height(iconTexture.height));                        
+                        var iconTexture = ResourceProxy.Instance.GetIconTexture(subTag.IconName, included || excluded);
+                        pushed |= GUILayout.Button(iconTexture, iconStyle, GUILayout.Width(iconTexture.width), GUILayout.Height(iconTexture.height));
+                        pushed |= GUILayout.Button(subTag.Name, buttonStyle, GUILayout.Height(iconTexture.height));                        
                     }
                     else
                     {
-                        pushed |= GUILayout.Button(subTag.Name, subTag.Enabled ? ButtonStyleEnabled : ButtonStyle);
+                        pushed |= GUILayout.Button(subTag.Name, buttonStyle);
                     }
                     
                     GUILayout.EndHorizontal();                      
@@ -432,13 +467,13 @@ namespace PartCatalog
                     Rect overlayPos = new Rect(curPos);
                     overlayPos.x -= 1;
                     overlayPos.y += 2;
-                    GUI.Label(overlayPos, tag.IconOverlay, tag.Enabled ? OverlayStyleEnabled : OverlayStyle);
+                    GUI.Label(overlayPos, tag.IconOverlay, tag.IncludedInFilter ? OverlayStyleEnabled : OverlayStyle);
                 }
 
                 Rect LabelPos = new Rect(curPos);
                 LabelPos.x += 3;
                 LabelPos.y += LabelPos.height * 0.2f;
-                GUI.Label(LabelPos, count.ToString(), tag.Enabled ? LabelStyleEnabled : LabelStyle);
+                GUI.Label(LabelPos, count.ToString(), tag.IncludedInFilter ? LabelStyleEnabled : LabelStyle);
 
 
                 if (curPos.Contains(Event.current.mousePosition))

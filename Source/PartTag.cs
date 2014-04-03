@@ -67,7 +67,6 @@ namespace PartCatalog
         #region PartData
         public HashSet<PartCategories> PartCategories = new HashSet<PartCategories>();
         public HashSet<PartCategories> FilteredCategories = new HashSet<PartCategories>();
-        public HashSet<PartCategories> VisiblePartCategories = new HashSet<PartCategories>();
         #endregion
         private bool isResearched = false;
         public bool Researched
@@ -129,15 +128,12 @@ namespace PartCatalog
             //Debug.Log("Rehashing Tag " + this.Name);            
             PartCategories.Clear();
             VisibleParts.Clear();
-            VisiblePartCategories.Clear();
-
             bool newResearched = RehashParts();
           
 
             foreach (PartTag child in ChildTags)
             {
                 VisibleParts.UnionWith(child.VisibleParts);
-                VisiblePartCategories.UnionWith(child.VisiblePartCategories);
 
                 newResearched |= child.Researched;
             }
@@ -170,10 +166,9 @@ namespace PartCatalog
                     }
                 }
             }
-            if (Enabled/* && SearchManager.Instance.DisplayTag(this)*/ && SearchManager.Instance.InFilterRefresh(this))
+            if (IncludedInFilter/* && SearchManager.Instance.DisplayTag(this)*/ && SearchManager.Instance.InFilterRefresh(this))
             {
                 //Debug.Log("Tag Is Enabled and filtered moving visibile stuff");
-                VisiblePartCategories.UnionWith(FilteredCategories);
                 VisibleParts.UnionWith(FilteredParts);                
             }
 
@@ -185,7 +180,6 @@ namespace PartCatalog
             //Debug.Log("Rehash Down Tag " + Name);
             PartCategories.Clear();            
             VisibleParts.Clear();
-            VisiblePartCategories.Clear();
             FilteredParts.Clear();
             FilteredCategories.Clear();
 
@@ -199,7 +193,6 @@ namespace PartCatalog
                 FilteredParts.UnionWith(child.FilteredParts);
                 FilteredCategories.UnionWith(child.FilteredCategories);
                 VisibleParts.UnionWith(child.VisibleParts);
-                VisiblePartCategories.UnionWith(child.VisiblePartCategories);
                 newResearched |= child.Researched;
             }
 
@@ -384,21 +377,38 @@ namespace PartCatalog
         }
         #endregion
 
-        public bool Enabled
+        public bool IncludedInFilter
         {
             get                                                                                                              
             {
-                if (PartFilterManager.Instance.EnabledTags.Contains(this))
+                if (PartFilterManager.Instance.IncludeTags.Contains(this))
                 {
                     return true;
                 }
                 if (Parent != null)
                 {
-                    return Parent.Enabled;
+                    return Parent.IncludedInFilter;
                 }
-                return PartFilterManager.Instance.EnabledTags.Count == 0;
+                return PartFilterManager.Instance.IncludeTags.Count == 0;
             }
         }
+
+        public bool ExcludedFromFilter
+        {
+            get
+            {
+                if (PartFilterManager.Instance.ExcludeTags.Contains(this))
+                {
+                    return true;
+                }
+                if (Parent != null)
+                {
+                    return Parent.ExcludedFromFilter;
+                }
+                return false;
+            }
+        }
+
 
         internal void AddAfter(PartTag newTag)
         {
