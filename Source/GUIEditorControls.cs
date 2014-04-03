@@ -111,7 +111,6 @@ namespace PartCatalog
             }
         }
 
-
         public int MaxTagCount
         {
             get

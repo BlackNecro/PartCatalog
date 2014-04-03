@@ -74,15 +74,50 @@ namespace PartCatalog
 
         public void Draw()
         {
-            if (display)
+            if (PartCatalog.Instance.NewPartsAvailable)
             {
-                EditorLockManager.Instance.LockGUI();
-                GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
+                if (display)
+                {
+                    Close();
+                }
+                windowPosition = new Rect(0, 0, 120, 100);
+                windowPosition.xMin = (Screen.width - windowPosition.width) / 2;
+                windowPosition.yMin = (Screen.height - windowPosition.height) / 2;
+                GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawNewPartWindow, "Part Catalog", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
             }
+            else
+            {
+                if (display)
+                {
+                    EditorLockManager.Instance.LockGUI();
+                    GUILayout.Window(ConfigHandler.Instance.TagEditorWindow, windowPosition, DrawWindow, "Tag Editor", GUILayout.Width(windowPosition.width), GUILayout.Height(windowPosition.height));
+                }
+            }
+        }
+        public void DrawNewPartWindow(int id)
+        {
+            GUILayout.BeginVertical(GUILayout.Width(windowPosition.width));
+
+            GUILayout.Label("There are new, uncategorized Parts.", GUILayout.ExpandWidth(true));
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Close"))
+            {
+                PartCatalog.Instance.NewPartsAvailable = false;
+                Close();
+            }
+            if (GUILayout.Button("Autotag Parts"))
+            {
+                PartCatalog.Instance.NewPartsAvailable = false;
+                Close();
+                LuaRuleHandler.Instance.ParseParts();
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
         public void DrawWindow(int id)
         {
-            if(Event.current.type == EventType.KeyDown)
+            if (Event.current.type == EventType.KeyDown)
             {
                 Update();
             }
@@ -174,7 +209,7 @@ namespace PartCatalog
             }
 
             ScrollPositions[1] = GUILayout.BeginScrollView(ScrollPositions[1]);
-            
+
 
             List<string> icons = new List<string>();
             foreach (var icon in ResourceProxy.Instance.LoadedTextures)
@@ -205,7 +240,7 @@ namespace PartCatalog
                 }
             }
             GUILayout.EndScrollView();
-            if(GUILayout.Button("Reload Icons"))
+            if (GUILayout.Button("Reload Icons"))
             {
                 ResourceProxy.Instance.Reload();
             }
@@ -624,8 +659,8 @@ namespace PartCatalog
             {
                 return "";
             }
-                    
-            
+
+
             switch ((PartCategories)EditorPartList.Instance.categorySelected)
             {
                 case PartCategories.Pods:
@@ -1071,7 +1106,7 @@ namespace PartCatalog
 
             RegisterHelp("AutoGroup");  */
             //GUILayout.EndHorizontal();
-            
+
             /* INDEV
             if (GUILayout.Button("Test"))
             {
@@ -1132,7 +1167,7 @@ namespace PartCatalog
                     selectedPartTag = nextTag;
                 }
             }
-            RegisterHelp("DeleteTag");            
+            RegisterHelp("DeleteTag");
             inputText = GUILayout.TextField(inputText);
             RegisterHelp("InputText");
             GUILayout.BeginHorizontal();
@@ -1229,7 +1264,7 @@ namespace PartCatalog
                 selectedPartTag.IconOverlay = GUILayout.TextField(selectedPartTag.IconOverlay);
                 RegisterHelp("OverlayText");
                 GUILayout.EndHorizontal();
-                
+
 
                 editIcon = GUILayout.Toggle(editIcon, "Edit Icon", HighLogic.Skin.button);
 
@@ -1445,7 +1480,7 @@ namespace PartCatalog
 
         public void Update()
         {
-            if(display && Event.current.keyCode == KeyCode.Escape)
+            if (display && Event.current.keyCode == KeyCode.Escape)
             {
                 Close();
             }

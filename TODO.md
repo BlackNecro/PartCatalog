@@ -1,6 +1,12 @@
 PartCatalog TODO List
 ===========
 
+
+* Save list of categorized parts, reorganize uncategorized parts on load
+
+
+
+
 * Add icon packs ( ask authors first )
 * Text overlay for mods without custom icon - DONE
  * New empty tag icon - DONE

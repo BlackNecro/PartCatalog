@@ -29,6 +29,8 @@ namespace PartCatalog
             }
         }
 
+        public bool NewPartsAvailable = false;
+
         #endregion
         #region Catalog Members
         public List<AvailablePart> SortedPartList = new List<AvailablePart>();
@@ -60,6 +62,18 @@ namespace PartCatalog
             HashedManufacturerCatalog.Clear();
             HashedModCatalog.Clear();
             PartModIndex.Clear();
+
+            HashSet<string> lastParts = new HashSet<string>();
+            if(KSP.IO.File.Exists<PartCatalog>("lastParts.txt"))
+            {
+                foreach(var part in KSP.IO.File.ReadAllLines<PartCatalog>("lastParts.txt"))
+                {
+                    lastParts.Add(part);
+                }
+            }
+            KSP.IO.File.Delete<PartCatalog>("lastParts.txt");
+
+            var FileWriter = KSP.IO.File.AppendText<PartCatalog>("lastParts.txt");
             foreach (AvailablePart part in PartLoader.Instance.parts)
             {
                 SortedPartList.Add(part);
@@ -77,7 +91,16 @@ namespace PartCatalog
                     HashedModCatalog[mod] = new HashSet<AvailablePart>();
                 }
                 HashedModCatalog[mod].Add(part);
+
+                if(!lastParts.Contains(part.name))
+                {
+                    NewPartsAvailable = true;
+                    lastParts.Add(part.name);
+                }
+                FileWriter.WriteLine(part.name);
             }
+            FileWriter.Close();
+
 
 
             HashSet<string> modFolders = new HashSet<string>(System.IO.Directory.GetDirectories(GUIConstants.ModFolderPath));

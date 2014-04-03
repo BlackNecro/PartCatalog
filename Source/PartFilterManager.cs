@@ -143,10 +143,12 @@ namespace PartCatalog
                     }
                 }
             }
+            
             if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
             {
                 EditorPartList.Instance.ShowTabs();
             }
+             
             else
             {
                 PartCategories selectedCategory = (PartCategories)EditorPartList.Instance.categorySelected;
@@ -177,5 +179,22 @@ namespace PartCatalog
         }
         #endregion
         #endregion
+
+        public void Update()
+        {
+            if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
+            {
+                EditorPartList.Instance.ShowTabs();
+            }
+            else
+            {
+                EditorPartList.Instance.HideTabs();
+                foreach (var cat in EnabledCategories)
+                {
+                    EditorPartList.Instance.ShowTab(cat);
+                }
+                EditorPartList.Instance.ShowTab(EditorPartList.Instance.tabs.Length - 1);
+            }
+        }
     }
 }

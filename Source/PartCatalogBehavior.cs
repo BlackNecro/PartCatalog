@@ -95,6 +95,7 @@ namespace PartCatalog
                     GUIEditorControls.Instance.Update();
                     SearchManager.Instance.OnUpdate();
                     GUITagEditor.Instance.Update();
+                    PartFilterManager.Instance.Update();
                     EditorLockManager.Instance.EndUpdate();
                 }
             }
