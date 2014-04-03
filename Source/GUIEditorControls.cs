@@ -405,7 +405,7 @@ namespace PartCatalog
 
                     if (pushed)
                     {
-                        PartFilterManager.Instance.ToggleFilter(subTag);
+                        PartFilterManager.Instance.PartTagToggleClick(subTag);
                     }
                     //GUILayout.Box(ResourceProxy.Instance.GetTagIcon(subTag)); 
                     if (Event.current.type == EventType.Repaint && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
@@ -464,7 +464,7 @@ namespace PartCatalog
                 count++;
                 if (GUI.Button(curPos, ResourceProxy.Instance.GetTagIcon(tag), GUIStyle.none))
                 {
-                    PartFilterManager.Instance.ToggleFilter(tag);
+                    PartFilterManager.Instance.PartTagToggleClick(tag);
                 }
 
                 if (tag.IconName == "" && tag.IconOverlay != "")
@@ -508,8 +508,6 @@ namespace PartCatalog
                     }
                     MouseOverClear = false;
                 }
-
-
 
                 switch (ConfigHandler.Instance.ToolBarDirection)
                 {
@@ -881,7 +879,7 @@ namespace PartCatalog
                         if (Input.GetKeyUp(shortCutsKeyCodes[i]))
                         {
                             PartTag tag = currentPageTags.ElementAt(index);
-                            PartFilterManager.Instance.ToggleFilter(tag);
+                            PartFilterManager.Instance.PartTagToggleClick(tag);
                         }
                     }
                 }

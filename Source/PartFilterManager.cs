@@ -65,7 +65,6 @@ namespace PartCatalog
             if (!IncludeTags.Contains(toAdd))
             {
                 IncludeTags.Add(toAdd);
-                Rehash();
             }
 
         }
@@ -74,7 +73,6 @@ namespace PartCatalog
             if (IncludeTags.Contains(toRemove))
             {
                 IncludeTags.Remove(toRemove);
-                Rehash();
             }
         }
         public void AddExcludeFilter(PartTag toAdd)
@@ -82,7 +80,6 @@ namespace PartCatalog
             if (!ExcludeTags.Contains(toAdd))
             {
                 ExcludeTags.Add(toAdd);
-                Rehash();
             }
 
         }
@@ -91,49 +88,162 @@ namespace PartCatalog
             if (ExcludeTags.Contains(toRemove))
             {
                 ExcludeTags.Remove(toRemove);
-                Rehash();
             }
         }
 
-        public void ToggleFilter(PartTag toToggle)
+        private PartTag lastToggledFilter = null;
+        private bool lastToggleAdded = false;
+        
+        public void PartTagToggleClick(PartTag toToggle)
         {
-            if (Event.current.button == 0) //Add Enabled filter
+            var modifiedTags = new HashSet<PartTag>();    
+
+            if(Input.GetKey(KeyCode.LeftShift))
             {
-                if (Input.GetKey(KeyCode.LeftControl))
+                if(lastToggledFilter != null && lastToggledFilter != toToggle && lastToggledFilter.Parent == toToggle.Parent) 
                 {
-                    if (IncludeTags.Contains(toToggle))
+                    PartTag parent = lastToggledFilter.Parent;
+                    bool found = false;
+                    bool forward = false;
+                    foreach(var node in parent.ChildTags)
                     {
-                        RemoveIncludeFilter(toToggle);
+                       if(node == lastToggledFilter)
+                       {
+                           if(found)
+                           {
+                               forward = false;
+                               break;
+                           }
+                           found = true;                           
+                       }
+                       else if ( node == toToggle)
+                       {
+                           if (found)
+                           {
+                               forward = true;
+                               break;
+                           }
+                           found = true;    
+                       }
+                    }
+                    LinkedListNode<PartTag> listNode,endNode;
+                    if(forward)
+                    {
+                        listNode = parent.ChildTags.Find(lastToggledFilter);
+                        endNode = parent.ChildTags.Find(toToggle);
                     }
                     else
                     {
-                        AddIncludeFilter(toToggle);
+                        listNode = parent.ChildTags.Find(toToggle);
+                        endNode = parent.ChildTags.Find(lastToggledFilter);
                     }
-                }
-                else
-                {
-                    bool add = !IncludeTags.Contains(toToggle);
-                    IncludeTags.Clear();
-                    ExcludeTags.Clear();
-                    if (add)
+                                        
+                    while(listNode != null)
                     {
-                        IncludeTags.Add(toToggle);
-                    }
-                    Rehash();
+                        if (lastToggleAdded)
+                        {
+                            AddTag(listNode.Value);
+                        }
+                        else
+                        {
+                            RemoveTag(listNode.Value);
+                        }
+                        modifiedTags.Add(listNode.Value);
+                        if (listNode == endNode)
+                        {
+                            break;
+                        }
+                        listNode = listNode.Next;
+                    } 
                 }
+            }
+            else
+            {
+                ToggleTag(toToggle);
+                modifiedTags.Add(toToggle);
+            }
+
+            if(!Input.GetKey(KeyCode.LeftControl))
+            {
+                IncludeTags.IntersectWith(modifiedTags);
+                ExcludeTags.IntersectWith(modifiedTags);
+            }
+
+            Rehash();
+            SearchManager.Instance.Refresh();
+            lastToggledFilter = toToggle;
+        }
+
+        private void ToggleTag(PartTag toToggle)
+        {
+            if (Event.current.button == 0) //Add Enabled filter
+            {
+                ToggleIncludeTag(toToggle);
             }
             else if (Event.current.button == 1) //Add Disabled filter
             {
-                if (ExcludeTags.Contains(toToggle))
-                {
-                    RemoveExcludeFilter(toToggle);
-                }
-                else
-                {
-                    AddExcludeFilter(toToggle);
-                }
+                ToggleExcludeTag(toToggle);
             }
-            SearchManager.Instance.Refresh();
+        }
+
+        private void AddTag(PartTag toToggle)
+        {
+            if (Event.current.button == 0) //Add Enabled filter
+            {
+                AddIncludeFilter(toToggle);
+            }
+            else if (Event.current.button == 1) //Add Disabled filter
+            {
+                AddExcludeFilter(toToggle);
+            }
+        }
+
+        private void RemoveTag(PartTag toToggle)
+        {
+            if (Event.current.button == 0) //Add Enabled filter
+            {
+                RemoveIncludeFilter(toToggle);
+            }
+            else if (Event.current.button == 1) //Add Disabled filter
+            {
+                RemoveExcludeFilter(toToggle);
+            }
+        }
+
+        private void ToggleExcludeTag(PartTag toToggle)
+        {
+            if (IncludeTags.Contains(toToggle))
+            {
+                RemoveIncludeFilter(toToggle);
+            }
+            if (ExcludeTags.Contains(toToggle))
+            {
+                RemoveExcludeFilter(toToggle);
+                lastToggleAdded = false;
+            }
+            else
+            {
+                AddExcludeFilter(toToggle);
+                lastToggleAdded = true;
+            }
+        }
+
+        private void ToggleIncludeTag(PartTag toToggle)
+        {
+            if (ExcludeTags.Contains(toToggle))
+            {
+                RemoveExcludeFilter(toToggle);
+            }
+            if (IncludeTags.Contains(toToggle))
+            {
+                RemoveIncludeFilter(toToggle);
+                lastToggleAdded = false;
+            }
+            else
+            {
+                AddIncludeFilter(toToggle);
+                lastToggleAdded = true;
+            }
         }
 
         public bool CategoryEnabled(PartCategories cat)
@@ -161,13 +271,14 @@ namespace PartCatalog
             {
                 foreach (PartTag tag in IncludeTags)
                 {
+                    Debug.Log(tag.Name);
                     DisplayedParts.UnionWith(tag.VisibleParts);
                 }
             }
             foreach (PartTag tag in ExcludeTags)
             {
                 DisplayedParts.ExceptWith(tag.VisibleParts);
-            }
+            }   
             foreach (var part in DisplayedParts)
             {
                 DisplayedCategories.Add(part.category);

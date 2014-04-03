@@ -134,7 +134,6 @@ namespace PartCatalog
             foreach (PartTag child in ChildTags)
             {
                 VisibleParts.UnionWith(child.VisibleParts);
-
                 newResearched |= child.Researched;
             }
 
@@ -166,7 +165,7 @@ namespace PartCatalog
                     }
                 }
             }
-            if (IncludedInFilter/* && SearchManager.Instance.DisplayTag(this)*/ && SearchManager.Instance.InFilterRefresh(this))
+            if (/*(ExcludedFromFilter || IncludedInFilter) && */SearchManager.Instance.InFilterRefresh(this))
             {
                 //Debug.Log("Tag Is Enabled and filtered moving visibile stuff");
                 VisibleParts.UnionWith(FilteredParts);                
