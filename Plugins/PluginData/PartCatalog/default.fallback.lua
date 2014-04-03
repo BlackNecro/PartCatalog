@@ -59,7 +59,7 @@ for name,part in pairs(PARTS) do
 	if not part.assigned  and part.category ~= "none" then
 		addToModCategory(part,part.category .. "/Misc")
 	end
-	if part.attachSurface then
+	if part.attachSurface == "True" then
 		addToCategory(part,"Attach/Surface","Surface Attachment")
 	end
 	

@@ -182,19 +182,23 @@ namespace PartCatalog
 
         public void Update()
         {
-            if (EnabledCategories.Count == 0 && ConfigHandler.Instance.DisplayAllOnEmptyFilter)
+            EditorPartList.Instance.ShowTabs();
+            
+            foreach(PartCategories enumVal in Enum.GetValues(typeof(PartCategories)))
             {
-                EditorPartList.Instance.ShowTabs();
-            }
-            else
-            {
-                EditorPartList.Instance.HideTabs();
-                foreach (var cat in EnabledCategories)
+                if (enumVal != PartCategories.none)
                 {
-                    EditorPartList.Instance.ShowTab(cat);
+                    if (!EnabledCategories.Contains(enumVal))
+                    {
+                        EditorPartList.Instance.HideTab((int)enumVal);
+                    }
                 }
-                EditorPartList.Instance.ShowTab(EditorPartList.Instance.tabs.Length - 1);
             }
+            /*
+            foreach (var cat in EnabledCategories)
+            {
+                EditorPartList.Instance.ShowTab(cat);
+            }      */      
         }
     }
 }
