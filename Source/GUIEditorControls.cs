@@ -43,11 +43,13 @@ namespace PartCatalog
             ButtonStyle = new GUIStyle(HighLogic.Skin.button);
             ButtonStyleIncluded = new GUIStyle(HighLogic.Skin.button);
             ButtonStyleIncluded.normal.textColor = Color.green;
+            ButtonStyleIncluded.hover.textColor = ButtonStyleIncluded.normal.textColor;
             ButtonStyleExcluded = new GUIStyle(HighLogic.Skin.button);
             ButtonStyleExcluded.normal.textColor = Color.red;
-            ButtonStyleIncludedInherited = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleExcluded.hover.textColor = ButtonStyleExcluded.normal.textColor;
+            ButtonStyleIncludedInherited = new GUIStyle(ButtonStyleIncluded);
             ButtonStyleIncludedInherited.normal.textColor = Color.Lerp(Color.green,Color.black, 0.2f);
-            ButtonStyleExcludedInherited = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyleExcludedInherited = new GUIStyle(ButtonStyleIncluded);
             ButtonStyleExcludedInherited.normal.textColor = Color.Lerp(Color.red, Color.black, 0.2f);
 
             iconStyle = new GUIStyle();
