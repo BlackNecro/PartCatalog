@@ -19,33 +19,33 @@ namespace PartCatalog
         }
         private GUIEditorControls()
         {
+            LabelStyle = new GUIStyle(HighLogic.Skin.label);
+            LabelStyle.alignment = TextAnchor.LowerLeft;
+            LabelStyle.fontSize = 10;
+            LabelStyle.normal.textColor = Color.gray;
+            LabelStyleIncluded = new GUIStyle(LabelStyle);
+            LabelStyleIncluded.normal.textColor = Color.Lerp(Color.white, Color.gray, 0.1f);
+            LabelStyleExcluded = new GUIStyle(LabelStyle);
+            LabelStyleExcluded.normal.textColor = Color.Lerp(Color.black, Color.gray, 0.2f);
+
 
             OverlayStyle = new GUIStyle(HighLogic.Skin.label);
             OverlayStyle.alignment = TextAnchor.MiddleCenter;
             OverlayStyle.font = HighLogic.Skin.button.font;
             OverlayStyle.fontSize = 17;
             OverlayStyle.fontStyle = FontStyle.Bold;
-            OverlayStyle.normal.textColor = Color.black;
+            OverlayStyle.normal.textColor = LabelStyle.normal.textColor;
             OverlayStyleIncluded = new GUIStyle(OverlayStyle);
-            OverlayStyleIncluded.normal.textColor = Color.green;
+            OverlayStyleIncluded.normal.textColor = LabelStyleIncluded.normal.textColor;
             OverlayStyleExcluded = new GUIStyle(OverlayStyle);
-            OverlayStyleExcluded.normal.textColor = Color.red;
-
-            LabelStyle = new GUIStyle(HighLogic.Skin.label);
-            LabelStyle.alignment = TextAnchor.LowerLeft;
-            LabelStyle.fontSize = 10;
-            LabelStyle.normal.textColor = Color.white;
-            LabelStyleIncluded = new GUIStyle(LabelStyle);
-            LabelStyleIncluded.normal.textColor = Color.green;
-            LabelStyleExcluded = new GUIStyle(LabelStyle);
-            LabelStyleExcluded.normal.textColor = Color.red;
+            OverlayStyleExcluded.normal.textColor = LabelStyleExcluded.normal.textColor;
 
             ButtonStyle = new GUIStyle(HighLogic.Skin.button);
             ButtonStyleIncluded = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleIncluded.normal.textColor = Color.green;
+            ButtonStyleIncluded.normal.textColor = Color.Lerp(Color.green,Color.black,0.1f);
             ButtonStyleIncluded.hover.textColor = ButtonStyleIncluded.normal.textColor;
             ButtonStyleExcluded = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleExcluded.normal.textColor = Color.red;
+            ButtonStyleExcluded.normal.textColor = Color.Lerp(Color.red, Color.black, 0.1f);
             ButtonStyleExcluded.hover.textColor = ButtonStyleExcluded.normal.textColor;
             ButtonStyleIncludedInherited = new GUIStyle(ButtonStyleIncluded);
             ButtonStyleIncludedInherited.normal.textColor = Color.Lerp(Color.green,Color.black, 0.2f);
@@ -121,7 +121,7 @@ namespace PartCatalog
             {
                 MouseOverStack.Clear();
             }
-            if(MouseOverVisible)
+            if (!MouseOverClear)
             {
                 EditorLockManager.Instance.LockGUI();
             }
@@ -188,10 +188,13 @@ namespace PartCatalog
                     GUI.Box(configOffsetRect, "");
                 }
 
-                TextAnchor old = GUI.skin.label.alignment;
-                GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-                GUI.Label(GetPageNumberPos(), (ConfigHandler.Instance.DisplayedPage + 1).ToString());
-                GUI.skin.label.alignment = old;
+                if (ConfigHandler.Instance.DisplayedPage != 0 || nextPageAvailable)
+                {
+                    TextAnchor old = GUI.skin.label.alignment;
+                    GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+                    GUI.Label(GetPageNumberPos(), (ConfigHandler.Instance.DisplayedPage + 1).ToString());
+                    GUI.skin.label.alignment = old;
+                }
                 Rect pageOffsetRect = GetToolbarRectNoPageNumber();
                 GUI.BeginGroup(pageOffsetRect);
                 Rect innerRect = new Rect(0, 0, pageOffsetRect.width, pageOffsetRect.height);
@@ -226,10 +229,24 @@ namespace PartCatalog
             {
                 newMouseOverEntry = null;
             }
+            else if (newMouseOverEntry != null && Event.current.type == EventType.Layout)
+            {
+
+                if (MouseOverStack.Count > newMouseOverEntryIndex)
+                {
+                    MouseOverStack.RemoveRange(newMouseOverEntryIndex, MouseOverStack.Count - (newMouseOverEntryIndex));
+                }
+                MouseOverStack.Add(newMouseOverEntry);
+                newMouseOverEntry = null;
+            }
             for (int i = 0; i < MouseOverStack.Count; i++)
             {
                 bool containsFiltered = false;
                 MouseOverStackEntry Entry = MouseOverStack[i];
+                if(Entry.Tag.ChildTags.Count == 0)
+                {
+                    break;
+                }
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
                 {
 
@@ -313,17 +330,7 @@ namespace PartCatalog
                 {
                     MouseOverClear = false;
                 }
-            }
-            if(newMouseOverEntry != null)
-            {
-                
-                if(MouseOverStack.Count > newMouseOverEntryIndex)
-                {
-                    MouseOverStack.RemoveRange(newMouseOverEntryIndex, MouseOverStack.Count - (newMouseOverEntryIndex));
-                }
-                MouseOverStack.Add(newMouseOverEntry);
-                newMouseOverEntry = null;
-            }
+            }            
         }
 
         private void DrawMouseOverWindow(int id)
@@ -506,7 +513,10 @@ namespace PartCatalog
                     if (MouseOverStack.Count == 0 || MouseOverStack[0].Tag != tag)
                     {
                         MouseOverStack.Clear();
-                        MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
+                        if(tag.ChildTags.Count > 0)
+                        {
+                            MouseOverStack.Add(new MouseOverStackEntry(tag, new Vector2(curPos.x, curPos.y)));
+                        }                        
                     }
                     MouseOverClear = false;
                 }
@@ -933,7 +943,7 @@ namespace PartCatalog
 
         private static void HandleMouseScroll(bool start)
         {
-            if (start && Input.GetKey(KeyCode.LeftControl))
+            if (start)
             {
                 EditorLockManager.Instance.LockUpdate();
 

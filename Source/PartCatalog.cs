@@ -74,6 +74,7 @@ namespace PartCatalog
             KSP.IO.File.Delete<PartCatalog>("lastParts.txt");
 
             var FileWriter = KSP.IO.File.AppendText<PartCatalog>("lastParts.txt");
+
             foreach (AvailablePart part in PartLoader.Instance.parts)
             {
                 SortedPartList.Add(part);

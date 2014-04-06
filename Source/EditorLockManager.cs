@@ -37,12 +37,12 @@ namespace PartCatalog
         {
             if(shouldLockGUI && !weLockedGUI)
             {
-                EditorLogic.fetch.Lock(true, true, true, "PartCatalog_GUI");
+                InputLockManager.SetControlLock(ControlTypes.EDITOR_PAD_PICK_COPY | ControlTypes.EDITOR_PAD_PICK_PLACE | ControlTypes.CAMERACONTROLS, "PartCatalog_GUI");
                 weLockedGUI = true;
             }
             if(weLockedGUI && !shouldLockGUI)
-            {                
-                EditorLogic.fetch.Unlock("PartCatalog_GUI");
+            {
+                InputLockManager.RemoveControlLock("PartCatalog_GUI");
                 weLockedGUI = false;
             }
         }
@@ -64,7 +64,7 @@ namespace PartCatalog
         {
             if (shouldLockUpdate && !weLockedUpdate)
             {
-                InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK,"PartCatalog_Update");
+                InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, "PartCatalog_Update");
                 weLockedUpdate = true;
             }
             if (!shouldLockUpdate && weLockedUpdate)

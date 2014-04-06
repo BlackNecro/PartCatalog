@@ -201,13 +201,14 @@ sortCat(CATEGORIES)");
             PartCatalog.Instance.UnlistedParts.Clear();
             foreach (var config in configs)
             {
-                if (!PartCatalog.Instance.PartIndex.ContainsKey(config.name.Replace('_', '.')))
+                string cleanedName = config.name.Replace('_', '.');
+                if (!PartCatalog.Instance.PartIndex.ContainsKey(cleanedName))
                 {
-                    Debug.LogError("Could not find part in index: " + config.name.Replace('_', '.'));
+                    Debug.LogError("Could not find part in index: " + cleanedName);
                 }
                 else
                 {
-                    AvailablePart part = PartCatalog.Instance.PartIndex[config.name.Replace('_', '.')];
+                    AvailablePart part = PartCatalog.Instance.PartIndex[cleanedName];
                     if (part != null)
                     {
                         HandledParts.Add(part);
