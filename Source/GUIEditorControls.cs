@@ -453,6 +453,7 @@ namespace PartCatalog
                 if (GUI.Button(curPos, ResourceProxy.Instance.GetTagIcon(tag), GUIStyle.none))
                 {
                     PartFilterManager.Instance.PartTagToggleClick(tag);
+                    MouseOverStartTimer = ConfigHandler.Instance.MouseOverStartDelay;
                 }
 
                 if (tag.IconName == "" && tag.IconOverlay != "")
