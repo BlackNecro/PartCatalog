@@ -22,11 +22,11 @@ namespace PartCatalog
             LabelStyle = new GUIStyle(HighLogic.Skin.label);
             LabelStyle.alignment = TextAnchor.LowerLeft;
             LabelStyle.fontSize = 10;
-            LabelStyle.normal.textColor = Color.gray;
+            LabelStyle.normal.textColor = Color.Lerp(Color.black, Color.gray, 0.1f);
             LabelStyleIncluded = new GUIStyle(LabelStyle);
             LabelStyleIncluded.normal.textColor = Color.Lerp(Color.white, Color.gray, 0.1f);
             LabelStyleExcluded = new GUIStyle(LabelStyle);
-            LabelStyleExcluded.normal.textColor = Color.Lerp(Color.black, Color.gray, 0.2f);
+            LabelStyleExcluded.normal.textColor = Color.Lerp(Color.red, Color.black, 0.2f);
 
 
             OverlayStyle = new GUIStyle(HighLogic.Skin.label);
@@ -41,16 +41,21 @@ namespace PartCatalog
             OverlayStyleExcluded.normal.textColor = LabelStyleExcluded.normal.textColor;
 
             ButtonStyle = new GUIStyle(HighLogic.Skin.button);
+            ButtonStyle.normal.textColor = LabelStyle.normal.textColor;
             ButtonStyleIncluded = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleIncluded.normal.textColor = Color.Lerp(Color.green,Color.black,0.1f);
+            ButtonStyleIncluded.normal = ButtonStyleIncluded.active;
+            ButtonStyleIncluded.normal.textColor = LabelStyleIncluded.normal.textColor;
             ButtonStyleIncluded.hover.textColor = ButtonStyleIncluded.normal.textColor;
             ButtonStyleExcluded = new GUIStyle(HighLogic.Skin.button);
-            ButtonStyleExcluded.normal.textColor = Color.Lerp(Color.red, Color.black, 0.1f);
+            ButtonStyleExcluded.normal = ButtonStyleExcluded.active;
+            ButtonStyleExcluded.normal.textColor = LabelStyleExcluded.normal.textColor;
             ButtonStyleExcluded.hover.textColor = ButtonStyleExcluded.normal.textColor;
-            ButtonStyleIncludedInherited = new GUIStyle(ButtonStyleIncluded);
-            ButtonStyleIncludedInherited.normal.textColor = Color.Lerp(Color.green,Color.black, 0.2f);
-            ButtonStyleExcludedInherited = new GUIStyle(ButtonStyleIncluded);
-            ButtonStyleExcludedInherited.normal.textColor = Color.Lerp(Color.red, Color.black, 0.2f);
+            ButtonStyleIncludedInherited = new GUIStyle(ButtonStyle);
+            ButtonStyleIncludedInherited.normal.textColor = Color.Lerp(ButtonStyleIncluded.normal.textColor, Color.black, 0.1f);
+            ButtonStyleIncluded.hover.textColor = ButtonStyleIncluded.normal.textColor;
+            ButtonStyleExcludedInherited = new GUIStyle(ButtonStyle);
+            ButtonStyleExcludedInherited.normal.textColor = Color.Lerp(ButtonStyleExcluded.normal.textColor, Color.black, 0.1f);
+            ButtonStyleExcludedInherited.hover.textColor = ButtonStyleExcluded.normal.textColor;
 
             iconStyle = new GUIStyle();
             iconStyle.alignment = TextAnchor.MiddleCenter;
@@ -61,8 +66,6 @@ namespace PartCatalog
         {
             public PartTag Tag;
             private Vector2 position;
-            public  Vector2 ScrollPos = new Vector2();
-
             public Vector2 Position
             {
                 get { return GUIUtility.ScreenToGUIPoint(position); }
@@ -265,7 +268,7 @@ namespace PartCatalog
                 {
                     break;
                 }
-                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name, GUILayout.MinHeight(200),GUILayout.MaxHeight(Screen.height), GUILayout.MinWidth(200), GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+                Entry.WindowPos = GUILayout.Window(ConfigHandler.Instance.MouseOverWindow + i, Entry.WindowPos, DrawMouseOverWindow, Entry.Tag.Name);
                 if (i > 0)
                 {
                     MouseOverStackEntry LastEntry = MouseOverStack[i - 1];
@@ -340,27 +343,14 @@ namespace PartCatalog
             {                
                 MouseOverStackEntry Entry = MouseOverStack[index];
 
-                if (index == 0 && Entry.Tag.ChildTags.Count == 0 && !SearchManager.Instance.DisplayTag(Entry.Tag))
-                {
-                    GUILayout.Space(15);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(Entry.Tag.Name.Length * 10);
-                    GUILayout.EndHorizontal();
-                    //GUILayout.Label(Entry.Tag.Name, GUILayout.ExpandWidth(true));
-                }
-                //Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos, GUILayout.MinWidth(Entry.Tag.Name.Length * 9));                
-                GUILayout.BeginVertical(GUILayout.MinWidth(Entry.Tag.Name.Length * 9),GUILayout.MaxHeight(Screen.height * 0.8f));
-                Entry.ScrollPos = GUILayout.BeginScrollView(Entry.ScrollPos,false,true,GUILayout.Width(Entry.innerSize.width + 34),GUILayout.Height((float)Math.Min(Screen.height * 0.85,(Entry.innerSize.height + 10))));
+                
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(GUI.skin.window.CalcSize(new GUIContent(Entry.Tag.Name)).x);
+                GUILayout.EndHorizontal();
                 GUILayout.BeginVertical();
-                /*if (Entry.Tag.ChildTags.Count == 0 )
-                {
-                    GUILayout.Space(15);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(Entry.Tag.Name.Length * 10);
-                    GUILayout.EndHorizontal();
-                }    */
+             
                 foreach (PartTag subTag in Entry.Tag.ChildTags)
-                {
+                {                    
                     if (ConfigHandler.Instance.HideUnresearchedTags && !subTag.Researched)
                     {
                         continue;
@@ -369,7 +359,8 @@ namespace PartCatalog
                     {
                         continue;
                     }
-                    GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+                    GUILayout.BeginHorizontal();
                     bool pushed = false;
                     bool included = subTag.IncludedInFilter;
                     bool excluded = subTag.ExcludedFromFilter;
@@ -416,21 +407,11 @@ namespace PartCatalog
                     {
                         PartFilterManager.Instance.PartTagToggleClick(subTag);
                     }
-                    //GUILayout.Box(ResourceProxy.Instance.GetTagIcon(subTag)); 
                     if (Event.current.type == EventType.Repaint && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                     {
-                        /*
-                        while (index + 1 < MouseOverStack.Count)
-                        {
-                            MouseOverStack.RemoveAt(index + 1);
-                        }
-
-                        MouseOverStack.Insert(index + 1, );
-                       
-                         */
                         if (MouseOverStack.Count <= index + 1 || MouseOverStack[index + 1].Tag != subTag)
                         {
-                            newMouseOverEntry = new MouseOverStackEntry(subTag, new Vector2(-15, GUILayoutUtility.GetLastRect().y + GUILayoutUtility.GetLastRect().height * 0.5f));
+                            newMouseOverEntry = new MouseOverStackEntry(subTag, new Vector2(0, GUILayoutUtility.GetLastRect().y + GUILayoutUtility.GetLastRect().height * 0.5f));
                             newMouseOverEntryIndex = index + 1;
                             MouseOverClear = false;
                         }
@@ -441,8 +422,6 @@ namespace PartCatalog
                 {
                     Entry.innerSize = GUILayoutUtility.GetLastRect();
                 }                
-                GUILayout.EndScrollView();
-                GUILayout.EndVertical();
             }
             else
             {                

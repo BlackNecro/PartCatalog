@@ -49,7 +49,7 @@ for name,part in pairs(PARTS) do
 				addToModCategory(part,"Storage/ServiceModule","ServiceModule","StorageServiceModule")
 			else
 				for resource in resources(part) do
-					addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Categories/Storage_"..resource.values.name)
+					addToModCategory(part,"Storage/_"..resource.values.name,resource.values.name,"Categories/Storage/Misc")
 				end
 			end		
 		end
