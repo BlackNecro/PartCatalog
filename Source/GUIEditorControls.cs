@@ -117,7 +117,7 @@ namespace PartCatalog
             GUI.skin = HighLogic.Skin;
             MouseOverClear = true;
             DrawToolBar();
-            if (!MouseOverVisible)
+            if (!MouseOverVisible && Event.current.type == EventType.Layout)
             {
                 MouseOverStack.Clear();
             }

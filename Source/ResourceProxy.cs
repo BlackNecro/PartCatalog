@@ -56,8 +56,8 @@ namespace PartCatalog
             Texture2D Disabled = null;
             Texture2D Enabled = null;
             string path = GUIConstants.IconFolderPath + "/" + name;
-            string offFile = path + "_off.png";
-            string onFile = path + "_on.png";
+            string offFile = path + "_Off.png";
+            string onFile = path + "_On.png";
             string genericFile = path + ".png";
             if (System.IO.File.Exists(offFile))
             {

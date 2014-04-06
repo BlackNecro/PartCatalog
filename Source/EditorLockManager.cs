@@ -43,6 +43,7 @@ namespace PartCatalog
             if(weLockedGUI && !shouldLockGUI)
             {                
                 EditorLogic.fetch.Unlock("PartCatalog_GUI");
+                weLockedGUI = false;
             }
         }
 
@@ -63,14 +64,11 @@ namespace PartCatalog
         {
             if (shouldLockUpdate && !weLockedUpdate)
             {
-                UnityEngine.Debug.Log("Lock");
-
                 InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK,"PartCatalog_Update");
                 weLockedUpdate = true;
             }
             if (!shouldLockUpdate && weLockedUpdate)
             {
-                UnityEngine.Debug.Log("Unlock");
                 InputLockManager.RemoveControlLock("PartCatalog_Update");
                 weLockedUpdate = false;
             }
