@@ -416,5 +416,19 @@ namespace PartCatalog
                 Parent.AddChild(newTag, this);
             }
         }
+
+        public int FullPartCount
+        {
+            get
+            {
+                int toReturn = 0;
+                foreach(var tag in ChildTags)
+                {
+                    toReturn += tag.FullPartCount;
+                }
+                toReturn += IncludedParts.Count;
+                return toReturn;
+            }
+        }
     }
 }

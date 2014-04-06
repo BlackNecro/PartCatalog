@@ -80,6 +80,33 @@ sortCat(CATEGORIES)");
                 }
             }
 
+            PartTag smallMods = PartCatalog.Instance.RootTag.findChild("Small Mods");
+            if(smallMods != null)
+            {
+                smallMods.Delete();
+            }
+            smallMods = new PartTag();
+            smallMods.Name = "Small Mods";
+            smallMods.IconName = "SmallMods"; 
+            
+            foreach(var tag in PartCatalog.Instance.RootTag.ChildTags)
+            {
+                if (tag.FullPartCount < ConfigHandler.Instance.SmallModTagPartCount)
+                {
+                    smallMods.ChildTags.AddLast(tag);
+                }
+            }
+            if (smallMods.ChildTags.Count > 0)
+            {
+                foreach (var tag in smallMods.ChildTags)
+                {
+                    tag.Parent.RemoveChild(tag);
+                    tag.Parent = smallMods;
+                }
+                smallMods.Rehash();
+                PartCatalog.Instance.RootTag.AddChild(smallMods);
+            }
+
             if (leftOvers.Count > 0)
             {
                 PartTag leftOver = PartCatalog.Instance.RootTag.findChild("Uncategorized");
