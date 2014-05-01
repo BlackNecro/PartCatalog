@@ -1,0 +1,14 @@
+{
+  "NAME": "PartCatalog",
+  "URL": "https://raw.githubusercontent.com/BlackNecro/PartCatalog/master/PartCatalog.version",
+  "VERSION": {
+    "MAJOR": 2,
+    "MINOR": 4,
+    "PATCH": 0
+  },
+  "KSP_VERSION": {
+    "MAJOR": 0,
+    "MINOR": 23,
+    "PATCH": 5
+  }
+}
