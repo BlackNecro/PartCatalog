@@ -430,5 +430,13 @@ namespace PartCatalog
                 return toReturn;
             }
         }
+
+        public bool IsRoot
+        {
+            get
+            {
+                return Parent == null;
+            }
+        }
     }
 }

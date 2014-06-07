@@ -798,7 +798,7 @@ namespace PartCatalog
             if (ConfigHandler.Instance.AutoHideToolBar)
             {
                 Rect ToolbarRect = GetToolbarRectRaw();
-                if (ToolbarRect.Contains(Event.current.mousePosition))
+                if (ToolbarRect.Contains(Event.current.mousePosition) || MouseOverVisible)
                 {
                     shiftAmount = Math.Min(shiftAmount + ConfigHandler.Instance.ToolbarShiftSpeed * 0.1f, Math.Min(ToolbarRect.height, ToolbarRect.width));
                 }

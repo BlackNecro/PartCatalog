@@ -110,7 +110,7 @@ namespace PartCatalog
         {
             var modifiedTags = new HashSet<PartTag>();
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (!toToggle.Parent.IsRoot && Input.GetKey(KeyCode.LeftShift))
             {
                 if (lastToggledFilter != null && lastToggledFilter != toToggle && lastToggledFilter.Parent == toToggle.Parent)
                 {
