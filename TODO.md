@@ -3,13 +3,13 @@ PartCatalog TODO List
 * Clear search on right click
 * Allow custom icons in mod folders
 * Allow meta info in mod folder
-* Fix shift select for icons >= 10
+
 
 
 
 DONE:
 
-
+* Fix shift select for icons >= 10 DONE
 * Save list of categorized parts, reorganize uncategorized parts on load DONE
 
 * Add icon packs ( ask authors first )

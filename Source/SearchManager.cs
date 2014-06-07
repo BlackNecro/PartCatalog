@@ -63,6 +63,12 @@ namespace PartCatalog
 
         public void Toggle()
         {
+            if (Event.current.button == 1)
+            {
+                UpdateSearchText("");
+                Close();
+                return;
+            }
             if (!open || GUIEditorControls.Instance.MouseOverVisible)
             {
                 Open();
