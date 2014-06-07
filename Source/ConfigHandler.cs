@@ -185,6 +185,9 @@ namespace PartCatalog
         [SaveToConfig(0)]
         public int SmallModTagPartCount;
 
+        [SaveToConfig(0)]
+        public int MaxTagsPerPage;
+
         [SaveToConfig(true)]
         public bool HelpActive;
 

@@ -937,11 +937,18 @@ namespace PartCatalog
             RegisterHelp("TagMoveMultiplier");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
-            GUILayout.Label("Small mod size", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label("Small Mod Size", GUILayout.Height(40), GUILayout.Width(100));
             GUILayout.Label(ConfigHandler.Instance.SmallModTagPartCount.ToString(), GUILayout.Height(40), GUILayout.Width(40));
             ConfigHandler.Instance.SmallModTagPartCount = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.SmallModTagPartCount, 0f, 100f, GUILayout.Height(40));
             GUILayout.EndHorizontal();
             RegisterHelp("SmallModSize");
+
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Max Subtags per Tag", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.MaxTagsPerPage.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.MaxTagsPerPage = (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.MaxTagsPerPage, 0f, 100f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("MaxTagPerPage");
 
             GUILayout.BeginHorizontal(GUILayout.Height(40));
             GUILayout.Label("Mouseover Close Delay", GUILayout.Height(40), GUILayout.Width(100));
@@ -1057,8 +1064,9 @@ namespace PartCatalog
             HelpTexts["OverlayText"] = "Set the initials displayed when no icon is set on the selected tag";
             HelpTexts["RenameTag"] = "Set the name of the selected tag";
             HelpTexts["ReloadIcons"] = "Reload all available icons";
-            HelpTexts["MouseCloseDelay"] = "";
-            HelpTexts["MouseOpenDelay"] = "";
+            HelpTexts["MouseCloseDelay"] = "Delay after closing the tag menus after leaving them with your mouse cursor";
+            HelpTexts["MouseOpenDelay"] = "Delay before opening the tag menus after entering them with your mouse cursor";
+            HelpTexts["MaxTagPerPage"] = "Maximum tags per subcategory before starting to sort them by initials";
             HelpTexts[""] = "";
             HelpTexts[""] = "";
         }

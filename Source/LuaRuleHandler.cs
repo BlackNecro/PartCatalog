@@ -204,6 +204,41 @@ sortCat(CATEGORIES)");
                         ParseCategoryTable((LuaTable)value, newTag, leftOvers);
                     }
                 }
+
+                if (ConfigHandler.Instance.MaxTagsPerPage > 0 && !parent.IsRoot)
+                {
+                    if (newTag.ChildTags.Count <= ConfigHandler.Instance.MaxTagsPerPage)
+                    {
+                        return;
+                    }
+
+                    int numLists = newTag.ChildTags.Count / ConfigHandler.Instance.MaxTagsPerPage + 1;
+
+                    UnityEngine.Debug.Log(string.Format("Setting up {0} with {1} child lists",newTag.Name,numLists));
+
+
+                    var subPages = new List<PartTag>();
+
+                    for (int i = 0; i < numLists; i++)
+                    {
+                            
+                        var subPage = new PartTag();
+                        for (int j = 0; j < ConfigHandler.Instance.MaxTagsPerPage; j++)
+                        {
+                            if (newTag.ChildTags.Count == 0)
+                                break;
+
+                            subPage.AddChild(newTag.ChildTags.First.Value);
+                        }
+                        subPage.Name = string.Format("Page {0}", i + 1);
+                        subPages.Add(subPage);                       
+                    }
+
+                    foreach (var subPage in subPages)
+                    {
+                        newTag.AddChild(subPage);
+                    }
+                }
             }
         }
 
