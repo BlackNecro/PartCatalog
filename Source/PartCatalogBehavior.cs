@@ -12,10 +12,13 @@ namespace PartCatalog
         private static PartCatalogBehavior instance = null;
 
         private bool launched = false;
+        private DateTime launchTime = DateTime.MinValue;
 
         public void Awake()
         {
             instance = this;
+            launched = false;
+            launchTime = DateTime.MinValue;
         }
 
         private bool CheckInstance()
@@ -63,8 +66,27 @@ namespace PartCatalog
         {
             if (CheckInstance())
             {
-                if (!launched && ((ResearchAndDevelopment.Instance != null && EditorPartList.Instance != null) || HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX))          // Wait for some to fire up
+                if (!launched)
                 {
+
+
+                    if (((ResearchAndDevelopment.Instance == null || EditorPartList.Instance == null) &&
+                         HighLogic.CurrentGame.Mode != Game.Modes.SANDBOX))
+                    {
+                        return;
+                    }
+                    
+                    if (launchTime == DateTime.MinValue)
+                    {
+                        launchTime = DateTime.Now.AddSeconds(ConfigHandler.Instance.StartupDelay);
+                    }
+
+                    if (launchTime >= DateTime.Now)
+                    {
+                        return;
+                    }
+
+
                     launched = true;
 
                     Debug.Log("****Loading PartCatalog ****");

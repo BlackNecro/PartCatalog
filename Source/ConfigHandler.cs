@@ -188,6 +188,9 @@ namespace PartCatalog
         [SaveToConfig(0)]
         public int MaxTagsPerPage;
 
+        [SaveToConfig(1)] 
+        public int StartupDelay;
+
         [SaveToConfig(true)]
         public bool HelpActive;
 

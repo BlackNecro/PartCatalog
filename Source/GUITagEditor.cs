@@ -965,6 +965,14 @@ namespace PartCatalog
             RegisterHelp("MouseOpenDelay");
 
 
+            GUILayout.BeginHorizontal(GUILayout.Height(40));
+            GUILayout.Label("Startup Delay", GUILayout.Height(40), GUILayout.Width(100));
+            GUILayout.Label(ConfigHandler.Instance.StartupDelay.ToString(), GUILayout.Height(40), GUILayout.Width(40));
+            ConfigHandler.Instance.StartupDelay= (int)GUILayout.HorizontalSlider((float)ConfigHandler.Instance.StartupDelay, 0f, 30f, GUILayout.Height(40));
+            GUILayout.EndHorizontal();
+            RegisterHelp("StartupDelay");
+
+
             if (GUILayout.Button("Open Layout Options"))
             {
                 Close();
@@ -1067,6 +1075,7 @@ namespace PartCatalog
             HelpTexts["MouseCloseDelay"] = "Delay after closing the tag menus after leaving them with your mouse cursor";
             HelpTexts["MouseOpenDelay"] = "Delay before opening the tag menus after entering them with your mouse cursor";
             HelpTexts["MaxTagPerPage"] = "Maximum tags per subcategory before starting to sort them by initials";
+            HelpTexts["StartupDelay"] = "Delay between entering the editor and starting up the catalog";
             HelpTexts[""] = "";
             HelpTexts[""] = "";
         }
