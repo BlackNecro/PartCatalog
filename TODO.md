@@ -1,6 +1,8 @@
 PartCatalog TODO List
 ===========
-* Clear search on right click
+
+* Refactor Settings button position
+* Split propulsion tab into Storage and engines
 * Allow custom icons in mod folders
 * Allow meta info in mod folder
 
@@ -8,7 +10,7 @@ PartCatalog TODO List
 
 
 DONE:
-
+* Clear search on right click - DONE
 * Fix shift select for icons >= 10 DONE
 * Save list of categorized parts, reorganize uncategorized parts on load DONE
 

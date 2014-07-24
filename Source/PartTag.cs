@@ -153,7 +153,7 @@ namespace PartCatalog
             {
                 //Debug.Log("  Checking Part "+ part.name);
                 PartCategories.Add(part.category);
-                if (!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)))
+                if (!ConfigHandler.Instance.HideUnresearchedTags || (ResearchAndDevelopment.PartModelPurchased(part) && ResearchAndDevelopment.PartTechAvailable(part)) || ResearchAndDevelopment.IsExperimentalPart(part))
                 {
                     //Debug.Log("   Is Researched");
                     newResearched = true;

@@ -55,12 +55,7 @@ namespace PartCatalog
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
             GUILayout.Label("Toolbar Position");
-            /*  RIP 24/7/2013 DEATH BY 0.21
-            if (GUILayout.Button("Top"))
-            {
-                ConfigHandler.Instance.ToolBarPreset = ToolBarPositions.HorizontalTop;
-                ConfigHandler.Instance.ToolBarDirection = ToolBarDirections.Right;
-            } */
+
             if (GUILayout.Button("Bottom"))
             {
                 ConfigHandler.Instance.ToolBarPreset = ToolBarPositions.HorizontalBottom;
@@ -114,6 +109,7 @@ namespace PartCatalog
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.Label("Config Button Position");
+
             if (GUILayout.Button("Start of Toolbar"))
             {
                 ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundStart;
@@ -123,12 +119,6 @@ namespace PartCatalog
             {
                 ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.CompoundEnd;
             }
-             /*  RIP 24/7/2013 DIED BY 0.21
-            if (GUILayout.Button("Top Middle"))
-            {
-                ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.TopMiddle;
-            }
-              */
             if (GUILayout.Button("Top Left"))
             {
                 ConfigHandler.Instance.ConfigButtonPreset = ConfigButtonPositions.TopLeft;
