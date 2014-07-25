@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KSPAchievements;
 using UnityEngine;
-using NLua;
-
+using Eluant;
+using Eluant.ObjectBinding;
 namespace PartCatalog
 {
     class LuaRuleHandler
     {
+        LuaRuntime luaInstance = new LuaRuntime();
 
-        Lua luaInstance = new Lua();
-
-        String PartString = String.Empty;
         private Dictionary<string, HashSet<AvailablePart>> Categories = new Dictionary<string, HashSet<AvailablePart>>();
         public Dictionary<string, HashSet<AvailablePart>> GetCategoriesForTag(PartTag limitTo)
         {
@@ -27,9 +26,7 @@ namespace PartCatalog
         }
 
         private LuaRuleHandler()
-        {
-            PartString = CreatePartString();
-            KSP.IO.File.WriteAllText<PartCatalog>(PartString, "partString.lua");
+        {            
             SetupNamespace();
         }
         private static LuaRuleHandler instance = new LuaRuleHandler();
@@ -67,7 +64,7 @@ sortCat(CATEGORIES)");
 
             Categories.Clear();
 
-            LuaTable category = luaInstance.GetTable("CATEGORIES");
+            LuaTable category = (LuaTable)luaInstance.Globals["CATEGORIES"];
             LuaTable children = (LuaTable)category["children"];
             //PartCatalog.Instance.RootTag = new PartTag();
             HashSet<AvailablePart> leftOvers = new HashSet<AvailablePart>();
@@ -118,7 +115,6 @@ sortCat(CATEGORIES)");
                 }
                 foreach (var part in leftOvers)
                 {
-                    Debug.Log("Adding " + part.name);
                     leftOver.AddPart(part);
                 }
 
@@ -148,13 +144,12 @@ sortCat(CATEGORIES)");
         {
             if (category != null)
             {
-
-                PartTag newTag = parent.findChild((string)category["title"]);
+                PartTag newTag = parent.findChild((string)category["title"].ToString());
                 if (newTag == null)
                 {
                     newTag = new PartTag();
-                    newTag.Name = (string)category["title"];
-                    newTag.IconName = ((string)category["icon"]);
+                    newTag.Name = (string)category["title"].ToString();
+                    newTag.IconName = ((string)category["icon"].ToString());
                     if (newTag.IconName != "")
                     {
                         if (!ResourceProxy.Instance.IconExists(newTag.IconName))
@@ -162,12 +157,12 @@ sortCat(CATEGORIES)");
                             newTag.IconName = "";
                         }
                     }
-                    newTag.IconOverlay = (string)category["overlay"];
+                    newTag.IconOverlay = (string)category["overlay"].ToString();
                 }
 
                 if (String.IsNullOrEmpty(newTag.IconName))
                 {
-                    newTag.IconName = ((string)category["icon"]);
+                    newTag.IconName = ((string)category["icon"].ToString());
                     if (newTag.IconName != "")
                     {
                         if (!ResourceProxy.Instance.IconExists(newTag.IconName))
@@ -181,15 +176,15 @@ sortCat(CATEGORIES)");
                 LuaTable parts = (LuaTable)category["parts"];
                 foreach (var value in parts.Keys)
                 {
-                    if (value is string)
+                    if (value is LuaString)
                     {
-                        if (!PartCatalog.Instance.PartIndex.ContainsKey((string)value))
+                        if (!PartCatalog.Instance.PartIndex.ContainsKey((string)value.ToString()))
                         {
                             Debug.LogError("Part Index is missing part " + value);
                         }
                         else
                         {
-                            AvailablePart part = PartCatalog.Instance.PartIndex[(string)value];
+                            AvailablePart part = PartCatalog.Instance.PartIndex[(string)value.ToString()];
                             leftOvers.Remove(part);
                             newTag.AddPart(part, false);
                         }
@@ -245,195 +240,180 @@ sortCat(CATEGORIES)");
         private void SetupNamespace()
         {
             luaInstance.DoString(KSP.IO.File.ReadAllText<PartCatalog>("util.lua"));
-            luaInstance.DoString(PartString);
+
+            
+            CreatePartTable();
+            //luaInstance.DoString(PartString);
             luaInstance.DoString(KSP.IO.File.ReadAllText<PartCatalog>("default.category.lua"));
         }
 
-        private static string CreatePartString()
+        private void CreatePartTable()
         {
-            StringBuilder toRun = new StringBuilder();
-
-
-            toRun.Append("PARTS = {");
-            UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
-            toRun.EnsureCapacity((configs.Length + ResourceProxy.Instance.LoadedTextures.Count) * ConfigHandler.Instance.PartSerializationBufferSize);
-            bool first = true;
-
-            HashSet<AvailablePart> HandledParts = new HashSet<AvailablePart>();
-            PartCatalog.Instance.UnlistedParts.Clear();
-            foreach (var config in configs)
+            using (LuaTable partTable = luaInstance.CreateTable())
             {
-                string cleanedName = config.name.Replace('_', '.');
-                if (!PartCatalog.Instance.PartIndex.ContainsKey(cleanedName))
+                luaInstance.Globals["PARTS"] = partTable;
+
+                UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
+
+                HashSet<AvailablePart> HandledParts = new HashSet<AvailablePart>();
+                PartCatalog.Instance.UnlistedParts.Clear();
+                foreach (var config in configs)
                 {
-                    Debug.LogError("Could not find part in index: " + cleanedName);
-                }
-                else
-                {
-                    AvailablePart part = PartCatalog.Instance.PartIndex[cleanedName];
-                    if (part != null)
+                    string cleanedName = config.name.Replace('_', '.');
+                    AvailablePart part;
+                    if (!PartCatalog.Instance.PartIndex.TryGetValue(cleanedName, out part))
                     {
-                        HandledParts.Add(part);
-                        if (first)
+                        Debug.LogError("Could not find part in index: " + cleanedName);
+                    }
+                    else
+                    {
+                        if (part != null)
                         {
-                            first = false;
-                        }   
-                        else
-                        {
-                            toRun.AppendLine(",");
+                            HandledParts.Add(part);
+                            SerializeAvailablePart(partTable, part, config.config);
                         }
-                        first = false;
-                        SerializeAvailablePart(toRun, part, config.config);
+                    }
+
+                }
+
+                foreach (var part in PartCatalog.Instance.SortedPartList)
+                {
+                    if (part.category != PartCategories.none)
+                    {
+                        if (!HandledParts.Contains(part))
+                        {
+                            PartCatalog.Instance.UnlistedParts.Add(part);
+                        }
                     }
                 }
 
-            }
-
-            foreach(var part in PartCatalog.Instance.SortedPartList)
-            {
-                if(part.category != PartCategories.none)
-                { 
-                if(!HandledParts.Contains(part))
+                using (LuaTable iconsTable = luaInstance.CreateTable())
                 {
-                    PartCatalog.Instance.UnlistedParts.Add(part);
-                }
-            }
-            }
-
-            toRun.AppendLine("}");
-
-            toRun.Append("ICONS = {");
-            first = true;
-            foreach(var texture in ResourceProxy.Instance.LoadedTextures.Keys)
-            {
-                
-                if(first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    toRun.Append(",");
-                }
-                toRun.Append("[ \"").Append(escapeString(texture.Replace(@"\", "/"))).Append("\" ]").Append(" = true");
-            }
-            toRun.Append("}");
-
-
-            return toRun.ToString();
-        }
-
-        private static string escapeString(object toEscape)
-        {
-            return toEscape.ToString().Replace("\"", "\\\"");
-        }
-
-        private static void SerializeAvailablePart(StringBuilder toRun, AvailablePart part, ConfigNode node)
-        {
-            toRun.Append("[ \"").Append(escapeString(part.name)).Append("\" ] = {")
-                    .Append("name = \"").Append(escapeString(part.name)).Append("\",")
-                    .Append("title = \"").Append(escapeString(part.title)).Append("\",")
-                    .Append("mod = \"").Append(escapeString(PartCatalog.Instance.GetPartMod(part))).Append("\",")
-                    .Append("manufacturer = \"").Append(escapeString(part.manufacturer)).Append("\",")
-                    .Append("author = \"").Append(escapeString(part.author)).Append("\",")
-                    .Append("category = \"").Append(escapeString(part.category)).Append("\",")
-                    .Append("cost = \"").Append(escapeString(part.cost)).Append("\",")
-                    .Append("description = \"").Append(escapeString(part.description)).Append("\",")
-                    .Append("entryCost = \"").Append(escapeString(part.entryCost)).Append("\",")
-                    .Append("techRequired = \"").Append(escapeString(part.TechRequired)).Append("\",")
-                    .Append("angularDrag = \"").Append(escapeString(part.partPrefab.angularDrag)).Append("\",")
-                    .Append("breakingForce = \"").Append(escapeString(part.partPrefab.breakingForce)).Append("\",")
-                    .Append("breakingTorque = \"").Append(escapeString(part.partPrefab.breakingTorque)).Append("\",")
-                    .Append("buoyancy = \"").Append(escapeString(part.partPrefab.buoyancy)).Append("\",")
-                    .Append("crashTolerance = \"").Append(escapeString(part.partPrefab.crashTolerance)).Append("\",")
-                    .Append("crewCapacity = \"").Append(escapeString(part.partPrefab.CrewCapacity)).Append("\",")
-                    .Append("dragModelType = \"").Append(escapeString(part.partPrefab.dragModelType)).Append("\",") //Determines whether we got stock aero or not
-                    .Append("explosionPotential = \"").Append(escapeString(part.partPrefab.explosionPotential)).Append("\",")
-                    .Append("fuelCrossFeed = \"").Append(escapeString(part.partPrefab.fuelCrossFeed)).Append("\",")
-                    .Append("heatConductivity = \"").Append(escapeString(part.partPrefab.heatConductivity)).Append("\",")
-                    .Append("heatDissipation = \"").Append(escapeString(part.partPrefab.heatDissipation)).Append("\",")
-                    .Append("mass = \"").Append(escapeString(part.partPrefab.mass)).Append("\",")
-                    .Append("minimum_drag = \"").Append(escapeString(part.partPrefab.minimum_drag)).Append("\",")
-                    .Append("maximum_drag = \"").Append(escapeString(part.partPrefab.maximum_drag)).Append("\",")
-                    .Append("maxTemp = \"").Append(escapeString(part.partPrefab.maxTemp)).Append("\",")
-                    .Append("rescaleFactor = \"").Append(escapeString(part.partPrefab.rescaleFactor)).Append("\",")
-                    .Append("scaleFactor = \"").Append(escapeString(part.partPrefab.scaleFactor)).Append("\",")
-                    .Append("stagingIcon = \"").Append(escapeString(part.partPrefab.stagingIcon)).Append("\",")
-                    .Append("stackSymmetry = \"").Append(escapeString(part.partPrefab.stackSymmetry)).Append("\",")
-                    .Append("assigned = false,")
-                    .Append("isPart = true,");
-
-            if (part.partPrefab != null)
-            {
-                if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
-                {
-                    toRun.Append("dragCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).dragCoeff)).Append("\",")
-                         .Append("deflectionLiftCoeff = \"").Append(escapeString(((Winglet)part.partPrefab).deflectionLiftCoeff)).Append("\",");
-                }
-                
-                toRun.Append("attachSurface = \"").Append(escapeString(part.partPrefab.attachRules.srfAttach)).Append("\",")
-
-                .Append("attachNodes = {");
-                    bool firstNode = true;
-                    foreach (var attachnode in part.partPrefab.attachNodes)
+                    luaInstance.Globals["ICONS"] = iconsTable;
+                    foreach (var texture in ResourceProxy.Instance.LoadedTextures.Keys)
                     {
-                        if(firstNode)
-                        {
-                            firstNode = false;
-                        }
-                        else
-                        {
-                            toRun.Append(",");
-                        }
-                        toRun.Append("{ ")
-                            .Append("offset = { x = ").Append(attachnode.offset.x).Append(", y = ").Append(attachnode.offset.y).Append(", z = ").Append(attachnode.offset.z).Append(" } ")
-                            .Append(",orientation = { x = ").Append(attachnode.orientation.x).Append(", y = ").Append(attachnode.orientation.y).Append(", z = ").Append(attachnode.orientation.z).Append(" } ")
-                            .Append(",size = ").Append(attachnode.size)
-                            .Append(",radius= ").Append(attachnode.radius)
-                            .Append("}");
+
+                        iconsTable[texture.Replace(@"\", "/")] = LuaBoolean.True;
                     }
-                   toRun.Append("},");
+                }
             }
-
-
-            SerializeConfigNode(toRun, node);
-
-            toRun.Append("}");
         }
 
-        private static void SerializeConfigNode(StringBuilder toRun, ConfigNode node)
+        private void SerializeAvailablePart(LuaTable partsTable, AvailablePart part, ConfigNode node)
         {
-            toRun.Append("nodes = {");
-            bool firstNode = true;
+            using (LuaTable partTable = luaInstance.CreateTable())
+            {
+                partsTable[part.name.ToString()] = partTable;
+                partTable["name"] = part.name;
+                partTable["title"] = part.title;
+                partTable["mod"] = PartCatalog.Instance.GetPartMod(part);
+                partTable["manufacturer"] = part.manufacturer;
+                partTable["author"] = part.author;
+                partTable["category"] = part.category.ToString();
+                partTable["cost"] = part.cost;
+                partTable["description"] = part.description;
+                partTable["entryCost"] = part.entryCost;
+                partTable["techRequired"] = part.TechRequired;
+                partTable["assigned"] = LuaBoolean.False;
+                partTable["isPart"] = LuaBoolean.True;
+                if (part.partPrefab != null)
+                {
+                    partTable["angularDrag"] = part.partPrefab.angularDrag;
+                    partTable["breakingForce"] = part.partPrefab.breakingForce;
+                    partTable["breakingTorque"] = part.partPrefab.breakingTorque;
+                    partTable["buoyancy"] = part.partPrefab.buoyancy;
+                    partTable["crashTolerance"] = part.partPrefab.crashTolerance;
+                    partTable["crewCapacity"] = part.partPrefab.CrewCapacity;
+                    partTable["dragModelType"] = part.partPrefab.dragModelType;
+                    partTable["explosionPotential"] = part.partPrefab.explosionPotential;
+                    partTable["fuelCrossFeed"] = part.partPrefab.fuelCrossFeed;
+                    partTable["heatConductivity"] = part.partPrefab.heatConductivity;
+                    partTable["heatDissipation"] = part.partPrefab.heatDissipation;
+                    partTable["mass"] = part.partPrefab.mass;
+                    partTable["minimum_drag"] = part.partPrefab.minimum_drag;
+                    partTable["maximum_drag"] = part.partPrefab.maximum_drag;
+                    partTable["maxTemp"] = part.partPrefab.maxTemp;
+                    partTable["rescaleFactor"] = part.partPrefab.rescaleFactor;
+                    partTable["scaleFactor"] = part.partPrefab.scaleFactor;
+                    partTable["stagingIcon"] = part.partPrefab.stagingIcon;
+                    partTable["stackSymmetry"] = part.partPrefab.stackSymmetry;
+
+                    if (part.partPrefab.dragModelType == "override" && part.partPrefab is Winglet)
+                    {
+                        partTable["dragCoeff"] = ((Winglet) part.partPrefab).dragCoeff;
+                        partTable["deflectionLiftCoeff"] = ((Winglet) part.partPrefab).deflectionLiftCoeff;
+                    }
+
+                    partTable["attachSurface"] = part.partPrefab.attachRules.srfAttach;
+                    using (LuaTable nodesTable = luaInstance.CreateTable())
+                    {
+                        partTable["attachNodes"] = nodesTable;
+
+                        double cnt = 1;
+                        foreach (var attachnode in part.partPrefab.attachNodes)
+                        {
+                            using (LuaTable nodeTable = luaInstance.CreateTable())
+                            {
+                                nodesTable[cnt++] = nodeTable;
+
+                                using (LuaTable offsetTable = luaInstance.CreateTable())
+                                {
+                                    nodeTable["offset"] = offsetTable;
+                                    offsetTable["x"] = attachnode.offset.x;
+                                    offsetTable["y"] = attachnode.offset.y;
+                                    offsetTable["z"] = attachnode.offset.z;
+                                }
+
+                                using (LuaTable orientationTable = luaInstance.CreateTable())
+                                {
+                                    nodeTable["orientation"] = orientationTable;
+                                    orientationTable["x"] = attachnode.orientation.x;
+                                    orientationTable["y"] = attachnode.orientation.y;
+                                    orientationTable["z"] = attachnode.orientation.z;
+                                }
+
+                                nodeTable["size"] = attachnode.size;
+                                nodeTable["radius"] = attachnode.radius;
+                            }
+                        }
+                    }
+                }
+
+                using (LuaTable nodesTable = SerializeConfigNode(node))
+                {
+                    partTable["nodes"] = nodesTable;
+                }
+            }
+        }
+
+        private LuaTable SerializeConfigNode(ConfigNode node)
+        {
+            LuaTable toReturn = luaInstance.CreateTable();
+            
+            double cnt = 1;
             foreach (ConfigNode childNode in node.nodes)
             {
-                if (!firstNode)
+                using (LuaTable childTable = luaInstance.CreateTable())
                 {
-                    toRun.Append(",");
-                }
-                firstNode = false;
-                toRun.Append("{")
-                        .Append("name = \"").Append(escapeString(childNode.name)).Append("\",")
-                        .Append("values = {");
-                bool first = true;
-                foreach (ConfigNode.Value val in childNode.values)
-                {
-                    if (!first)
+                    toReturn[cnt++] = childTable;
+
+                    childTable["name"] = childNode.name;
+
+                    using (LuaTable childValueTable = luaInstance.CreateTable())
                     {
-                        toRun.Append(",");
+                        childTable["values"] = childValueTable;
+
+                        foreach (ConfigNode.Value val in childNode.values)
+                        {
+                            childValueTable[val.name] = val.value;
+                        }
                     }
-                    first = false;
-                    toRun.Append("[ \"").Append(escapeString(val.name)).Append("\" ] = \"").Append(escapeString(val.value)).Append("\"");
+
+                    childTable["nodes"] = SerializeConfigNode(childNode);
                 }
-                toRun.Append("},");
-
-                SerializeConfigNode(toRun, childNode);
-
-                toRun.Append("}");
-
-
             }
-            toRun.Append("}");
+            return toReturn;
+            
         }
 
     }

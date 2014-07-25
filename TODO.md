@@ -5,6 +5,7 @@ PartCatalog TODO List
 * Split propulsion tab into Storage and engines
 * Allow custom icons in mod folders
 * Allow meta info in mod folder
+* Directly write down part info in lua tables
 
 
 
