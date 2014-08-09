@@ -78,6 +78,7 @@ namespace PartCatalog
             foreach (AvailablePart part in PartLoader.Instance.parts)
             {
                 SortedPartList.Add(part);
+                Debug.Log("PartCatalog: Adding part " + part.name + " to index");
                 PartIndex[part.name] = part;
 
                 if (!HashedManufacturerCatalog.ContainsKey(part.manufacturer))

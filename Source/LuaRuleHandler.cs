@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KSPAchievements;
+using NLua;
+using KSPLua;
 using UnityEngine;
-using Eluant;
-using Eluant.ObjectBinding;
+
 namespace PartCatalog
 {
     class LuaRuleHandler
     {
-        LuaRuntime luaInstance = new LuaRuntime();
+        Lua luaInstance = new Lua();
 
         private Dictionary<string, HashSet<AvailablePart>> Categories = new Dictionary<string, HashSet<AvailablePart>>();
         public Dictionary<string, HashSet<AvailablePart>> GetCategoriesForTag(PartTag limitTo)
@@ -64,7 +65,7 @@ sortCat(CATEGORIES)");
 
             Categories.Clear();
 
-            LuaTable category = (LuaTable)luaInstance.Globals["CATEGORIES"];
+            LuaTable category = (LuaTable)luaInstance["CATEGORIES"];
             LuaTable children = (LuaTable)category["children"];
             //PartCatalog.Instance.RootTag = new PartTag();
             HashSet<AvailablePart> leftOvers = new HashSet<AvailablePart>();
@@ -176,7 +177,7 @@ sortCat(CATEGORIES)");
                 LuaTable parts = (LuaTable)category["parts"];
                 foreach (var value in parts.Keys)
                 {
-                    if (value is LuaString)
+                    if (value is String)
                     {
                         if (!PartCatalog.Instance.PartIndex.ContainsKey((string)value.ToString()))
                         {
@@ -251,7 +252,7 @@ sortCat(CATEGORIES)");
         {
             using (LuaTable partTable = luaInstance.CreateTable())
             {
-                luaInstance.Globals["PARTS"] = partTable;
+                luaInstance["PARTS"] = partTable;
 
                 UrlDir.UrlConfig[] configs = GameDatabase.Instance.GetConfigs("PART");
 
@@ -289,11 +290,11 @@ sortCat(CATEGORIES)");
 
                 using (LuaTable iconsTable = luaInstance.CreateTable())
                 {
-                    luaInstance.Globals["ICONS"] = iconsTable;
+                    luaInstance["ICONS"] = iconsTable;
                     foreach (var texture in ResourceProxy.Instance.LoadedTextures.Keys)
                     {
 
-                        iconsTable[texture.Replace(@"\", "/")] = LuaBoolean.True;
+                        iconsTable[texture.Replace(@"\", "/").Replace(".","\\.")] = true;
                     }
                 }
             }
@@ -301,9 +302,10 @@ sortCat(CATEGORIES)");
 
         private void SerializeAvailablePart(LuaTable partsTable, AvailablePart part, ConfigNode node)
         {
+            Debug.Log("Serializing " + part.name + " in " + partsTable.ToString());
             using (LuaTable partTable = luaInstance.CreateTable())
             {
-                partsTable[part.name.ToString()] = partTable;
+                partsTable[part.name.Replace(".","\\.")] = partTable;
                 partTable["name"] = part.name;
                 partTable["title"] = part.title;
                 partTable["mod"] = PartCatalog.Instance.GetPartMod(part);
@@ -314,8 +316,8 @@ sortCat(CATEGORIES)");
                 partTable["description"] = part.description;
                 partTable["entryCost"] = part.entryCost;
                 partTable["techRequired"] = part.TechRequired;
-                partTable["assigned"] = LuaBoolean.False;
-                partTable["isPart"] = LuaBoolean.True;
+                partTable["assigned"] = false;
+                partTable["isPart"] = true;
                 if (part.partPrefab != null)
                 {
                     partTable["angularDrag"] = part.partPrefab.angularDrag;
@@ -405,7 +407,7 @@ sortCat(CATEGORIES)");
 
                         foreach (ConfigNode.Value val in childNode.values)
                         {
-                            childValueTable[val.name] = val.value;
+                            childValueTable[val.name.Replace(".","\\.")] = val.value;
                         }
                     }
 
