@@ -209,8 +209,7 @@ sortCat(CATEGORIES)");
                     }
 
                     int numLists = newTag.ChildTags.Count / ConfigHandler.Instance.MaxTagsPerPage + 1;
-
-                    UnityEngine.Debug.Log(string.Format("Setting up {0} with {1} child lists",newTag.Name,numLists));
+                    
 
 
                     var subPages = new List<PartTag>();
@@ -301,8 +300,7 @@ sortCat(CATEGORIES)");
         }
 
         private void SerializeAvailablePart(LuaTable partsTable, AvailablePart part, ConfigNode node)
-        {
-            Debug.Log("Serializing " + part.name + " in " + partsTable.ToString());
+        {            
             using (LuaTable partTable = luaInstance.CreateTable())
             {
                 partsTable[part.name.Replace(".","\\.")] = partTable;
