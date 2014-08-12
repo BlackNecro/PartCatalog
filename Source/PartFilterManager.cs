@@ -325,6 +325,9 @@ namespace PartCatalog
             {
                 DisplayedParts.ExceptWith(tag.VisibleParts);
             }
+
+            DisplayedParts.ExceptWith(PartCatalog.Instance.RootTag.BlacklistedParts);
+
             foreach (var part in DisplayedParts)
             {
                 DisplayedCategories.Add(part.category);

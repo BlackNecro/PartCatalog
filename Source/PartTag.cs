@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using KSP.IO;
 using UnityEngine;
 
@@ -63,6 +64,7 @@ namespace PartCatalog
         public HashSet<AvailablePart> IncludedParts = new HashSet<AvailablePart>();
         public HashSet<AvailablePart> FilteredParts = new HashSet<AvailablePart>();
         public HashSet<AvailablePart> VisibleParts = new HashSet<AvailablePart>();
+        public HashSet<AvailablePart> BlacklistedParts = new HashSet<AvailablePart>();         
         #endregion
         #region PartData
         public HashSet<PartCategories> PartCategories = new HashSet<PartCategories>();
@@ -128,12 +130,13 @@ namespace PartCatalog
             //Debug.Log("Rehashing Tag " + this.Name);            
             PartCategories.Clear();
             VisibleParts.Clear();
+            BlacklistedParts.Clear();
             bool newResearched = RehashParts();
-          
-
+                      
             foreach (PartTag child in ChildTags)
             {
                 VisibleParts.UnionWith(child.VisibleParts);
+                BlacklistedParts.UnionWith(child.BlacklistedParts);
                 newResearched |= child.Researched;
             }
 
@@ -171,6 +174,13 @@ namespace PartCatalog
                 VisibleParts.UnionWith(FilteredParts);                
             }
 
+
+            if (!visibleInSPH && !visibleInVAB)
+            {
+                BlacklistedParts.UnionWith(IncludedParts);
+            }
+
+
             return newResearched;
         }
 
@@ -181,6 +191,7 @@ namespace PartCatalog
             VisibleParts.Clear();
             FilteredParts.Clear();
             FilteredCategories.Clear();
+            BlacklistedParts.Clear();
 
             bool newResearched = RehashParts();
             
@@ -192,6 +203,7 @@ namespace PartCatalog
                 FilteredParts.UnionWith(child.FilteredParts);
                 FilteredCategories.UnionWith(child.FilteredCategories);
                 VisibleParts.UnionWith(child.VisibleParts);
+                BlacklistedParts.UnionWith(child.BlacklistedParts);
                 newResearched |= child.Researched;
             }
 
