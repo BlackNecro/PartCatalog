@@ -16,6 +16,9 @@ namespace PartCatalog
         public const int EditorToolbarTop = 1;
         public const int PageNumberWidth = 25;
         public const int EditorToolbarTopOffset = 30;
+        public const int EditorVerticalMarginBottomLeft = 124;
+        public const int EditorHorizontalMarginBottomLeft = 284;
+        public const int EditorHorizontalMarginBottomRight = 115; 
 
         public readonly static Rect EditorScrollRegion = new Rect(0, 0, EditorPartListWidth, Screen.height);
 

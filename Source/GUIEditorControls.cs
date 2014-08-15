@@ -617,7 +617,7 @@ namespace PartCatalog
                     toReturn.height = ConfigHandler.Instance.ButtonSize.y;
                     break;
                 case ToolBarPositions.HorizontalBottom:
-                    toReturn.x = GUIConstants.EditorPartListWidth;
+                    toReturn.x = GUIConstants.EditorHorizontalMarginBottomLeft;
                     toReturn.height = ConfigHandler.Instance.ButtonSize.y;
                     toReturn.y = Screen.height - toReturn.height - 1;
                     toReturn.width = Screen.width - GUIConstants.EditorResetButtonWidth - toReturn.x;
@@ -626,7 +626,7 @@ namespace PartCatalog
                     toReturn.x = GUIConstants.EditorPartListWidth;
                     toReturn.width = ConfigHandler.Instance.ButtonSize.x;
                     toReturn.y = GUIConstants.EditorToolbarHeight;
-                    toReturn.height = Screen.height - toReturn.y;
+                    toReturn.height = Screen.height - toReturn.y - GUIConstants.EditorVerticalMarginBottomLeft;
                     break;
                 case ToolBarPositions.VerticalRight:
                     toReturn.x = Screen.width - ConfigHandler.Instance.ButtonSize.x;
