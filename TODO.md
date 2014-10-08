@@ -1,6 +1,8 @@
 PartCatalog TODO List
 ===========
 
+* Only categorize new parts
+* Check disappearing parts in tag editor
 * Refactor Settings button position
 * Split propulsion tab into Storage and engines
 * Allow custom icons in mod folders
